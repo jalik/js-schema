@@ -2,7 +2,7 @@
   "name": "jk-schema",
   "version": "0.2.2",
   "description": "Validates objects using schemas",
-  "main": "dist/index.js",
+  "main": "dist/jk-schema.js",
   "scripts": {
     "start": "gulp watch",
     "build": "gulp default",
@@ -18,12 +18,12 @@
     "schema",
     "validation"
   ],
+  "license": "MIT",
   "author": {
-    "name": "Karl Stein",
+    "name": "Karl STEIN",
     "email": "karl.stein.pro@gmail.com",
     "url": "https://github.com/jalik"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jalik/jk-schema/issues"
   },

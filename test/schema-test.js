@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 var chai = require('chai');
-var Schema = require('../dist/index').Schema;
+var Schema = require('../dist/jk-schema.min').Schema;
 
 const FALSE = false;
 const TRUE = true;

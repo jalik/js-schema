@@ -30,11 +30,9 @@ const rename = require("gulp-rename");
 const uglify = require("gulp-uglify");
 const watch = require("gulp-watch");
 
-const distDir = "dist/";
+const distDir = "dist";
 
-/**
- * Compile Javascript files
- */
+// Compile JavaScript files
 gulp.task("build:js", function () {
     return gulp.src([
         "src/*.js"
@@ -43,9 +41,7 @@ gulp.task("build:js", function () {
         .pipe(gulp.dest(distDir));
 });
 
-/**
- * Compress Javascript files
- */
+// Compress JavaScript files
 gulp.task("compress:js", function (cb) {
     pump([
             gulp.src([
