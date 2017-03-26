@@ -32,6 +32,7 @@ export const FIELD_PROPERTIES = [
     "check",
     "decimal",
     "denied",
+    "label",
     "length",
     "max",
     "maxWords",
@@ -265,22 +266,12 @@ export class Schema {
         };
 
         /**
-         * Extends schema with fields from another schema
-         * @param parent
+         * Creates a new schema based on current schema
+         * @param fields
          * @return {Schema}
          */
-        this.extend = (parent) => {
-            if (!(parent instanceof Schema)) {
-                throw new TypeError(`Cannot extend object that is not a Schema`, parent);
-            }
-            const fields = parent.getFields();
-
-            for (let field in fields) {
-                if (fields.hasOwnProperty(field) && !schema.hasOwnProperty(field)) {
-                    schema[field] = fields[field];
-                }
-            }
-            return this;
+        this.extend = (fields) => {
+            return new Schema(_.extend({}, this.getFields(), fields));
         };
 
         /**

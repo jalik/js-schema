@@ -71,9 +71,9 @@ describe(`Schema`, function () {
      * extend()
      */
     describe(`extend()`, function () {
-        it(`should add fields to schema`, function () {
+        it(`should create an extended version of the schema`, function () {
             var parent = new Schema({fieldA: {type: String}});
-            var child = new Schema({fieldB: {type: Number}}).extend(parent);
+            var child = parent.extend({fieldB: {type: Number}});
             var fields = child.getFields();
             chai.assert.equal(fields.hasOwnProperty("fieldA") && fields.hasOwnProperty("fieldB"), true);
         });

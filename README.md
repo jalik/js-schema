@@ -191,10 +191,16 @@ ComplexSchema.validate({
 
 ## Changelog
 
+### v0.2.6
+- Removes warning `Unknown property "${field}.label"`
+
+### v0.2.5
+- Changes `schema.extend(fields)` signature, uses fields instead of parent schema
+
 ### v0.2.4
-- Adds `Schema.extend(parent)` to extend a schema with another
-- Adds `Schema.getFields()` to return schema fields
-- Adds `Schema.isValid(obj, options)` to validate an object without throwing an error
+- Adds `schema.extend(fields)` to create a schema based on an existing one
+- Adds `schema.getFields()` to return schema fields
+- Adds `schema.isValid(obj, options)` to validate an object without throwing an error
 - Adds `nullable` field option to allow a field to be `null`
 - Adds `ignoreMissing` option to `Schema.validate()` to ignore missing fields (useful for updates)
 

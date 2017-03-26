@@ -68,5 +68,5 @@ gulp.task("default", ["build", "compress"]);
 // Automatic rebuild
 gulp.task("watch", function () {
     gulp.watch(["src/*.js"], ["build:js"]);
-    gulp.watch(["build/*.js", "!build/*.min.js"], ["compress:js"]);
+    gulp.watch([`${distDir}/*.js`, `!${distDir}/*.min.js`], ["compress:js"]);
 });
