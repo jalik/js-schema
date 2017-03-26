@@ -60,13 +60,13 @@ const UserSchema = new Schema({
     }
 });
 
-// This is valid
+// This won't throw any error because data is valid
 UserSchema.validate({
     name: 'karl',
     email: 'karl@mail.com'
 });
 
-// This is not valid
+// This is not valid, an error will be thrown
 UserSchema.validate({
     email: 'karl@mail.com',
     birthday: '1999-12-20'
@@ -190,6 +190,13 @@ ComplexSchema.validate({
 ```
 
 ## Changelog
+
+### v0.2.4
+- Adds `Schema.extend(parent)` to extend a schema with another
+- Adds `Schema.getFields()` to return schema fields
+- Adds `Schema.isValid(obj, options)` to validate an object without throwing an error
+- Adds `nullable` field option to allow a field to be `null`
+- Adds `ignoreMissing` option to `Schema.validate()` to ignore missing fields (useful for updates)
 
 ### v0.2.1
 - First public release

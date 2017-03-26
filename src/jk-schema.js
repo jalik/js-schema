@@ -32,11 +32,12 @@ export const FIELD_PROPERTIES = [
     "check",
     "decimal",
     "denied",
+    "length",
     "max",
     "maxWords",
     "min",
     "minWords",
-    "length",
+    "nullable",
     "regEx",
     "required",
     "type"
@@ -164,6 +165,13 @@ export class Schema {
                     }
                 }
 
+                // Check if attribute is nullable
+                if (prop.nullable !== undefined) {
+                    if (typeof prop.nullable !== "boolean") {
+                        throw new TypeError(`${field}.nullable is not a boolean`);
+                    }
+                }
+
                 // Check regular expression
                 if (prop.regEx !== undefined) {
                     if (!_.contains(["function"], typeof prop.regEx) && !(prop.regEx instanceof RegExp)) {
@@ -254,6 +262,48 @@ export class Schema {
                 return value();
             }
             return value;
+        };
+
+        /**
+         * Extends schema with fields from another schema
+         * @param parent
+         * @return {Schema}
+         */
+        this.extend = (parent) => {
+            if (!(parent instanceof Schema)) {
+                throw new TypeError(`Cannot extend object that is not a Schema`, parent);
+            }
+            const fields = parent.getFields();
+
+            for (let field in fields) {
+                if (fields.hasOwnProperty(field) && !schema.hasOwnProperty(field)) {
+                    schema[field] = fields[field];
+                }
+            }
+            return this;
+        };
+
+        /**
+         * Returns fields
+         * @return {*}
+         */
+        this.getFields = () => {
+            return schema;
+        };
+
+        /**
+         * Checks if the object is valid
+         * @param obj
+         * @param options
+         * @return {boolean}
+         */
+        this.isValid = (obj, options) => {
+            try {
+                this.validate(obj, options);
+                return true;
+            } catch (err) {
+                return false;
+            }
         };
 
         /**
@@ -441,8 +491,8 @@ export class Schema {
             options = _.extend({
                 clean: true,
                 ignoreUnknown: false,
-                removeUnknown: true,
-                throwError: true
+                ignoreMissing: false,
+                removeUnknown: true
             }, options);
 
             // Check if object is null
@@ -474,6 +524,11 @@ export class Schema {
                 if (schema.hasOwnProperty(field)) {
                     const prop = schema[field];
                     const value = obj[field];
+
+                    // Ignore missing fields
+                    if (value === undefined && options.ignoreMissing) {
+                        continue;
+                    }
                     this.validateField(prop, value, options);
                 }
             }
@@ -496,7 +551,7 @@ export class Schema {
 
             // Check if value is missing
             if (value === undefined || value === null) {
-                if (field.required) {
+                if (field.required && !field.nullable) {
                     this.throwFieldMissingError(label);
                 } else {
                     return;

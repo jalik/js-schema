@@ -35,13 +35,138 @@ const ARRAY_STRING = ['a', 'b'];
 
 describe(`Schema`, function () {
 
+    var StringSchema = new Schema({
+        string: {
+            type: String,
+            required: true
+        }
+    });
+
+    var TestSchema = new Schema({
+        array: {
+            type: Array,
+            required: true
+        },
+        number: {
+            type: Number,
+            required: true
+        },
+        string: {
+            type: String,
+            required: true
+        }
+    });
+
     /**
-     * ARRAY
+     * getFields()
      */
-    describe(`Array field`, function () {
+    describe(`getFields()`, function () {
+        it(`should return all fields`, function () {
+            var fields = {field: {type: Array}};
+            chai.assert.equal(new Schema(fields).getFields(), fields);
+        });
+    });
+
+    /**
+     * extend()
+     */
+    describe(`extend()`, function () {
+        it(`should add fields to schema`, function () {
+            var parent = new Schema({fieldA: {type: String}});
+            var child = new Schema({fieldB: {type: Number}}).extend(parent);
+            var fields = child.getFields();
+            chai.assert.equal(fields.hasOwnProperty("fieldA") && fields.hasOwnProperty("fieldB"), true);
+        });
+    });
+
+    describe(`validate()`, function () {
+        /**
+         * ignoreMissing option
+         */
+        describe(`ignoreMissing = true`, function () {
+            it(`should not throw an error for missing fields`, function () {
+                chai.assert.doesNotThrow(function () {
+                    TestSchema.validate({string: "abc"}, {
+                        ignoreMissing: true
+                    });
+                }, Error);
+            });
+        });
+        describe(`ignoreMissing = false`, function () {
+            it(`should throw an error for missing fields`, function () {
+                chai.assert.throw(function () {
+                    TestSchema.validate({string: "abc"}, {
+                        ignoreMissing: false
+                    });
+                }, Error);
+            });
+        });
+        /**
+         * ignoreUnknown option
+         */
+        describe(`ignoreUnknown = true`, function () {
+            it(`should not throw an error for unknown fields`, function () {
+                chai.assert.doesNotThrow(function () {
+                    StringSchema.validate({string: "abc", xxx: null}, {
+                        ignoreUnknown: true
+                    });
+                }, Error);
+            });
+        });
+        describe(`ignoreUnknown = false`, function () {
+            it(`should throw an error for unknown fields`, function () {
+                chai.assert.throw(function () {
+                    StringSchema.validate({string: "abc", xxx: null}, {
+                        ignoreUnknown: false
+                    });
+                }, Error);
+            });
+        });
+        /**
+         * removeUnknown option
+         */
+        describe(`removeUnknown = true`, function () {
+            it(`should remove unknown fields`, function () {
+                var obj = {string: "abc", xxx: null};
+                StringSchema.validate(obj, {
+                    clean: true,
+                    ignoreUnknown: true,
+                    removeUnknown: true
+                });
+                chai.assert.equal(obj.hasOwnProperty("xxx"), false);
+            });
+        });
+        describe(`removeUnknown = false`, function () {
+            it(`should not remove unknown fields`, function () {
+                var obj = {string: "abc", xxx: null};
+                StringSchema.validate(obj, {
+                    clean: true,
+                    ignoreUnknown: true,
+                    removeUnknown: false
+                });
+                chai.assert.equal(obj.hasOwnProperty("xxx"), true);
+            });
+        });
+    });
+
+    /**
+     * NULL ARRAY
+     */
+    describe(`Array field with null value`, function () {
         it(`should throw an Error`, function () {
             chai.assert.throws(function () {
                 new Schema({field: {type: Array}}).validate({field: null});
+            }, Error);
+        });
+    });
+
+    /**
+     * NULLABLE ARRAY
+     */
+    describe(`Nullable Array field with null value`, function () {
+        it(`should not throw an Error`, function () {
+            chai.assert.doesNotThrow(function () {
+                new Schema({field: {type: Array, nullable: true}}).validate({field: null});
             }, Error);
         });
     });
