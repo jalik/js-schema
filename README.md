@@ -10,10 +10,17 @@ To define a schema, use the `Schema` class.
 const RegEx = require("jk-schema").RegEx;
 const Schema = require("jk-schema").Schema;
 
-const UserSchema = new Schema({
+const PersonSchema = new Schema({
     name: {
         type: String,
-        length: [3, 30]
+        required: true,
+        length: [3, 30] // min 3, max 30
+    },
+    presentation: {
+        type: String,
+        required: false,
+        length: [0, 500],
+        minWords: 10
     },
     email: {
         type :String,
@@ -23,6 +30,7 @@ const UserSchema = new Schema({
     birthday: {
         type: Date,
         required: false,
+        nullable: true,
         max: function() {
             const YEARS_18 = 18*365*24*60*60*1000;
             return new Date(Date.now() - YEARS_18);
@@ -31,7 +39,67 @@ const UserSchema = new Schema({
 });
 ```
 
-## Validating a schema
+## Updating a schema
+
+The update creates fields that do not exist, but only modifies existing properties of fields,
+so you can keep properties that have already been defined.
+
+```js
+const Schema = require("jk-schema").Schema;
+
+const PersonSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    }
+});
+
+PersonSchema.update({
+    age: {type: Number},
+    name: {length:[0,20]}
+});
+```
+
+## Extending a schema (inheritance)
+
+The extend operation creates a new schema based on the current one.
+
+```js
+const Schema = require("jk-schema").Schema;
+
+const PersonSchema = new Schema({
+    age: {type: Number},
+    name: {
+        type: String,
+        required: true
+    }
+});
+
+const ParentSchema = PersonSchema.extend({
+    children: {
+        type: [PersonSchema],
+        required: true,
+        length: [0] // min = 0, no max
+    }
+});
+```
+
+## Cloning a schema
+
+```js
+const Schema = require("jk-schema").Schema;
+
+const PersonSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    }
+});
+
+const CloneSchema = PersonSchema.clone();
+```
+
+## Validating data using a schema
 
 To validate data using a schema, use the method `schema.validate(obj)`.
 If the validation fails, it will throw a `SchemaError` containing information about the error.
@@ -40,156 +108,100 @@ If the validation fails, it will throw a `SchemaError` containing information ab
 const RegEx = require("jk-schema").RegEx;
 const Schema = require("jk-schema").Schema;
 
-const UserSchema = new Schema({
-    name: {
+const AddressSchema = new Schema({
+    city: {
         type: String,
-        length: [3, 30]
+        required: true,
+        length: [1, 30]
+    },
+    country: {
+        type: String,
+        required: true,
+        allowed: ["PF", "FR", "US", "CA"]
+    }
+});
+
+const PhoneSchema = new Schema({
+    number: {
+        type: String,
+        required: true,
+        regEx: /^[0-9 -.]+$/
+    }
+});
+
+const PersonSchema = new Schema({
+    birthday: {
+        type: Date,
+        required: false,
+        nullable: true,
+        max: function() {
+            const YEARS_18 = 18*365*24*60*60*1000;
+            return new Date(Date.now() - YEARS_18);
+        }
     },
     email: {
         type :String,
         regEx: RegEx.Email,
         required: false
     },
-    birthday: {
-        type: Date,
+    name: {
+        type: String,
+        required: true,
+        length: [3, 30] // min 3, max 30
+    },
+    phones: {
+        type: [PhoneSchema],
+        required: false
+    },
+    postalAddress: {
+        // Inherit from AddressSchema
+        type: AddressSchema.extend({
+            postalCode: {
+                type: Number,
+                required: false
+            }
+        }),
+        required: true
+    },
+    presentation: {
+        type: String,
         required: false,
-        max: function() {
-            const YEARS_18 = 18*365*24*60*60*1000;
-            return new Date(Date.now() - YEARS_18);
-        }
+        length: [0, 500],
+        minWords: 10
     }
 });
 
 // This won't throw any error because data is valid
-UserSchema.validate({
+PersonSchema.validate({
     name: 'karl',
-    email: 'karl@mail.com'
-});
-
-// This is not valid, an error will be thrown
-UserSchema.validate({
     email: 'karl@mail.com',
-    birthday: '1999-12-20'
-});
-```
-
-## Examples of validation
-
-```js
-const RegEx = require("jk-schema").RegEx;
-const Schema = require("jk-schema").Schema;
-
-const PrimitiveSchema = new Schema({
-    array: {
-        type: Array,
-        length: [1, 2]
-    },
-    binaryArray: {
-        type: [Number],
-        allowed: [0, 1]
-    },
-    stringArray: {
-        type: [String],
-        allowed: ["a", "b", "c"]
-    },
-    status: {
-        type: String,
-        allowed: ["on", "off"]
-    },
-    boolean: {
-        type: Boolean
-    },
-    date: {
-        type: Date
-    },
-    error: {
-        type: Error
-    },
-    email: {
-        type: String,
-        regEx: RegEx.Email
-    },
-    ipv4: {
-        type: String,
-        regEx: RegEx.IPv4
-    },
-    float: {
-        type: Number,
-        decimal: true
-    },
-    integer: {
-        type: Number,
-        decimal: false
-    },
-    method: {
-        type: Function
-    },
-    number: {
-        type: Number
-    },
-    object: {
-        type: Object
-    },
-    string: {
-        type: String,
-        length: [1, 10]
-        // regEx: /^[a-z-0-9]+$/i
-    },
-});
-
-const ComplexSchema = new Schema({
-    child: {
-        type: PrimitiveSchema
-    },
-    children: {
-        type: [PrimitiveSchema]
-    },
-    dates: {
-        type: [Date]
+    postalAddress: {
+        city: "Papeete",
+        country: "PF"
     }
 });
 
-const DATA = {
-    // intruder: "@#=*",
-    array: [0, 1],
-    binaryArray: [0, 1, 1, 0],
-    stringArray: ["a", "b", "a"],
-    status: "on",
-    boolean: false,
-    date: new Date(),
-    email: "jalik26@mail.com",
-    ipv4: "10.0.0.255",
-    error: new TypeError(),
-    float: 13.37,
-    integer: 1337,
-    method: function () {
-    },
-    number: 123,
-    object: {a: "  1 ", b: 2},
-    string: " hell0   "
-};
-
-// Create a sub schema by picking only some fields
-const subSchema = PrimitiveSchema.pick(["number", "string"]);
-
-// Validate data using the sub schema
-subSchema.validate({
-    number: 123,
-    string: "  a "
-});
-
-// Validate data using primitive schema
-PrimitiveSchema.validate(DATA);
-
-// Validate data using complex schema
-ComplexSchema.validate({
-    dates: [new Date()],
-    child: DATA,
-    children: [DATA]
+// This will throw an error since date is not valid
+PersonSchema.validate({
+    email: 'karl@mail.com',
+    birthday: '1999-12-20',
+    postalAddress: {
+        city: "Papeete",
+        country: "PF"
+    }
 });
 ```
 
 ## Changelog
+
+### v0.2.9
+- Adds class `SchemaField`
+- Adds method `Schema.addField(name, props)`
+- Adds method `Schema.clone()`
+- Adds method `Schema.update(fields)`
+- Moves `Schema.cleanField()` to  `SchemaField.clean()`
+- Moves `Schema.dynamicValue()` to  `SchemaField.dynamicValue()`
+- Moves `Schema.validateField()` to  `SchemaField.validate()`
 
 ### v0.2.8
 - Adds `resolveField(name)` method

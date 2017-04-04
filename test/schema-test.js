@@ -23,6 +23,7 @@
  */
 var chai = require('chai');
 var Schema = require('../dist/jk-schema.min').Schema;
+var RegEx = require('../dist/jk-schema.min').RegEx;
 
 const FALSE = false;
 const TRUE = true;
@@ -59,23 +60,24 @@ describe(`Schema`, function () {
     });
 
     /**
-     * resolveField()
+     * clone()
      */
-    describe(`resolveField()`, function () {
-        it(`should return field properties`, function () {
-            var PhoneSchema = new Schema({
-                number: {type: String}
-            });
-            var ChildSchema = new Schema({
-                phones: {type: [PhoneSchema]}
-            });
-            var ParentSchema = new Schema({
-                child: {type: ChildSchema}
-            });
-            chai.assert.doesNotThrow(function () {
-                return ParentSchema.resolveField("child[phones][number]").type === String
-                    && ParentSchema.resolveField("child[phones][0][number]").type === String;
-            });
+    describe(`clone()`, function () {
+        it(`should create a copy of the schema`, function () {
+            var schema = new Schema({fieldA: {type: String}});
+            chai.assert.deepEqual(schema.clone(), schema);
+        });
+    });
+
+    /**
+     * extend()
+     */
+    describe(`extend()`, function () {
+        it(`should create an extended version of the schema`, function () {
+            var parent = new Schema({fieldA: {type: String}});
+            var child = parent.extend({fieldB: {type: Number}});
+            var fields = child.getFields();
+            chai.assert.equal(fields.hasOwnProperty("fieldA") && fields.hasOwnProperty("fieldB"), true);
         });
     });
 
@@ -97,20 +99,56 @@ describe(`Schema`, function () {
      */
     describe(`getFields()`, function () {
         it(`should return all fields`, function () {
-            var fields = {field: {type: Array}};
-            chai.assert.equal(new Schema(fields).getFields(), fields);
+            var schema = new Schema({field: {type: Array}});
+            chai.assert.equal(schema.getFields() !== null, true);
         });
     });
 
     /**
-     * extend()
+     * resolveField()
      */
-    describe(`extend()`, function () {
-        it(`should create an extended version of the schema`, function () {
-            var parent = new Schema({fieldA: {type: String}});
-            var child = parent.extend({fieldB: {type: Number}});
-            var fields = child.getFields();
-            chai.assert.equal(fields.hasOwnProperty("fieldA") && fields.hasOwnProperty("fieldB"), true);
+    describe(`resolveField()`, function () {
+        it(`should return field properties`, function () {
+            var PhoneSchema = new Schema({
+                number: {type: String}
+            });
+            var ChildSchema = new Schema({
+                phones: {type: [PhoneSchema]}
+            });
+            var ParentSchema = new Schema({
+                child: {type: ChildSchema}
+            });
+            chai.assert.doesNotThrow(function () {
+                return ParentSchema.resolveField("child[phones][number]").type === String
+                    && ParentSchema.resolveField("child[phones][0][number]").type === String;
+            });
+        });
+    });
+
+    /**
+     * update()
+     */
+    describe(`update()`, function () {
+        it(`should modify the schema`, function () {
+            var PhoneSchema = new Schema({
+                number: {
+                    type: String,
+                    required: true
+                }
+            });
+            var PersonSchema = new Schema({
+                name: {
+                    type: String,
+                    required: true
+                },
+                phones: {
+                    type: [PhoneSchema.clone().update({number: {required: false}})],
+                    required: true
+                }
+            });
+            chai.assert.equal(PersonSchema.getField("name").required, true);
+            chai.assert.equal(PersonSchema.getField("phones[number]").required, false);
+            chai.assert.equal(PhoneSchema.getField("number").required, true);
         });
     });
 
@@ -182,151 +220,186 @@ describe(`Schema`, function () {
                 chai.assert.equal(obj.hasOwnProperty("xxx"), true);
             });
         });
-    });
 
-    /**
-     * NULL ARRAY
-     */
-    describe(`Array field with null value`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.throws(function () {
-                new Schema({field: {type: Array}}).validate({field: null});
-            }, Error);
+        /**
+         * NULL ARRAY
+         */
+        describe(`Non-Nullable Array field with null value`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.throws(function () {
+                    new Schema({field: {type: Array, nullable: false}}).validate({field: null});
+                }, Error);
+            });
+        });
+
+        /**
+         * NULLABLE ARRAY
+         */
+        describe(`Nullable Array field with null value`, function () {
+            it(`should not throw an Error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: Array, nullable: true}}).validate({field: null});
+                }, Error);
+            });
+        });
+
+        /**
+         * BOOLEAN
+         */
+        describe(`Boolean field containing ${TRUE}`, function () {
+            it(`should not throw an error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: Boolean}}).validate({field: true});
+                }, Error);
+            });
+        });
+
+        describe(`Boolean field containing ${FALSE}`, function () {
+            it(`should not throw an error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: Boolean}}).validate({field: false});
+                }, Error);
+            });
+        });
+
+        /**
+         * FLOAT
+         */
+        describe(`Float field containing ${FLOAT}`, function () {
+            it(`should not throw an error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: Number, decimal: true}}).validate({field: FLOAT});
+                }, Error);
+            });
+        });
+
+        describe(`Float field containing ${INTEGER}`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: Number, decimal: true}}).validate({field: INTEGER});
+                }, Error);
+            });
+        });
+
+        /**
+         * INTEGER
+         */
+        describe(`Integer field containing ${INTEGER}`, function () {
+            it(`should not throw an error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: Number, decimal: false}}).validate({field: INTEGER});
+                }, Error);
+            });
+        });
+
+        describe(`Integer field containing ${FLOAT}`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.throws(function () {
+                    new Schema({field: {type: Number, decimal: false}}).validate({field: FLOAT});
+                }, Error);
+            });
+        });
+
+        /**
+         * STRING
+         */
+        describe(`String field containing ${STRING}`, function () {
+            it(`should not throw an error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: String}}).validate({field: STRING});
+                }, Error);
+            });
+        });
+
+        describe(`String field containing ${FLOAT}`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.throws(function () {
+                    new Schema({field: {type: String}}).validate({field: FLOAT});
+                }, Error);
+            });
+        });
+
+        describe(`String field containing more than max length`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.throws(function () {
+                    new Schema({field: {type: String, length: [0, 5]}}).validate({field: "1234567"});
+                }, Error);
+            });
+        });
+
+        describe(`String field containing less than max length`, function () {
+            it(`should not throw an Error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: String, length: [0, 5]}}).validate({field: "123"});
+                }, Error);
+            });
+        });
+
+        describe(`String field containing more than min length`, function () {
+            it(`should not throw an Error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: String, length: [3]}}).validate({field: "1234"});
+                }, Error);
+            });
+        });
+
+        describe(`String field containing less than min length`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.throws(function () {
+                    new Schema({field: {type: String, length: [3]}}).validate({field: "1"});
+                }, Error);
+            });
+        });
+
+        describe(`String field having a denied length`, function () {
+            it(`should throw an Error`, function () {
+                chai.assert.throws(function () {
+                    new Schema({field: {type: String, length: 3}}).validate({field: "1"});
+                }, Error);
+            });
+        });
+
+        describe(`String field having the exact allowed length`, function () {
+            it(`should not throw an Error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    new Schema({field: {type: String, length: 3}}).validate({field: "123"});
+                }, Error);
+            });
         });
     });
 
     /**
-     * NULLABLE ARRAY
+     * RegExp
      */
-    describe(`Nullable Array field with null value`, function () {
-        it(`should not throw an Error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: Array, nullable: true}}).validate({field: null});
-            }, Error);
-        });
-    });
+    describe(`RegEx`, function () {
+        var invalidEmail = "aa_aa@ bb.cc";
+        var validEmail = "quick-test.1337@domain.com";
 
-    /**
-     * BOOLEAN
-     */
-    describe(`Boolean field containing ${TRUE}`, function () {
-        it(`should not throw an error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: Boolean}}).validate({field: true});
-            }, Error);
+        describe(`Valid Email "${validEmail}"`, function () {
+            it(`should return true`, function () {
+                chai.assert.equal(RegEx.Email.test(validEmail), true);
+            });
         });
-    });
 
-    describe(`Boolean field containing ${FALSE}`, function () {
-        it(`should not throw an error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: Boolean}}).validate({field: false});
-            }, Error);
+        describe(`Invalid Email "${invalidEmail}"`, function () {
+            it(`should return false`, function () {
+                chai.assert.equal(RegEx.Email.test(invalidEmail), false);
+            });
         });
-    });
 
-    /**
-     * FLOAT
-     */
-    describe(`Float field containing ${FLOAT}`, function () {
-        it(`should not throw an error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: Number, decimal: true}}).validate({field: FLOAT});
-            }, Error);
+        var invalidFQDN = "a.bcd_ef.ghi";
+        var validFQDN = "a.bcd-ef.ghi";
+
+        describe(`Valid FQDN "${validFQDN}"`, function () {
+            it(`should return true`, function () {
+                chai.assert.equal(RegEx.FQDN.test(validFQDN), true);
+            });
         });
-    });
 
-    describe(`Float field containing ${INTEGER}`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: Number, decimal: true}}).validate({field: INTEGER});
-            }, Error);
-        });
-    });
-
-    /**
-     * INTEGER
-     */
-    describe(`Integer field containing ${INTEGER}`, function () {
-        it(`should not throw an error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: Number, decimal: false}}).validate({field: INTEGER});
-            }, Error);
-        });
-    });
-
-    describe(`Integer field containing ${FLOAT}`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.throws(function () {
-                new Schema({field: {type: Number, decimal: false}}).validate({field: FLOAT});
-            }, Error);
-        });
-    });
-
-    /**
-     * STRING
-     */
-    describe(`String field containing ${STRING}`, function () {
-        it(`should not throw an error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: String}}).validate({field: STRING});
-            }, Error);
-        });
-    });
-
-    describe(`String field containing ${FLOAT}`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.throws(function () {
-                new Schema({field: {type: String}}).validate({field: FLOAT});
-            }, Error);
-        });
-    });
-
-    describe(`String field containing more than max length`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.throws(function () {
-                new Schema({field: {type: String, length: [0, 5]}}).validate({field: "1234567"});
-            }, Error);
-        });
-    });
-
-    describe(`String field containing less than max length`, function () {
-        it(`should not throw an Error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: String, length: [0, 5]}}).validate({field: "123"});
-            }, Error);
-        });
-    });
-
-    describe(`String field containing more than min length`, function () {
-        it(`should not throw an Error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: String, length: [3]}}).validate({field: "1234"});
-            }, Error);
-        });
-    });
-
-    describe(`String field containing less than min length`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.throws(function () {
-                new Schema({field: {type: String, length: [3]}}).validate({field: "1"});
-            }, Error);
-        });
-    });
-
-    describe(`String field having a denied length`, function () {
-        it(`should throw an Error`, function () {
-            chai.assert.throws(function () {
-                new Schema({field: {type: String, length: 3}}).validate({field: "1"});
-            }, Error);
-        });
-    });
-
-    describe(`String field having the exact allowed length`, function () {
-        it(`should not throw an Error`, function () {
-            chai.assert.doesNotThrow(function () {
-                new Schema({field: {type: String, length: 3}}).validate({field: "123"});
-            }, Error);
+        describe(`Invalid FQDN "${invalidEmail}"`, function () {
+            it(`should return false`, function () {
+                chai.assert.equal(RegEx.FQDN.test(invalidFQDN), false);
+            });
         });
     });
 });

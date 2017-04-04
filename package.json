@@ -1,6 +1,6 @@
 {
   "name": "jk-schema",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Validates objects using schemas",
   "main": "dist/jk-schema.js",
   "scripts": {
