@@ -719,18 +719,23 @@ export class SchemaField {
             context: {[label]: value}
         }, options);
 
+        // Check null value
+        if (!props.nullable && value === null) {
+            this.throwFieldMissingError(label);
+        }
+
         // Check if value is missing
         if (props.required && (value === undefined || value === null)) {
-            if (!props.nullable || value !== null) {
-                this.throwFieldMissingError(label);
-            } else {
-                return;
-            }
+            this.throwFieldMissingError(label);
+        }
+
+        // Ignore empty value
+        if (value === undefined || value === null) {
+            return;
         }
 
         // Check type
         switch (type) {
-
             case Array:
                 if (!(value instanceof Array)) {
                     this.throwFieldTypeError(label, "array");

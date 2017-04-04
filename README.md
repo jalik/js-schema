@@ -1,4 +1,4 @@
-# Schema
+# jk-schema
 
 This package allows you to validate complex objects using schemas.
 
@@ -193,6 +193,9 @@ PersonSchema.validate({
 ```
 
 ## Changelog
+
+### v0.3.0
+- Fixes `nullable` and `required` field options
 
 ### v0.2.9
 - Adds class `SchemaField`

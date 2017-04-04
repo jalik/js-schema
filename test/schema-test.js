@@ -227,7 +227,13 @@ describe(`Schema`, function () {
         describe(`Non-Nullable Array field with null value`, function () {
             it(`should throw an Error`, function () {
                 chai.assert.throws(function () {
-                    new Schema({field: {type: Array, nullable: false}}).validate({field: null});
+                    new Schema({
+                        array: {
+                            type: Array,
+                            nullable: false,
+                            required: false
+                        }
+                    }).validate({array: null});
                 }, Error);
             });
         });
@@ -238,7 +244,13 @@ describe(`Schema`, function () {
         describe(`Nullable Array field with null value`, function () {
             it(`should not throw an Error`, function () {
                 chai.assert.doesNotThrow(function () {
-                    new Schema({field: {type: Array, nullable: true}}).validate({field: null});
+                    new Schema({
+                        array: {
+                            type: Array,
+                            nullable: true,
+                            required: false
+                        }
+                    }).validate({array: null});
                 }, Error);
             });
         });
@@ -363,6 +375,65 @@ describe(`Schema`, function () {
             it(`should not throw an Error`, function () {
                 chai.assert.doesNotThrow(function () {
                     new Schema({field: {type: String, length: 3}}).validate({field: "123"});
+                }, Error);
+            });
+        });
+
+        /**
+         * Required field
+         */
+        var Address = new Schema({
+            city: {
+                type: String,
+                length: [0, 30],
+                required: true
+            }
+        });
+        var Person = new Schema({
+            address: {
+                type: Address,
+                required: true
+            },
+            name: {
+                type: String,
+                required: true
+            }
+        });
+
+        describe(`Required field that is defined`, function () {
+            it(`should not throw an error`, function () {
+                chai.assert.doesNotThrow(function () {
+                    Person.validate({
+                        address: {city: "Papeete"},
+                        name: "karl"
+                    });
+                }, Error);
+            });
+        });
+        describe(`Required field that is null`, function () {
+            it(`should throw an error`, function () {
+                chai.assert.throws(function () {
+                    Person.validate({
+                        address: null,
+                        name: null
+                    });
+                }, Error);
+            });
+        });
+        describe(`Required field that is undefined`, function () {
+            it(`should throw an error`, function () {
+                chai.assert.throws(function () {
+                    Person.validate({});
+                }, Error);
+            });
+        });
+        describe(`Required sub-field that is null`, function () {
+            it(`should throw an error`, function () {
+                chai.assert.throws(function () {
+                    Person.validate({
+                        address: {},
+                        name: "karl"
+                    });
                 }, Error);
             });
         });
