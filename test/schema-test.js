@@ -59,13 +59,33 @@ describe(`Schema`, function () {
     });
 
     /**
+     * resolveField()
+     */
+    describe(`resolveField()`, function () {
+        it(`should return field properties`, function () {
+            var PhoneSchema = new Schema({
+                number: {type: String}
+            });
+            var ChildSchema = new Schema({
+                phones: {type: [PhoneSchema]}
+            });
+            var ParentSchema = new Schema({
+                child: {type: ChildSchema}
+            });
+            chai.assert.doesNotThrow(function () {
+                return ParentSchema.resolveField("child[phones][number]").type === String
+                    && ParentSchema.resolveField("child[phones][0][number]").type === String;
+            });
+        });
+    });
+
+    /**
      * getField()
      */
     describe(`getField()`, function () {
         it(`should return field properties`, function () {
             var fields = {text: {type: String}};
             var schema = new Schema(fields);
-            console.log(schema.getField("text"));
             chai.assert.doesNotThrow(function () {
                 var test = schema.getField("text").type === String;
             });

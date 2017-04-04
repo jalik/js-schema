@@ -191,6 +191,9 @@ ComplexSchema.validate({
 
 ## Changelog
 
+### v0.2.8
+- Adds `resolveField(name)` method
+
 ### v0.2.7
 - Adds `getField(name)` method
 - Adds unit tests to check `length` field option
