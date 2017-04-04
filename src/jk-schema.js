@@ -275,6 +275,15 @@ export class Schema {
         };
 
         /**
+         * Returns field
+         * @param name
+         * @return {*}
+         */
+        this.getField = (name) => {
+            return this.getFields()[name];
+        };
+
+        /**
          * Returns fields
          * @return {*}
          */
@@ -513,31 +522,31 @@ export class Schema {
             // Check fields
             for (let field in schema) {
                 if (schema.hasOwnProperty(field)) {
-                    const prop = schema[field];
                     const value = obj[field];
 
                     // Ignore missing fields
                     if (value === undefined && options.ignoreMissing) {
                         continue;
                     }
-                    this.validateField(prop, value, options);
+                    this.validateField(field, value, options);
                 }
             }
         };
 
         /**
          * Validates the field
-         * @param field
+         * @param name
          * @param value
          * @param options
          */
-        this.validateField = (field, value, options) => {
+        this.validateField = (name, value, options) => {
+            const field = this.getField(name);
             const label = field.label;
             const type = field.type;
 
             // Default options
             options = _.extend({
-                context: null
+                context: {[field]: value}
             }, options);
 
             // Check if value is missing

@@ -28,6 +28,7 @@ const FALSE = false;
 const TRUE = true;
 const FLOAT = 9.99;
 const INTEGER = 100;
+const STRING = "HelloWorld";
 const ARRAY_EMPTY = [];
 const ARRAY_INT = [0, 1];
 const ARRAY_FLOAT = [0.1, 0.2];
@@ -55,6 +56,20 @@ describe(`Schema`, function () {
             type: String,
             required: true
         }
+    });
+
+    /**
+     * getField()
+     */
+    describe(`getField()`, function () {
+        it(`should return field properties`, function () {
+            var fields = {text: {type: String}};
+            var schema = new Schema(fields);
+            console.log(schema.getField("text"));
+            chai.assert.doesNotThrow(function () {
+                var test = schema.getField("text").type === String;
+            });
+        });
     });
 
     /**
@@ -224,6 +239,73 @@ describe(`Schema`, function () {
         it(`should throw an Error`, function () {
             chai.assert.throws(function () {
                 new Schema({field: {type: Number, decimal: false}}).validate({field: FLOAT});
+            }, Error);
+        });
+    });
+
+    /**
+     * STRING
+     */
+    describe(`String field containing ${STRING}`, function () {
+        it(`should not throw an error`, function () {
+            chai.assert.doesNotThrow(function () {
+                new Schema({field: {type: String}}).validate({field: STRING});
+            }, Error);
+        });
+    });
+
+    describe(`String field containing ${FLOAT}`, function () {
+        it(`should throw an Error`, function () {
+            chai.assert.throws(function () {
+                new Schema({field: {type: String}}).validate({field: FLOAT});
+            }, Error);
+        });
+    });
+
+    describe(`String field containing more than max length`, function () {
+        it(`should throw an Error`, function () {
+            chai.assert.throws(function () {
+                new Schema({field: {type: String, length: [0, 5]}}).validate({field: "1234567"});
+            }, Error);
+        });
+    });
+
+    describe(`String field containing less than max length`, function () {
+        it(`should not throw an Error`, function () {
+            chai.assert.doesNotThrow(function () {
+                new Schema({field: {type: String, length: [0, 5]}}).validate({field: "123"});
+            }, Error);
+        });
+    });
+
+    describe(`String field containing more than min length`, function () {
+        it(`should not throw an Error`, function () {
+            chai.assert.doesNotThrow(function () {
+                new Schema({field: {type: String, length: [3]}}).validate({field: "1234"});
+            }, Error);
+        });
+    });
+
+    describe(`String field containing less than min length`, function () {
+        it(`should throw an Error`, function () {
+            chai.assert.throws(function () {
+                new Schema({field: {type: String, length: [3]}}).validate({field: "1"});
+            }, Error);
+        });
+    });
+
+    describe(`String field having a denied length`, function () {
+        it(`should throw an Error`, function () {
+            chai.assert.throws(function () {
+                new Schema({field: {type: String, length: 3}}).validate({field: "1"});
+            }, Error);
+        });
+    });
+
+    describe(`String field having the exact allowed length`, function () {
+        it(`should not throw an Error`, function () {
+            chai.assert.doesNotThrow(function () {
+                new Schema({field: {type: String, length: 3}}).validate({field: "123"});
             }, Error);
         });
     });

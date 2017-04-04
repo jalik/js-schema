@@ -191,6 +191,11 @@ ComplexSchema.validate({
 
 ## Changelog
 
+### v0.2.7
+- Adds `getField(name)` method
+- Adds unit tests to check `length` field option
+- Uses field name as first parameter of `validateField(name, value)` method instead of field properties
+
 ### v0.2.6
 - Removes warning `Unknown property "${field}.label"`
 
