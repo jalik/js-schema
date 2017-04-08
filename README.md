@@ -2,9 +2,88 @@
 
 This package allows you to validate complex objects using schemas.
 
+## Introduction
+
+A schema is a definition of all characteristics of an object.
+For example, a person has a first name, age, gender and so on...
+some information are required while others are optional.
+With a schema you can tell how your object must be defined.
+And when your schema is created you can then validate any data against it
+to check if the data is valid or not.
+
+**This library is well tested with more than 80+ unit tests.**
+
+## Schema field properties
+
+You can use any of the given properties to define a field.
+
+```js
+const Schema = require("jk-schema").Schema;
+
+const ExampleSchema = new Schema({
+
+    // ALLOWED
+    allowed: {type:String, allowed:["0","1"]}, // force binary values
+    
+    // CHECK
+    // accept a function that is called after all native validations
+    check: {type:Number, check:(value) => value % 2 === 0}, // number must be even
+    
+    // DENIED
+    denied: {type:Number, denied:["yes", "no"]}, // allow maybe :)
+    
+    // LABEL
+    // used in errors for a more human description
+    labelled: {type:String, label: "Labelled field"},
+
+    // LENGTH
+    arrayLength: {type:[Number], length: 2}, // must contain 2 values
+    fixedLength: {type:String, length: 10}, // length must be 10
+    maxLength: {type:String, length: [0, 10]}, // max = 10, min = 0
+    minLength: {type:String, length: [2]}, // min = 2, no max
+
+    // MAX
+    maxDate: {type:Date, max: new Date(Date.now() + 3600*1000)},
+    maxNumber: {type:Number, max: 10},
+    
+    // MAX WORDS
+    maxWords: {type:String, maxWords:50},
+
+    // MIN
+    minDate: {type:Date, min: new Date(Date.now() - 3600*1000)},
+    minNumber: {type:Number, min: 0},
+    
+    // MIN WORDS
+    minWords: {type:String, minWords:5},
+
+    // NULLABLE
+    nullable: {type:String, nullable: false},
+    notNullable: {type:String, nullable: true},
+    
+    // REGEX
+    regEx: {type:String, regEx:/^\d{1,2}:\d{1,2}$/}, // force time format "00:00"
+
+    // REQUIRED
+    optional: {type:String, required: false},
+    required: {type:String, required: true},
+
+    // TYPE
+    boolean: {type: Boolean},
+    booleanArray: {type: [Boolean]},
+    float: {type: Number, decimal: true},
+    // note: we don't have float array yet
+    integer: {type: Number, decimal: false},
+    // note: we don't have integer array yet
+    number: {type: Number},
+    numberArray: {type: [Number]},
+    string: {type: String},
+    stringArray: {type: [String]},
+});
+```
+
 ## Creating a schema
 
-To define a schema, use the `Schema` class.
+To create a schema, use the `Schema` class.
 
 ```js
 const RegEx = require("jk-schema").RegEx;
@@ -96,7 +175,7 @@ const PersonSchema = new Schema({
     }
 });
 
-const CloneSchema = PersonSchema.clone();
+const ClonedSchema = PersonSchema.clone();
 ```
 
 ## Validating data using a schema
@@ -171,25 +250,32 @@ const PersonSchema = new Schema({
     }
 });
 
-// This won't throw any error because data is valid
-PersonSchema.validate({
-    name: 'karl',
-    email: 'karl@mail.com',
-    postalAddress: {
-        city: "Papeete",
-        country: "PF"
-    }
-});
-
-// This will throw an error since date is not valid
-PersonSchema.validate({
-    email: 'karl@mail.com',
-    birthday: '1999-12-20',
-    postalAddress: {
-        city: "Papeete",
-        country: "PF"
-    }
-});
+try {
+    // This won't throw any error because data is valid
+    PersonSchema.validate({
+        name: 'karl',
+        birthday: null,
+        email: 'karl@mail.com',
+        postalAddress: {
+            city: "Papeete",
+            country: "PF"
+        }
+    });
+    
+    // This will throw an error because date is not valid
+    PersonSchema.validate({
+        email: 'karl@mail.com',
+        birthday: '1999-12-20',
+        postalAddress: {
+            city: "Papeete",
+            country: "PF"
+        }
+    });
+}
+catch (err) {
+    // err is an instance of SchemaError
+    console.error(err.message);
+}
 ```
 
 ## Changelog
