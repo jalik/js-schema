@@ -194,6 +194,9 @@ PersonSchema.validate({
 
 ## Changelog
 
+### v0.3.1
+- Adds value as first argument of `check(value)` field property
+
 ### v0.3.0
 - Fixes `nullable` and `required` field options
 

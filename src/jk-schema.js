@@ -536,15 +536,16 @@ export class SchemaField {
     }
 
     /**
-     * Returns the value of the function
-     * @param value
+     * Returns the value of the object
+     * @param obj
+     * @param context
      * @return {*}
      */
-    dynamicValue(value) {
-        if (typeof value === "function") {
-            return value();
+    dynamicValue(obj, context) {
+        if (typeof obj === "function") {
+            return obj(context);
         }
-        return value;
+        return obj;
     }
 
     /**
@@ -872,7 +873,7 @@ export class SchemaField {
 
         // Check allowed values
         if (props.allowed !== undefined) {
-            const allowed = this.dynamicValue(props.allowed);
+            const allowed = this.dynamicValue(props.allowed, value);
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
@@ -887,7 +888,7 @@ export class SchemaField {
         }
         // Check denied values
         else if (props.denied !== undefined) {
-            const denied = this.dynamicValue(props.denied);
+            const denied = this.dynamicValue(props.denied, value);
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
@@ -903,7 +904,7 @@ export class SchemaField {
 
         // Check length if value has the length attribute
         if (props.length !== undefined && value.length !== undefined) {
-            const length = this.dynamicValue(props.length);
+            const length = this.dynamicValue(props.length, value);
 
             // Ranged length
             if (length instanceof Array) {
@@ -925,7 +926,7 @@ export class SchemaField {
 
         // Check min value
         if (props.min !== undefined) {
-            const min = this.dynamicValue(props.min);
+            const min = this.dynamicValue(props.min, value);
 
             if (value < min) {
                 this.throwFieldMinValueError(label, min);
@@ -934,7 +935,7 @@ export class SchemaField {
 
         // Check min words
         if (props.minWords !== undefined && typeof value === "string") {
-            const min = this.dynamicValue(props.minWords);
+            const min = this.dynamicValue(props.minWords, value);
 
             if (value.split(" ").length < min) {
                 this.throwFieldMinWordsError(label, min);
@@ -943,7 +944,7 @@ export class SchemaField {
 
         // Check max value
         if (props.max !== undefined) {
-            const max = this.dynamicValue(props.max);
+            const max = this.dynamicValue(props.max, value);
 
             if (value > max) {
                 this.throwFieldMaxValueError(label, max);
@@ -952,7 +953,7 @@ export class SchemaField {
 
         // Check max words
         if (props.maxWords !== undefined && typeof value === "string") {
-            const max = this.dynamicValue(props.maxWords);
+            const max = this.dynamicValue(props.maxWords, value);
 
             if (value.split(" ").length > max) {
                 this.throwFieldMaxWordsError(label, max);
@@ -961,7 +962,7 @@ export class SchemaField {
 
         // Test regular expression
         if (props.regEx !== undefined) {
-            const regEx = this.dynamicValue(props.regEx);
+            const regEx = this.dynamicValue(props.regEx, value);
 
             if (!regEx.test(value)) {
                 this.throwFieldRegExError(label, regEx);
@@ -970,7 +971,7 @@ export class SchemaField {
 
         // Test custom checks
         if (props.check !== undefined) {
-            if (props.check.call(this, value, label, options.context) === false) {
+            if (props.check.call(this, value, options.context) === false) {
                 this.throwFieldBadValueError(label);
             }
         }
