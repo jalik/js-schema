@@ -38,6 +38,7 @@ export const FIELD_PROPERTIES = [
     "maxWords",
     "min",
     "minWords",
+    "name",
     "nullable",
     "regEx",
     "required",
