@@ -273,6 +273,13 @@ export class Schema {
         }
     }
 
+    setErrorWrapper(callback) {
+        if (typeof  callback !== "function") {
+            throw new TypeError(`callback is not a Function`);
+        }
+        this.errorWrapper = callback;
+    }
+
     /**
      * Updates existing fields
      * @param fields
@@ -363,6 +370,8 @@ export class SchemaError extends Error {
  */
 export class SchemaField {
     constructor(field, props) {
+        this.name = field;
+
         // Default properties
         props = _.extend({
             allowed: undefined,
@@ -394,7 +403,7 @@ export class SchemaField {
 
         // Check field type
         if (props.type === undefined || props.type === null) {
-            throw new TypeError(`${field}.type is not defined`);
+            throw new TypeError(`${field}.type is missing`);
         }
         else if (props.type instanceof Array) {
             const arrayType = props.type[0];
@@ -409,36 +418,28 @@ export class SchemaField {
         }
 
         // Check allowed values
-        if (props.allowed !== undefined) {
-            if (!(props.allowed instanceof Array) && typeof props.allowed !== "function") {
-                throw new TypeError(`${field}.allowed must be an array or function`);
-            }
+        if (props.allowed !== undefined && !(props.allowed instanceof Array) && typeof props.allowed !== "function") {
+            throw new TypeError(`${field}.allowed must be an array or function`);
         }
 
         // Check custom check function
-        if (props.check !== undefined) {
-            if (typeof props.check !== "function") {
-                throw new TypeError(`${field}.check is not a function`);
-            }
+        if (props.check !== undefined && typeof props.check !== "function") {
+            throw new TypeError(`${field}.check must be a function`);
         }
 
         // Check number decimal
-        if (props.decimal !== undefined) {
-            if (typeof props.decimal !== "boolean") {
-                throw new TypeError(`${field}.decimal is not a boolean`);
-            }
+        if (props.decimal !== undefined && !_.contains(["function", "boolean"], typeof props.decimal)) {
+            throw new TypeError(`${field}.decimal must be a boolean or function`);
         }
 
         // Check denied values
-        if (props.denied !== undefined) {
-            if (!(props.denied instanceof Array) && typeof props.denied !== "function") {
-                throw new TypeError(`${field}.denied must be an array or function`);
-            }
+        if (props.denied !== undefined && !(props.denied instanceof Array) && typeof props.denied !== "function") {
+            throw new TypeError(`${field}.denied must be an array or function`);
         }
 
         // Set default label if missing
-        if (props.label !== undefined && typeof props.label !== "string") {
-            throw new TypeError(`${field}.label is not a string`);
+        if (props.label !== undefined && !_.contains(["function", "string"], typeof props.label)) {
+            throw new TypeError(`${field}.label must be a string or function`);
         }
 
         // Check length
@@ -453,48 +454,38 @@ export class SchemaField {
         }
 
         // Check max value
-        if (props.max !== undefined) {
-            if (!_.contains(["function", "number", "string"], typeof props.max) && !(props.max instanceof Date)) {
-                throw new TypeError(`${field}.max must be a date, number, string or function`);
-            }
+        if (props.max !== undefined && !_.contains(["function", "number", "string"], typeof props.max) && !(props.max instanceof Date)) {
+            throw new TypeError(`${field}.max must be a date, number, string or function`);
         }
 
         // Check max words
-        if (props.maxWords !== undefined) {
-            if (!_.contains(["function", "number"], typeof props.maxWords)) {
-                throw new TypeError(`${field}.maxWords must be a number or function`);
-            }
+        if (props.maxWords !== undefined && !_.contains(["function", "number"], typeof props.maxWords)) {
+            throw new TypeError(`${field}.maxWords must be a number or function`);
         }
 
         // Check min value
-        if (props.min !== undefined) {
-            if (!_.contains(["function", "number", "string"], typeof props.min) && !(props.min instanceof Date)) {
-                throw new TypeError(`${field}.min must be a date, number, string or function`);
-            }
+        if (props.min !== undefined && !_.contains(["function", "number", "string"], typeof props.min) && !(props.min instanceof Date)) {
+            throw new TypeError(`${field}.min must be a date, number, string or function`);
         }
 
         // Check min words
-        if (props.minWords !== undefined) {
-            if (!_.contains(["function", "number"], typeof props.minWords)) {
-                throw new TypeError(`${field}.minWords must be a number or function`);
-            }
+        if (props.minWords !== undefined && !_.contains(["function", "number"], typeof props.minWords)) {
+            throw new TypeError(`${field}.minWords must be a number or function`);
         }
 
         // Check if field is nullable
-        if (props.nullable !== undefined && typeof props.nullable !== "boolean") {
-            throw new TypeError(`${field}.nullable is not a boolean`);
+        if (props.nullable !== undefined && !_.contains(["function", "boolean"], typeof props.nullable)) {
+            throw new TypeError(`${field}.nullable must be a boolean or function`);
         }
 
         // Check regular expression
-        if (props.regEx !== undefined) {
-            if (!_.contains(["function"], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
-                throw new TypeError(`${field}.regEx must be a regular expression or a function`);
-            }
+        if (props.regEx !== undefined && !_.contains(["function"], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
+            throw new TypeError(`${field}.regEx must be a regular expression or function`);
         }
 
-        // Set default value for required
-        if (props.required !== undefined && typeof props.required !== "boolean") {
-            throw new TypeError(`${field}.required is not a boolean`);
+        // Check required
+        if (props.required !== undefined && !_.contains(["function", "boolean"], typeof props.required)) {
+            throw new TypeError(`${field}.required must be a boolean or function`);
         }
     }
 
@@ -553,7 +544,7 @@ export class SchemaField {
      * @param field
      */
     throwFieldBadValueError(field) {
-        throw new SchemaError(`field-bad-value`, `The field "${field}" contains a bad value`, {field});
+        throw new SchemaError(`field-bad-value`, `The field "${field}" contains a bad value.`, {field});
     }
 
     /**
@@ -561,7 +552,7 @@ export class SchemaField {
      * @param field
      */
     throwFieldDeniedValueError(field) {
-        throw new SchemaError(`field-denied-value`, `The field "${field}" contains a denied value`, {field});
+        throw new SchemaError(`field-denied-value`, `The field "${field}" contains a denied value.`, {field});
     }
 
     /**
@@ -569,7 +560,7 @@ export class SchemaField {
      * @param field
      */
     throwFieldInstanceError(field) {
-        throw new SchemaError(`field-instance`, `The field "${field}" is not a valid instance`, {field});
+        throw new SchemaError(`field-instance`, `The field "${field}" is not a valid instance.`, {field});
     }
 
     /**
@@ -578,7 +569,7 @@ export class SchemaField {
      * @param length
      */
     throwFieldLengthError(field, length) {
-        throw new SchemaError(`field-length`, `Length of field "${field}" must be exactly ${length}`, {
+        throw new SchemaError(`field-length`, `Length of field "${field}" must be exactly ${length}.`, {
             field,
             length
         });
@@ -590,7 +581,7 @@ export class SchemaField {
      * @param max
      */
     throwFieldMaxLengthError(field, max) {
-        throw new SchemaError(`field-max-length`, `Length of field "${field}" must be at more ${max}`, {
+        throw new SchemaError(`field-max-length`, `Length of field "${field}" must be at more ${max}.`, {
             field,
             max
         });
@@ -602,7 +593,7 @@ export class SchemaField {
      * @param max
      */
     throwFieldMaxValueError(field, max) {
-        throw new SchemaError(`field-max-value`, `The field "${field}" must be lesser than or equals to ${max}`, {
+        throw new SchemaError(`field-max-value`, `The field "${field}" must be lesser than or equals to ${max}.`, {
             field,
             max
         });
@@ -614,7 +605,7 @@ export class SchemaField {
      * @param min
      */
     throwFieldMaxWordsError(field, min) {
-        throw new SchemaError(`field-max-words`, `The field "${field}" must contain ${min} words max`, {
+        throw new SchemaError(`field-max-words`, `The field "${field}" must contain ${min} words max.`, {
             field,
             min
         });
@@ -626,7 +617,7 @@ export class SchemaField {
      * @param min
      */
     throwFieldMinLengthError(field, min) {
-        throw new SchemaError(`field-min-length`, `Length of field "${field}" must be at least ${min}`, {
+        throw new SchemaError(`field-min-length`, `Length of field "${field}" must be at least ${min}.`, {
             field,
             min
         });
@@ -638,7 +629,7 @@ export class SchemaField {
      * @param min
      */
     throwFieldMinValueError(field, min) {
-        throw new SchemaError(`field-min-value`, `The field "${field}" must be greater than or equals to ${min}`, {
+        throw new SchemaError(`field-min-value`, `The field "${field}" must be greater than or equals to ${min}.`, {
             field,
             min
         });
@@ -650,7 +641,7 @@ export class SchemaField {
      * @param min
      */
     throwFieldMinWordsError(field, min) {
-        throw new SchemaError(`field-min-words`, `The field "${field}" must contain at least ${min} words`, {
+        throw new SchemaError(`field-min-words`, `The field "${field}" must contain at least ${min} words.`, {
             field,
             min
         });
@@ -661,7 +652,7 @@ export class SchemaField {
      * @param field
      */
     throwFieldMissingError(field) {
-        throw new SchemaError(`field-missing`, `The field "${field}" is missing`, {field});
+        throw new SchemaError(`field-missing`, `The field "${field}" is missing.`, {field});
     }
 
     /**
@@ -670,7 +661,7 @@ export class SchemaField {
      * @param regEx
      */
     throwFieldRegExError(field, regEx) {
-        throw new SchemaError(`field-regex`, `The field "${field}" does not match the pattern ${regEx}`, {
+        throw new SchemaError(`field-regex`, `The field "${field}" does not match the pattern ${regEx}.`, {
             field,
             regEx
         });
@@ -682,15 +673,7 @@ export class SchemaField {
      * @param type
      */
     throwFieldTypeError(field, type) {
-        throw new SchemaError(`field-type`, `The field "${field}" is not of type ${type}`, {field});
-    }
-
-    /**
-     *
-     * @param field
-     */
-    throwFieldUnknownError(field) {
-        throw new SchemaError(`field-unknown`, `The field "${field}" is unknown`, {field});
+        throw new SchemaError(`field-type`, `The field "${field}" is not of type ${type}.`, {field});
     }
 
     /**
@@ -699,7 +682,7 @@ export class SchemaField {
      * @param type
      */
     throwFieldValueTypesError(field, type) {
-        throw new SchemaError(`field-values-type`, `The field "${field}" contains values of incorrect type`, {
+        throw new SchemaError(`field-values-type`, `The field "${field}" contains values of incorrect type.`, {
             field,
             type
         });
@@ -712,21 +695,25 @@ export class SchemaField {
      */
     validate(value, options) {
         const props = this;
-        const label = props.label;
         const type = props.type;
 
         // Default options
         options = _.extend({
-            context: {[label]: value}
+            context: {[this.name]: value}
         }, options);
 
+        const context = options.context;
+        const label = this.dynamicValue(props.label, context);
+        const nullable = this.dynamicValue(props.nullable, context);
+        const required = this.dynamicValue(props.required, context);
+
         // Check null value
-        if (!props.nullable && value === null) {
+        if (!nullable && value === null) {
             this.throwFieldMissingError(label);
         }
 
         // Check if value is missing
-        if (props.required && (value === undefined || value === null)) {
+        if (required && (value === undefined || value === null)) {
             this.throwFieldMissingError(label);
         }
 
@@ -742,7 +729,7 @@ export class SchemaField {
                     this.throwFieldTypeError(label, "array");
                 }
                 // Ignore empty array if field is not required
-                else if (value.length === 0 && !props.required) {
+                else if (value.length === 0 && !required) {
                     return;
                 }
                 break;
@@ -763,13 +750,17 @@ export class SchemaField {
                 if (typeof value !== "number" || isNaN(value)) {
                     this.throwFieldTypeError(label, "number");
                 }
-                // Check decimal
                 if (props.decimal !== undefined) {
-                    if (props.decimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(value))) {
-                        this.throwFieldTypeError(label, "float");
-                    }
-                    if (props.decimal === false && !/^[0-9]+$/.test(String(value))) {
-                        this.throwFieldTypeError(label, "integer");
+                    const decimal = this.dynamicValue(props.decimal, context);
+
+                    // Check decimal
+                    if (decimal !== undefined) {
+                        if (decimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(value))) {
+                            this.throwFieldTypeError(label, "float");
+                        }
+                        if (decimal === false && !/^[0-9]+$/.test(String(value))) {
+                            this.throwFieldTypeError(label, "integer");
+                        }
                     }
                 }
                 break;
@@ -796,7 +787,7 @@ export class SchemaField {
                         this.throwFieldTypeError(label, "array");
                     }
                     // Ignore empty array if field is not required
-                    else if (value.length === 0 && !props.required) {
+                    else if (value.length === 0 && !required) {
                         return;
                     }
                     const arrayType = type[0];
@@ -873,7 +864,7 @@ export class SchemaField {
 
         // Check allowed values
         if (props.allowed !== undefined) {
-            const allowed = this.dynamicValue(props.allowed, value);
+            const allowed = this.dynamicValue(props.allowed, context);
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
@@ -888,7 +879,7 @@ export class SchemaField {
         }
         // Check denied values
         else if (props.denied !== undefined) {
-            const denied = this.dynamicValue(props.denied, value);
+            const denied = this.dynamicValue(props.denied, context);
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
@@ -904,7 +895,7 @@ export class SchemaField {
 
         // Check length if value has the length attribute
         if (props.length !== undefined && value.length !== undefined) {
-            const length = this.dynamicValue(props.length, value);
+            const length = this.dynamicValue(props.length, context);
 
             // Ranged length
             if (length instanceof Array) {
@@ -926,7 +917,7 @@ export class SchemaField {
 
         // Check min value
         if (props.min !== undefined) {
-            const min = this.dynamicValue(props.min, value);
+            const min = this.dynamicValue(props.min, context);
 
             if (value < min) {
                 this.throwFieldMinValueError(label, min);
@@ -935,7 +926,7 @@ export class SchemaField {
 
         // Check min words
         if (props.minWords !== undefined && typeof value === "string") {
-            const min = this.dynamicValue(props.minWords, value);
+            const min = this.dynamicValue(props.minWords, context);
 
             if (value.split(" ").length < min) {
                 this.throwFieldMinWordsError(label, min);
@@ -944,7 +935,7 @@ export class SchemaField {
 
         // Check max value
         if (props.max !== undefined) {
-            const max = this.dynamicValue(props.max, value);
+            const max = this.dynamicValue(props.max, context);
 
             if (value > max) {
                 this.throwFieldMaxValueError(label, max);
@@ -953,7 +944,7 @@ export class SchemaField {
 
         // Check max words
         if (props.maxWords !== undefined && typeof value === "string") {
-            const max = this.dynamicValue(props.maxWords, value);
+            const max = this.dynamicValue(props.maxWords, context);
 
             if (value.split(" ").length > max) {
                 this.throwFieldMaxWordsError(label, max);
@@ -962,7 +953,7 @@ export class SchemaField {
 
         // Test regular expression
         if (props.regEx !== undefined) {
-            const regEx = this.dynamicValue(props.regEx, value);
+            const regEx = this.dynamicValue(props.regEx, context);
 
             if (!regEx.test(value)) {
                 this.throwFieldRegExError(label, regEx);
@@ -971,7 +962,7 @@ export class SchemaField {
 
         // Test custom checks
         if (props.check !== undefined) {
-            if (props.check.call(this, value, options.context) === false) {
+            if (props.check.call(this, value, context) === false) {
                 this.throwFieldBadValueError(label);
             }
         }

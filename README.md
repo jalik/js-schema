@@ -81,6 +81,57 @@ const ExampleSchema = new Schema({
 });
 ```
 
+## Dynamic field properties
+
+Almost all properties (excepted `type`) accept a function instead of the usual value, it is useful to return a constraint based on some conditions when the field is actually validated.
+The given function is called with a single argument representing the current context (data) being validated by the schema.
+
+```js
+const Schema = require("jk-schema").Schema;
+
+const isPublishing = function(context) {
+    // context refers to the data being validated
+    return context.status === "published";
+};
+
+const PostSchema = new Schema({
+    title: {
+        type: String,
+        nullable: false,
+        required: isPublishing
+    },
+    text: {
+        type: String,
+        nullable: false,
+        required: isPublishing
+    },
+    status: {
+        type: String,
+        required: true,
+        allowed: ["published", "draft"]
+    }
+});
+
+// So this is valid
+PostSchema.validate({
+    title: "Hello World",
+    text: "This is a hello world post !",
+    status: "published"
+});
+
+// And this is valid too..
+PostSchema.validate({
+    status: "draft"
+});
+
+// But this is not valid !
+PostSchema.validate({
+    title: "Hello World",
+    text: null,
+    status: "published"
+});
+```
+
 ## Creating a schema
 
 To create a schema, use the `Schema` class.
@@ -279,6 +330,10 @@ catch (err) {
 ```
 
 ## Changelog
+
+### v0.3.2
+- Allows to pass function for `decimal`, `label`, `nullable` and `required` field properties
+- Changes error messages
 
 ### v0.3.1
 - Adds value as first argument of `check(value)` field property

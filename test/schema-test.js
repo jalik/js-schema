@@ -739,7 +739,35 @@ describe(`Schema`, function () {
                     nullable: true
                 }
             });
+            var PostSchema = new Schema({
+                text: {
+                    type: String,
+                    nullable: false,
+                    required(context) {
+                        return context.status === "published";
+                    }
+                },
+                status: {
+                    type: String,
+                    required: true,
+                    allowed: ["published", "draft"]
+                }
+            });
 
+            describe(`Dynamically required field with undefined value`, function () {
+                it(`should throw an error`, function () {
+                    chai.assert.throws(function () {
+                        PostSchema.validate({status: "published"});
+                    }, Error);
+                });
+            });
+            describe(`Dynamically not required field with undefined value`, function () {
+                it(`should not throw an error`, function () {
+                    chai.assert.doesNotThrow(function () {
+                        PostSchema.validate({status: "draft"});
+                    }, Error);
+                });
+            });
             describe(`Required field with undefined value`, function () {
                 it(`should throw an error`, function () {
                     chai.assert.throws(function () {
