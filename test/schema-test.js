@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-var chai = require('chai');
-var Schema = require('../dist/jk-schema.min').Schema;
-var RegEx = require('../dist/jk-schema.min').RegEx;
+const chai = require('chai');
+const Schema = require('../dist/jk-schema.min').Schema;
+const RegEx = require('../dist/jk-schema.min').RegEx;
 
 const FALSE = false;
 const TRUE = true;
@@ -37,14 +37,14 @@ const ARRAY_STRING = ['a', 'b'];
 
 describe(`Schema`, function () {
 
-    var StringSchema = new Schema({
+    const StringSchema = new Schema({
         string: {
             type: String,
             required: true
         }
     });
 
-    var TestSchema = new Schema({
+    const TestSchema = new Schema({
         array: {
             type: Array,
             required: true
@@ -64,7 +64,7 @@ describe(`Schema`, function () {
      */
     describe(`clone()`, function () {
         it(`should create a copy of the schema`, function () {
-            var schema = new Schema({fieldA: {type: String}});
+            const schema = new Schema({fieldA: {type: String}});
             chai.assert.deepEqual(schema.clone(), schema);
         });
     });
@@ -74,9 +74,9 @@ describe(`Schema`, function () {
      */
     describe(`extend()`, function () {
         it(`should create an extended version of the schema`, function () {
-            var parent = new Schema({fieldA: {type: String}});
-            var child = parent.extend({fieldB: {type: Number}});
-            var fields = child.getFields();
+            const parent = new Schema({fieldA: {type: String}});
+            const child = parent.extend({fieldB: {type: Number}});
+            const fields = child.getFields();
             chai.assert.equal(fields.hasOwnProperty("fieldA") && fields.hasOwnProperty("fieldB"), true);
         });
     });
@@ -86,10 +86,10 @@ describe(`Schema`, function () {
      */
     describe(`getField()`, function () {
         it(`should return field properties`, function () {
-            var fields = {text: {type: String}};
-            var schema = new Schema(fields);
+            const fields = {text: {type: String}};
+            const schema = new Schema(fields);
             chai.assert.doesNotThrow(function () {
-                var test = schema.getField("text").type === String;
+                const test = schema.getField("text").type === String;
             });
         });
     });
@@ -99,7 +99,7 @@ describe(`Schema`, function () {
      */
     describe(`getFields()`, function () {
         it(`should return all fields`, function () {
-            var schema = new Schema({field: {type: Array}});
+            const schema = new Schema({field: {type: Array}});
             chai.assert.equal(schema.getFields() !== null, true);
         });
     });
@@ -109,13 +109,13 @@ describe(`Schema`, function () {
      */
     describe(`resolveField()`, function () {
         it(`should return field properties`, function () {
-            var PhoneSchema = new Schema({
+            const PhoneSchema = new Schema({
                 number: {type: String}
             });
-            var ChildSchema = new Schema({
+            const ChildSchema = new Schema({
                 phones: {type: [PhoneSchema]}
             });
-            var ParentSchema = new Schema({
+            const ParentSchema = new Schema({
                 child: {type: ChildSchema}
             });
             chai.assert.doesNotThrow(function () {
@@ -130,24 +130,26 @@ describe(`Schema`, function () {
      */
     describe(`update()`, function () {
         it(`should modify the schema`, function () {
-            var PhoneSchema = new Schema({
+            const PhoneSchema = new Schema({
                 number: {
                     type: String,
                     required: true
                 }
             });
-            var PersonSchema = new Schema({
+            const PersonSchema = new Schema({
                 name: {
                     type: String,
                     required: true
                 },
-                phones: {
-                    type: [PhoneSchema.clone().update({number: {required: false}})],
+                phone: {
+                    type: PhoneSchema.clone().update({
+                        number: {required: false}
+                    }),
                     required: true
                 }
             });
             chai.assert.equal(PersonSchema.getField("name").required, true);
-            chai.assert.equal(PersonSchema.getField("phones[number]").required, false);
+            chai.assert.equal(PersonSchema.getField("phone[number]").required, false);
             chai.assert.equal(PhoneSchema.getField("number").required, true);
         });
     });
@@ -200,7 +202,7 @@ describe(`Schema`, function () {
          */
         describe(`removeUnknown is true`, function () {
             it(`should remove unknown fields`, function () {
-                var obj = {string: "abc", xxx: null};
+                const obj = {string: "abc", xxx: null};
                 StringSchema.validate(obj, {
                     clean: true,
                     ignoreUnknown: true,
@@ -211,7 +213,7 @@ describe(`Schema`, function () {
         });
         describe(`removeUnknown = false`, function () {
             it(`should not remove unknown fields`, function () {
-                var obj = {string: "abc", xxx: null};
+                const obj = {string: "abc", xxx: null};
                 StringSchema.validate(obj, {
                     clean: true,
                     ignoreUnknown: true,
@@ -225,7 +227,7 @@ describe(`Schema`, function () {
          * FIELD.ALLOWED
          */
         describe(`Field.allowed (Array|Func)`, function () {
-            var CheckSchema = new Schema({
+            const CheckSchema = new Schema({
                 numbers: {
                     type: [Number],
                     nullable: false,
@@ -273,7 +275,7 @@ describe(`Schema`, function () {
          * FIELD.CHECK
          */
         describe(`Field.check (Func)`, function () {
-            var CheckSchema = new Schema({
+            const CheckSchema = new Schema({
                 array: {
                     type: [Number],
                     nullable: false,
@@ -330,7 +332,7 @@ describe(`Schema`, function () {
          * FIELD.DENIED
          */
         describe(`Field.denied (Array|Func)`, function () {
-            var CheckSchema = new Schema({
+            const CheckSchema = new Schema({
                 numbers: {
                     type: [Number],
                     nullable: false,
@@ -378,7 +380,7 @@ describe(`Schema`, function () {
          * FIELD.LENGTH
          */
         describe(`Field.length (bool)`, function () {
-            var FixedLengthSchema = new Schema({
+            const FixedLengthSchema = new Schema({
                 array: {
                     type: Array,
                     required: false,
@@ -395,7 +397,7 @@ describe(`Schema`, function () {
                     length: 5
                 }
             });
-            var LimitedLengthSchema = new Schema({
+            const LimitedLengthSchema = new Schema({
                 array: {
                     type: Array,
                     required: false,
@@ -553,7 +555,7 @@ describe(`Schema`, function () {
          * FIELD.MAX
          */
         describe(`Field.max (Number|Date)`, function () {
-            var MaxSchema = new Schema({
+            const MaxSchema = new Schema({
                 array: {
                     type: Array,
                     required: false,
@@ -620,7 +622,7 @@ describe(`Schema`, function () {
          * FIELD.MIN
          */
         describe(`Field.min (Number|Date)`, function () {
-            var MinSchema = new Schema({
+            const MinSchema = new Schema({
                 array: {
                     type: Array,
                     required: false,
@@ -719,7 +721,7 @@ describe(`Schema`, function () {
          * FIELD.REQUIRED
          */
         describe(`Field.required (bool)`, function () {
-            var Address = new Schema({
+            const Address = new Schema({
                 city: {
                     type: String,
                     length: [0, 30],
@@ -727,7 +729,7 @@ describe(`Schema`, function () {
                     nullable: true
                 }
             });
-            var Person = new Schema({
+            const Person = new Schema({
                 address: {
                     type: Address,
                     required: true,
@@ -739,7 +741,7 @@ describe(`Schema`, function () {
                     nullable: true
                 }
             });
-            var PostSchema = new Schema({
+            const PostSchema = new Schema({
                 text: {
                     type: String,
                     nullable: false,
@@ -860,7 +862,7 @@ describe(`Schema`, function () {
             /**
              * FIELD.TYPE = ARRAY
              */
-            var ArraySchema = new Schema({
+            const ArraySchema = new Schema({
                 booleans: {
                     type: [Boolean],
                     required: false
@@ -920,7 +922,7 @@ describe(`Schema`, function () {
             /**
              * FIELD.TYPE = BOOLEAN
              */
-            var BooleanSchema = new Schema({
+            const BooleanSchema = new Schema({
                 bool: {
                     type: Boolean,
                     required: true
@@ -945,7 +947,7 @@ describe(`Schema`, function () {
             /**
              * FIELD.TYPE = FLOAT
              */
-            var FloatSchema = new Schema({
+            const FloatSchema = new Schema({
                 float: {
                     type: Number,
                     required: true,
@@ -970,7 +972,7 @@ describe(`Schema`, function () {
             /**
              * FIELD.TYPE = INTEGER
              */
-            var IntegerSchema = new Schema({
+            const IntegerSchema = new Schema({
                 integer: {
                     type: Number,
                     required: true,
@@ -1002,7 +1004,7 @@ describe(`Schema`, function () {
             /**
              * FIELD.TYPE = STRING
              */
-            var StringSchema = new Schema({
+            const StringSchema = new Schema({
                 string: {
                     type: String,
                     required: true
@@ -1030,8 +1032,8 @@ describe(`Schema`, function () {
      * REGULAR EXPRESSIONS
      */
     describe(`RegEx`, function () {
-        var invalidEmail = "aa_aa@ bb.cc";
-        var validEmail = "quick-test.1337@domain.com";
+        const invalidEmail = "aa_aa@ bb.cc";
+        const validEmail = "quick-test.1337@domain.com";
 
         describe(`Valid Email "${validEmail}"`, function () {
             it(`should return true`, function () {
@@ -1045,8 +1047,8 @@ describe(`Schema`, function () {
             });
         });
 
-        var invalidFQDN = "a.bcd_ef.ghi";
-        var validFQDN = "a.bcd-ef.ghi";
+        const invalidFQDN = "a.bcd_ef.ghi";
+        const validFQDN = "a.bcd-ef.ghi";
 
         describe(`Valid FQDN "${validFQDN}"`, function () {
             it(`should return true`, function () {

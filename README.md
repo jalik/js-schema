@@ -229,6 +229,31 @@ const PersonSchema = new Schema({
 const ClonedSchema = PersonSchema.clone();
 ```
 
+## Updating a schema
+
+```js
+const Schema = require("jk-schema").Schema;
+
+const PersonSchema = new Schema({
+    name: {
+        type: String,
+        required: true
+    }
+});
+
+// This only changes specified fields
+// and creates new one.
+PersonSchema.update({
+    name:{
+        required: false
+    },
+    age:{
+        type: Number,
+        required: false
+    }
+});
+```
+
 ## Validating data using a schema
 
 To validate data using a schema, use the method `schema.validate(obj)`.
@@ -330,6 +355,9 @@ catch (err) {
 ```
 
 ## Changelog
+
+### v0.3.3
+- Fixes `Unknown property "field.name"` when assigning a name to a field
 
 ### v0.3.2
 - Allows to pass function for `decimal`, `label`, `nullable` and `required` field properties
