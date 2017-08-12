@@ -971,5 +971,3 @@ export class SchemaField {
 }
 
 Schema.RegEx = RegEx;
-
-export default Schema;

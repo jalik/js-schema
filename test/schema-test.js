@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 const chai = require('chai');
-const Schema = require('../dist/jk-schema.min').Schema;
-const RegEx = require('../dist/jk-schema.min').RegEx;
+const Schema = require('../dist/jk-schema').Schema;
+const RegEx = require('../dist/jk-schema').RegEx;
 
 const FALSE = false;
 const TRUE = true;
