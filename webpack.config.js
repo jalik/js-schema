@@ -29,7 +29,7 @@ const filename = Package.name + (isProd ? ".min" : "");
 
 module.exports = {
     entry: {
-        bundle: path.join(__dirname, `src/jk-schema.js`)
+        bundle: path.join(__dirname, "src", `${filename}.js`)
     },
     output: {
         libraryTarget: "umd",
