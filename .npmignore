@@ -1,7 +1,7 @@
 .babelrc
 .idea
+node_modules
 src
 test
-gulpfile.js
-npm-debug.log
+.gitignore
 webpack.config.js

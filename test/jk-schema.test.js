@@ -21,19 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-const chai = require('chai');
-const Schema = require('../dist/jk-schema').Schema;
-const RegEx = require('../dist/jk-schema').RegEx;
+const chai = require("chai");
+const Schema = require("../src/jk-schema").Schema;
+const RegEx = require("../src/jk-schema").RegEx;
 
-const FLOAT = 9.99;
-const INTEGER = 100;
-const STRING = "HelloWorld";
-const ARRAY_EMPTY = [];
-const ARRAY_INT = [0, 1];
-const ARRAY_FLOAT = [0.1, 0.2];
-const ARRAY_STRING = ['a', 'b'];
-
-describe(`Schema`, function () {
+describe(`Schema`, () => {
 
     const StringSchema = new Schema({
         string: {
@@ -57,21 +49,20 @@ describe(`Schema`, function () {
         }
     });
 
-    /**
-     * clone()
-     */
-    describe(`clone()`, function () {
-        it(`should create a copy of the schema`, function () {
+    it(`should be importable from package`, () => {
+        expect(Schema).not.toBe(null);
+        expect(Schema).not.toBe(undefined);
+    });
+
+    describe(`clone()`, () => {
+        it(`should create a copy of the schema`, () => {
             const schema = new Schema({fieldA: {type: String}});
             chai.assert.deepEqual(schema.clone(), schema);
         });
     });
 
-    /**
-     * extend()
-     */
-    describe(`extend()`, function () {
-        it(`should create an extended version of the schema`, function () {
+    describe(`extend()`, () => {
+        it(`should create an extended version of the schema`, () => {
             const parent = new Schema({fieldA: {type: String}});
             const child = parent.extend({fieldB: {type: Number}});
             const fields = child.getFields();
@@ -79,34 +70,25 @@ describe(`Schema`, function () {
         });
     });
 
-    /**
-     * getField()
-     */
-    describe(`getField()`, function () {
-        it(`should return field properties`, function () {
+    describe(`getField()`, () => {
+        it(`should return field properties`, () => {
             const fields = {text: {type: String}};
             const schema = new Schema(fields);
-            chai.assert.doesNotThrow(function () {
+            chai.assert.doesNotThrow(() => {
                 const test = schema.getField("text").type === String;
             });
         });
     });
 
-    /**
-     * getFields()
-     */
-    describe(`getFields()`, function () {
-        it(`should return all fields`, function () {
+    describe(`getFields()`, () => {
+        it(`should return all fields`, () => {
             const schema = new Schema({field: {type: Array}});
             chai.assert.equal(schema.getFields() !== null, true);
         });
     });
 
-    /**
-     * resolveField()
-     */
-    describe(`resolveField()`, function () {
-        it(`should return field properties`, function () {
+    describe(`resolveField()`, () => {
+        it(`should return field properties`, () => {
             const PhoneSchema = new Schema({
                 number: {type: String}
             });
@@ -116,18 +98,15 @@ describe(`Schema`, function () {
             const ParentSchema = new Schema({
                 child: {type: ChildSchema}
             });
-            chai.assert.doesNotThrow(function () {
+            chai.assert.doesNotThrow(() => {
                 return ParentSchema.resolveField("child[phones][number]").type === String
                     && ParentSchema.resolveField("child[phones][0][number]").type === String;
             });
         });
     });
 
-    /**
-     * update()
-     */
-    describe(`update()`, function () {
-        it(`should modify the schema`, function () {
+    describe(`update()`, () => {
+        it(`should modify the schema`, () => {
             const PhoneSchema = new Schema({
                 number: {
                     type: String,
@@ -152,22 +131,22 @@ describe(`Schema`, function () {
         });
     });
 
-    describe(`validate()`, function () {
+    describe(`validate()`, () => {
         /**
          * ignoreMissing option
          */
-        describe(`ignoreMissing = true`, function () {
-            it(`should not throw an error for missing fields`, function () {
-                chai.assert.doesNotThrow(function () {
+        describe(`ignoreMissing = true`, () => {
+            it(`should not throw an error for missing fields`, () => {
+                chai.assert.doesNotThrow(() => {
                     TestSchema.validate({string: "abc"}, {
                         ignoreMissing: true
                     });
                 }, Error);
             });
         });
-        describe(`ignoreMissing = false`, function () {
-            it(`should throw an error for missing fields`, function () {
-                chai.assert.throw(function () {
+        describe(`ignoreMissing = false`, () => {
+            it(`should throw an error for missing fields`, () => {
+                chai.assert.throw(() => {
                     TestSchema.validate({string: "abc"}, {
                         ignoreMissing: false
                     });
@@ -177,18 +156,18 @@ describe(`Schema`, function () {
         /**
          * ignoreUnknown option
          */
-        describe(`ignoreUnknown = true`, function () {
-            it(`should not throw an error for unknown fields`, function () {
-                chai.assert.doesNotThrow(function () {
+        describe(`ignoreUnknown = true`, () => {
+            it(`should not throw an error for unknown fields`, () => {
+                chai.assert.doesNotThrow(() => {
                     StringSchema.validate({string: "abc", xxx: null}, {
                         ignoreUnknown: true
                     });
                 }, Error);
             });
         });
-        describe(`ignoreUnknown = false`, function () {
-            it(`should throw an error for unknown fields`, function () {
-                chai.assert.throw(function () {
+        describe(`ignoreUnknown = false`, () => {
+            it(`should throw an error for unknown fields`, () => {
+                chai.assert.throw(() => {
                     StringSchema.validate({string: "abc", xxx: null}, {
                         ignoreUnknown: false
                     });
@@ -198,8 +177,8 @@ describe(`Schema`, function () {
         /**
          * removeUnknown option
          */
-        describe(`removeUnknown is true`, function () {
-            it(`should remove unknown fields`, function () {
+        describe(`removeUnknown is true`, () => {
+            it(`should remove unknown fields`, () => {
                 const obj = {string: "abc", xxx: null};
                 StringSchema.validate(obj, {
                     clean: true,
@@ -209,8 +188,8 @@ describe(`Schema`, function () {
                 chai.assert.equal(obj.hasOwnProperty("xxx"), false);
             });
         });
-        describe(`removeUnknown = false`, function () {
-            it(`should not remove unknown fields`, function () {
+        describe(`removeUnknown = false`, () => {
+            it(`should not remove unknown fields`, () => {
                 const obj = {string: "abc", xxx: null};
                 StringSchema.validate(obj, {
                     clean: true,
@@ -224,7 +203,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.ALLOWED
          */
-        describe(`Field.allowed (Array|Func)`, function () {
+        describe(`Field.allowed (Array|Func)`, () => {
             const CheckSchema = new Schema({
                 numbers: {
                     type: [Number],
@@ -239,30 +218,30 @@ describe(`Schema`, function () {
                     allowed: ["off", "on"]
                 }
             });
-            describe(`Array field with a value not allowed`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array field with a value not allowed`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         CheckSchema.validate({numbers: [0, 1, 0, 3]});
                     }, Error);
                 });
             });
-            describe(`Array field with an allowed value`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array field with an allowed value`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         CheckSchema.validate({numbers: [0, 1, 1, 0]});
                     }, Error);
                 });
             });
-            describe(`String field with a value not allowed`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`String field with a value not allowed`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         CheckSchema.validate({string: "toggle"});
                     }, Error);
                 });
             });
-            describe(`String field with an allowed value`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`String field with an allowed value`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         CheckSchema.validate({string: "on"});
                     }, Error);
                 });
@@ -272,7 +251,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.CHECK
          */
-        describe(`Field.check (Func)`, function () {
+        describe(`Field.check (Func)`, () => {
             const CheckSchema = new Schema({
                 array: {
                     type: [Number],
@@ -296,30 +275,30 @@ describe(`Schema`, function () {
                     }
                 }
             });
-            describe(`Check field with bad value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Check field with bad value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         CheckSchema.validate({number: 1});
                     }, Error);
                 });
             });
-            describe(`Check array field with bad values`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Check array field with bad values`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         CheckSchema.validate({array: [1, 2, 4, 5, 6, 8]});
                     }, Error);
                 });
             });
-            describe(`Check field with good value`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Check field with good value`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         CheckSchema.validate({number: 8});
                     }, Error);
                 });
             });
-            describe(`Check array field with good values`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Check array field with good values`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         CheckSchema.validate({array: [2, 4, 6, 8, 10]});
                     }, Error);
                 });
@@ -329,7 +308,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.DENIED
          */
-        describe(`Field.denied (Array|Func)`, function () {
+        describe(`Field.denied (Array|Func)`, () => {
             const CheckSchema = new Schema({
                 numbers: {
                     type: [Number],
@@ -344,30 +323,30 @@ describe(`Schema`, function () {
                     denied: ["yes", "no"]
                 }
             });
-            describe(`Array field with a denied value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array field with a denied value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         CheckSchema.validate({numbers: [2, 1, 5, 9]});
                     }, Error);
                 });
             });
-            describe(`Array field with a value not denied`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array field with a value not denied`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         CheckSchema.validate({numbers: [3, 4, 6]});
                     }, Error);
                 });
             });
-            describe(`String field with a denied value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`String field with a denied value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         CheckSchema.validate({string: "yes"});
                     }, Error);
                 });
             });
-            describe(`String field with a value not denied`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`String field with a value not denied`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         CheckSchema.validate({string: "maybe"});
                     }, Error);
                 });
@@ -377,7 +356,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.LENGTH
          */
-        describe(`Field.length (bool)`, function () {
+        describe(`Field.length (bool)`, () => {
             const FixedLengthSchema = new Schema({
                 array: {
                     type: Array,
@@ -413,135 +392,135 @@ describe(`Schema`, function () {
                 }
             });
 
-            describe(`Fixed length`, function () {
-                describe(`Array field with a wrong length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+            describe(`Fixed length`, () => {
+                describe(`Array field with a wrong length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             FixedLengthSchema.validate({array: [1]});
                         }, Error);
                     });
                 });
-                describe(`Array field with the exact length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`Array field with the exact length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3]});
                         }, Error);
                     });
                 });
-                describe(`Object field with a wrong length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+                describe(`Object field with a wrong length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             FixedLengthSchema.validate({object: {length: 8}});
                         }, Error);
                     });
                 });
-                describe(`Object field with the exact length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`Object field with the exact length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             FixedLengthSchema.validate({object: {length: 22}});
                         }, Error);
                     });
                 });
-                describe(`String field with a wrong length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+                describe(`String field with a wrong length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             FixedLengthSchema.validate({string: "xx"});
                         }, Error);
                     });
                 });
-                describe(`String field with the exact length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`String field with the exact length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({string: "aaaaa"});
                         }, Error);
                     });
                 });
             });
 
-            describe(`Minimal length`, function () {
-                describe(`Array field with length < min length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+            describe(`Minimal length`, () => {
+                describe(`Array field with length < min length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             LimitedLengthSchema.validate({array: [1]});
                         }, Error);
                     });
                 });
-                describe(`Array field with length > min length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`Array field with length > min length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3, 4]});
                         }, Error);
                     });
                 });
-                describe(`Object field with length < min length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+                describe(`Object field with length < min length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             LimitedLengthSchema.validate({object: {length: 0}});
                         }, Error);
                     });
                 });
-                describe(`Object field with length > min length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`Object field with length > min length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({object: {length: 5}});
                         }, Error);
                     });
                 });
-                describe(`String field with length < min length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+                describe(`String field with length < min length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             LimitedLengthSchema.validate({string: "shor"});
                         }, Error);
                     });
                 });
-                describe(`String field with length > min length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`String field with length > min length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({string: "123456"});
                         }, Error);
                     });
                 });
             });
 
-            describe(`Maximal length`, function () {
-                describe(`Array field with length > max length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+            describe(`Maximal length`, () => {
+                describe(`Array field with length > max length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3, 4, 5, 6, 7, 8]});
                         }, Error);
                     });
                 });
-                describe(`Array field with length < max length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`Array field with length < max length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3]});
                         }, Error);
                     });
                 });
-                describe(`Object field with length > max length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+                describe(`Object field with length > max length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             LimitedLengthSchema.validate({object: {length: 99}});
                         }, Error);
                     });
                 });
-                describe(`Object field with length < max length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`Object field with length < max length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({object: {length: 6}});
                         }, Error);
                     });
                 });
-                describe(`String field with length > max length`, function () {
-                    it(`should throw an Error`, function () {
-                        chai.assert.throws(function () {
+                describe(`String field with length > max length`, () => {
+                    it(`should throw an Error`, () => {
+                        chai.assert.throws(() => {
                             LimitedLengthSchema.validate({string: "loooooooooong"});
                         }, Error);
                     });
                 });
-                describe(`String field with length < max length`, function () {
-                    it(`should not throw an Error`, function () {
-                        chai.assert.doesNotThrow(function () {
+                describe(`String field with length < max length`, () => {
+                    it(`should not throw an Error`, () => {
+                        chai.assert.doesNotThrow(() => {
                             LimitedLengthSchema.validate({string: "1234567"});
                         }, Error);
                     });
@@ -552,7 +531,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.MAX
          */
-        describe(`Field.max (Number|Date)`, function () {
+        describe(`Field.max (Number|Date)`, () => {
             const MaxSchema = new Schema({
                 array: {
                     type: Array,
@@ -571,45 +550,45 @@ describe(`Schema`, function () {
                 }
             });
 
-            describe(`Array field with values higher than max`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array field with values higher than max`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         MaxSchema.validate({array: [99]});
                     }, Error);
                 });
             });
-            describe(`Array field with values lower than max`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array field with values lower than max`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         MaxSchema.validate({array: [9, 5, 0, -100]});
                     }, Error);
                 });
             });
 
-            describe(`Date field with value higher than max`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Date field with value higher than max`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         MaxSchema.validate({date: new Date(Date.now() + 10000)});
                     }, Error);
                 });
             });
-            describe(`Date field with value lower than max`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Date field with value lower than max`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         MaxSchema.validate({date: new Date(Date.now() - 10000)});
                     }, Error);
                 });
             });
-            describe(`Number field with value higher than max`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Number field with value higher than max`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         MaxSchema.validate({number: 99});
                     }, Error);
                 });
             });
-            describe(`Number field with value lower than max`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Number field with value lower than max`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         MaxSchema.validate({number: 5});
                     }, Error);
                 });
@@ -619,7 +598,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.MIN
          */
-        describe(`Field.min (Number|Date)`, function () {
+        describe(`Field.min (Number|Date)`, () => {
             const MinSchema = new Schema({
                 array: {
                     type: Array,
@@ -638,45 +617,45 @@ describe(`Schema`, function () {
                 }
             });
 
-            describe(`Array field with values lower than min`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array field with values lower than min`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         MinSchema.validate({array: [-5]});
                     }, Error);
                 });
             });
-            describe(`Array field with values higher than min`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array field with values higher than min`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         MinSchema.validate({array: [20, 30, 40]});
                     }, Error);
                 });
             });
 
-            describe(`Date field with value lower than min`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Date field with value lower than min`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         MinSchema.validate({date: new Date(Date.now() - 10000)});
                     }, Error);
                 });
             });
-            describe(`Date field with value higher than min`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Date field with value higher than min`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         MinSchema.validate({date: new Date(Date.now() + 10000)});
                     }, Error);
                 });
             });
-            describe(`Number field with value lower than min`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Number field with value lower than min`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         MinSchema.validate({number: 0});
                     }, Error);
                 });
             });
-            describe(`Number field with value higher than min`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Number field with value higher than min`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         MinSchema.validate({number: 100});
                     }, Error);
                 });
@@ -686,10 +665,10 @@ describe(`Schema`, function () {
         /**
          * FIELD.NULLABLE
          */
-        describe(`Field.nullable (bool)`, function () {
-            describe(`Not nullable field with null value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+        describe(`Field.nullable (bool)`, () => {
+            describe(`Not nullable field with null value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -700,9 +679,9 @@ describe(`Schema`, function () {
                     }, Error);
                 });
             });
-            describe(`Nullable field with null value`, function () {
-                it(`should not throw an Error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Nullable field with null value`, () => {
+                it(`should not throw an Error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -718,7 +697,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.REQUIRED
          */
-        describe(`Field.required (bool)`, function () {
+        describe(`Field.required (bool)`, () => {
             const Address = new Schema({
                 city: {
                     type: String,
@@ -754,23 +733,23 @@ describe(`Schema`, function () {
                 }
             });
 
-            describe(`Dynamically required field with undefined value`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Dynamically required field with undefined value`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         PostSchema.validate({status: "published"});
                     }, Error);
                 });
             });
-            describe(`Dynamically not required field with undefined value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Dynamically not required field with undefined value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         PostSchema.validate({status: "draft"});
                     }, Error);
                 });
             });
-            describe(`Required field with undefined value`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Required field with undefined value`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -785,9 +764,9 @@ describe(`Schema`, function () {
                     }, Error);
                 });
             });
-            describe(`Required field with null value`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Required field with null value`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -798,9 +777,9 @@ describe(`Schema`, function () {
                     }, Error);
                 });
             });
-            describe(`Required field with empty string`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Required field with empty string`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -811,9 +790,9 @@ describe(`Schema`, function () {
                     }, Error);
                 });
             });
-            describe(`Not required field with undefined value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Not required field with undefined value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -824,9 +803,9 @@ describe(`Schema`, function () {
                     }, Error);
                 });
             });
-            describe(`Not required field with null value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Not required field with null value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -837,9 +816,9 @@ describe(`Schema`, function () {
                     }, Error);
                 });
             });
-            describe(`Not required field with string value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Not required field with string value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -855,7 +834,7 @@ describe(`Schema`, function () {
         /**
          * FIELD.TYPE
          */
-        describe(`Field.type (Func)`, function () {
+        describe(`Field.type (Func)`, () => {
 
             /**
              * FIELD.TYPE = ARRAY
@@ -874,44 +853,44 @@ describe(`Schema`, function () {
                     required: false
                 }
             });
-            describe(`Array of Boolean field with non boolean values`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array of Boolean field with non boolean values`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         ArraySchema.validate({booleans: [true, false, "true"]});
                     }, Error);
                 });
             });
-            describe(`Array of Boolean field with boolean values`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array of Boolean field with boolean values`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         ArraySchema.validate({booleans: [true, false]});
                     }, Error);
                 });
             });
-            describe(`Array of Number field with non numeric values`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array of Number field with non numeric values`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         ArraySchema.validate({numbers: [0, 1, "3"]});
                     }, Error);
                 });
             });
-            describe(`Array of Number field with numeric values`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array of Number field with numeric values`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         ArraySchema.validate({numbers: [0, 1]});
                     }, Error);
                 });
             });
-            describe(`Array of String field with non string values`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Array of String field with non string values`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         ArraySchema.validate({strings: ["a", "b", 5]});
                     }, Error);
                 });
             });
-            describe(`Array of String field with string values`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Array of String field with string values`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         ArraySchema.validate({strings: ["a", "b"]});
                     }, Error);
                 });
@@ -926,16 +905,16 @@ describe(`Schema`, function () {
                     required: true
                 }
             });
-            describe(`Boolean field with a non boolean value`, function () {
-                it(`should throw an error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Boolean field with a non boolean value`, () => {
+                it(`should throw an error`, () => {
+                    chai.assert.throws(() => {
                         BooleanSchema.validate({bool: "text"});
                     }, Error);
                 });
             });
-            describe(`Boolean field with a boolean value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Boolean field with a boolean value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         BooleanSchema.validate({bool: true});
                         BooleanSchema.validate({bool: false});
                     }, Error);
@@ -952,16 +931,16 @@ describe(`Schema`, function () {
                     decimal: true
                 }
             });
-            describe(`Float field with a non number value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Float field with a non number value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         FloatSchema.validate({float: ""});
                     }, Error);
                 });
             });
-            describe(`Float field with a number value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Float field with a number value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         FloatSchema.validate({float: 0.99});
                     }, Error);
                 });
@@ -977,23 +956,23 @@ describe(`Schema`, function () {
                     decimal: false
                 }
             });
-            describe(`Integer field with a non number value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Integer field with a non number value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         IntegerSchema.validate({integer: ""});
                     }, Error);
                 });
             });
-            describe(`Integer field with a float value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`Integer field with a float value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         IntegerSchema.validate({integer: 0.567});
                     }, Error);
                 });
             });
-            describe(`Integer field with a number value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`Integer field with a number value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         IntegerSchema.validate({integer: 1000});
                     }, Error);
                 });
@@ -1008,16 +987,16 @@ describe(`Schema`, function () {
                     required: true
                 }
             });
-            describe(`String field with a non string value`, function () {
-                it(`should throw an Error`, function () {
-                    chai.assert.throws(function () {
+            describe(`String field with a non string value`, () => {
+                it(`should throw an Error`, () => {
+                    chai.assert.throws(() => {
                         StringSchema.validate({string: 99});
                     }, Error);
                 });
             });
-            describe(`String field with a string value`, function () {
-                it(`should not throw an error`, function () {
-                    chai.assert.doesNotThrow(function () {
+            describe(`String field with a string value`, () => {
+                it(`should not throw an error`, () => {
+                    chai.assert.doesNotThrow(() => {
                         StringSchema.validate({string: "hello"});
                     }, Error);
                 });
@@ -1029,18 +1008,18 @@ describe(`Schema`, function () {
     /**
      * REGULAR EXPRESSIONS
      */
-    describe(`RegEx`, function () {
+    describe(`RegEx`, () => {
         const invalidEmail = "aa_aa@ bb.cc";
         const validEmail = "quick-test.1337@domain.com";
 
-        describe(`Valid Email "${validEmail}"`, function () {
-            it(`should return true`, function () {
+        describe(`Valid Email "${validEmail}"`, () => {
+            it(`should return true`, () => {
                 chai.assert.equal(RegEx.Email.test(validEmail), true);
             });
         });
 
-        describe(`Invalid Email "${invalidEmail}"`, function () {
-            it(`should return false`, function () {
+        describe(`Invalid Email "${invalidEmail}"`, () => {
+            it(`should return false`, () => {
                 chai.assert.equal(RegEx.Email.test(invalidEmail), false);
             });
         });
@@ -1048,14 +1027,14 @@ describe(`Schema`, function () {
         const invalidFQDN = "a.bcd_ef.ghi";
         const validFQDN = "a.bcd-ef.ghi";
 
-        describe(`Valid FQDN "${validFQDN}"`, function () {
-            it(`should return true`, function () {
+        describe(`Valid FQDN "${validFQDN}"`, () => {
+            it(`should return true`, () => {
                 chai.assert.equal(RegEx.FQDN.test(validFQDN), true);
             });
         });
 
-        describe(`Invalid FQDN "${invalidEmail}"`, function () {
-            it(`should return false`, function () {
+        describe(`Invalid FQDN "${invalidEmail}"`, () => {
+            it(`should return false`, () => {
                 chai.assert.equal(RegEx.FQDN.test(invalidFQDN), false);
             });
         });
