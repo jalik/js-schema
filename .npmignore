@@ -4,3 +4,4 @@ src
 test
 gulpfile.js
 npm-debug.log
+webpack.config.js

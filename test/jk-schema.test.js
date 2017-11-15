@@ -25,8 +25,6 @@ const chai = require('chai');
 const Schema = require('../dist/jk-schema').Schema;
 const RegEx = require('../dist/jk-schema').RegEx;
 
-const FALSE = false;
-const TRUE = true;
 const FLOAT = 9.99;
 const INTEGER = 100;
 const STRING = "HelloWorld";
