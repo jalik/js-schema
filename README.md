@@ -356,6 +356,9 @@ catch (err) {
 
 ## Changelog
 
+### v0.3.4
+- Updates documentation
+
 ### v0.3.3
 - Fixes `Unknown property "field.name"` when assigning a name to a field
 
@@ -408,4 +411,4 @@ The code is released under the [MIT License](http://www.opensource.org/licenses/
 
 If you find this lib useful and would like to support my work, donations are welcome :)
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SS78MUMW8AH4N)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=R7XM4Q3TNE47L)

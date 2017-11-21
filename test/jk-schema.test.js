@@ -23,6 +23,8 @@
  */
 const chai = require("chai");
 const Schema = require("../src/jk-schema").Schema;
+const SchemaError = require("../src/jk-schema").SchemaError;
+const SchemaField = require("../src/jk-schema").SchemaField;
 const RegEx = require("../src/jk-schema").RegEx;
 
 describe(`Schema`, () => {
@@ -50,8 +52,7 @@ describe(`Schema`, () => {
     });
 
     it(`should be importable from package`, () => {
-        expect(Schema).not.toBe(null);
-        expect(Schema).not.toBe(undefined);
+        expect(typeof Schema).toEqual("function");
     });
 
     describe(`clone()`, () => {
@@ -1038,5 +1039,19 @@ describe(`Schema`, () => {
                 chai.assert.equal(RegEx.FQDN.test(invalidFQDN), false);
             });
         });
+    });
+});
+
+describe(`SchemaError`, () => {
+
+    it(`should be importable from package`, () => {
+        expect(typeof SchemaError).toEqual("function");
+    });
+});
+
+describe(`SchemaField`, () => {
+
+    it(`should be importable from package`, () => {
+        expect(typeof SchemaField).toEqual("function");
     });
 });
