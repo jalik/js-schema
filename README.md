@@ -18,66 +18,158 @@ to check if the data is valid or not.
 You can use any of the given properties to define a field.
 
 ```js
-const Schema = require("jk-schema").Schema;
+import {Schema} from "jk-schema";
 
 const ExampleSchema = new Schema({
 
     // ALLOWED
-    allowed: {type:String, allowed:["0","1"]}, // force binary values
+    allowed: {
+        type: String,
+        // force binary values
+        allowed:["0","1"]
+     },
     
-    // CHECK
+    // CHECK FUNCTION
     // accept a function that is called after all native validations
-    check: {type:Number, check:(value) => value % 2 === 0}, // number must be even
+    check: {
+        type: Number,
+        // cehck that number is even
+        check(value) { return value % 2 === 0; }
+    }, 
+    
+    // CLEAN FUNCTION
+    // accept a function that is called on each 
+    clean: {
+        type: String,
+        clean(value) {
+            return value.trim().toLowerCase();
+        }
+    },
     
     // DENIED
-    denied: {type:Number, denied:["yes", "no"]}, // allow maybe :)
+    denied: {
+        type: Number,
+        // will throw an error if these values are present
+        denied: ["yes", "no"]
+    },
     
     // LABEL
     // used in errors for a more human description
-    labelled: {type:String, label: "Labelled field"},
+    labelled: {
+        type: String,
+        label: "Labelled field"
+    },
 
     // LENGTH
-    arrayLength: {type:[Number], length: 2}, // must contain 2 values
-    fixedLength: {type:String, length: 10}, // length must be 10
-    maxLength: {type:String, length: [0, 10]}, // max = 10, min = 0
-    minLength: {type:String, length: [2]}, // min = 2, no max
+    arrayLength: {
+        type: [Number],
+        // must contain 2 values
+        length: 2
+    },
+    fixedLength: {
+        type: String,
+        // length must be 10
+        length: 10
+    },
+    maxLength: {
+        type: String,
+        // max = 10, min = 0
+        length: [0, 10]
+    },
+    minLength: {
+        type: String,
+        // min = 2, no max
+        length: [2]
+    },
 
     // MAX
-    maxDate: {type:Date, max: new Date(Date.now() + 3600*1000)},
-    maxNumber: {type:Number, max: 10},
+    maxDate: {
+        type: Date,
+        max: new Date(Date.now() + 3600*1000)
+    },
+    maxNumber: {
+        type: Number,
+        max: 10
+    },
     
     // MAX WORDS
-    maxWords: {type:String, maxWords:50},
+    maxWords: {
+        type: String,
+        maxWords:50
+    },
 
     // MIN
-    minDate: {type:Date, min: new Date(Date.now() - 3600*1000)},
-    minNumber: {type:Number, min: 0},
+    minDate: {
+        type: Date,
+        min: new Date(Date.now() - 3600*1000)
+    },
+    minNumber: {
+        type: Number,
+        min: 0
+    },
     
     // MIN WORDS
-    minWords: {type:String, minWords:5},
+    minWords: {
+        type: String,
+        minWords:5
+    },
 
     // NULLABLE
-    nullable: {type:String, nullable: false},
-    notNullable: {type:String, nullable: true},
+    nullable: {
+        type: String,
+        nullable: false
+    },
+    notNullable: {
+        type: String,
+        nullable: true
+    },
     
     // REGEX
-    regEx: {type:String, regEx:/^\d{1,2}:\d{1,2}$/}, // force time format "00:00"
+    regEx: {
+        type: String,
+         // force time format "00:00"
+        regEx:/^\d{1,2}:\d{1,2}$/
+    },
 
     // REQUIRED
-    optional: {type:String, required: false},
-    required: {type:String, required: true},
+    optional: {
+        type: String,
+        required: false
+    },
+    required: {
+        type: String,
+        required: true
+    },
 
     // TYPE
-    boolean: {type: Boolean},
-    booleanArray: {type: [Boolean]},
-    float: {type: Number, decimal: true},
+    boolean: {
+        type: Boolean
+    },
+    booleanArray: {
+        type: [Boolean]
+    },
+    float: {
+        type: Number,
+        decimal: true
+    },
     // note: we don't have float array yet
-    integer: {type: Number, decimal: false},
+    integer: {
+        type: Number,
+        decimal: false
+    },
     // note: we don't have integer array yet
-    number: {type: Number},
-    numberArray: {type: [Number]},
-    string: {type: String},
-    stringArray: {type: [String]},
+    number: {
+        type: Number
+    },
+    numberArray: {
+        type: [Number]
+    },
+    string: {
+        type: String
+    },
+    stringArray: {
+        type: [String]
+    },
 });
 ```
 
@@ -87,7 +179,7 @@ Almost all properties (excepted `type`) accept a function instead of the usual v
 The given function is called with a single argument representing the current context (data) being validated by the schema.
 
 ```js
-const Schema = require("jk-schema").Schema;
+import {Schema} from "jk-schema";
 
 const isPublishing = function(context) {
     // context refers to the data being validated
@@ -137,8 +229,8 @@ PostSchema.validate({
 To create a schema, use the `Schema` class.
 
 ```js
-const RegEx = require("jk-schema").RegEx;
-const Schema = require("jk-schema").Schema;
+import RegEx from "jk-schema/regex";
+import {Schema} from "jk-schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -161,7 +253,7 @@ const PersonSchema = new Schema({
         type: Date,
         required: false,
         nullable: true,
-        max: function() {
+        max() {
             const YEARS_18 = 18*365*24*60*60*1000;
             return new Date(Date.now() - YEARS_18);
         }
@@ -175,7 +267,7 @@ The update creates fields that do not exist, but only modifies existing properti
 so you can keep properties that have already been defined.
 
 ```js
-const Schema = require("jk-schema").Schema;
+import {Schema} from "jk-schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -195,7 +287,7 @@ PersonSchema.update({
 The extend operation creates a new schema based on the current one.
 
 ```js
-const Schema = require("jk-schema").Schema;
+import {Schema} from "jk-schema";
 
 const PersonSchema = new Schema({
     age: {type: Number},
@@ -217,7 +309,7 @@ const ParentSchema = PersonSchema.extend({
 ## Cloning a schema
 
 ```js
-const Schema = require("jk-schema").Schema;
+import {Schema} from "jk-schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -232,7 +324,7 @@ const ClonedSchema = PersonSchema.clone();
 ## Updating a schema
 
 ```js
-const Schema = require("jk-schema").Schema;
+import {Schema} from "jk-schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -260,8 +352,8 @@ To validate data using a schema, use the method `schema.validate(obj)`.
 If the validation fails, it will throw a `SchemaError` containing information about the error.
 
 ```js
-const RegEx = require("jk-schema").RegEx;
-const Schema = require("jk-schema").Schema;
+import RegEx from "jk-schema/regex";
+import {Schema} from "jk-schema";
 
 const AddressSchema = new Schema({
     city: {
@@ -357,6 +449,7 @@ catch (err) {
 ## Changelog
 
 ### v0.4.0
+- Explodes classes in multiple files (see doc to import classes and methods)
 - Adds method `Schema.removeUnknownFields(obj)`
 - Adds method `SchemaField.getAllowedValues()`
 - Adds method `SchemaField.getCheckFunction()`

@@ -23,7 +23,6 @@
  */
 
 import {Schema} from "../src/schema";
-import {SchemaField} from "../src/schema-field";
 
 describe(`Schema`, () => {
 

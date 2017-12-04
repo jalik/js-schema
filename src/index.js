@@ -22,11 +22,6 @@
  * SOFTWARE.
  */
 
-import RegEx from "./regex";
-import {Schema} from "./schema";
-import {SchemaError} from "./schema-error";
-import {fieldProperties, SchemaField} from "./schema-field";
-
 export default {
 
     /**
@@ -82,11 +77,5 @@ export default {
             }
         }
         return a;
-    },
-
-    fieldProperties: fieldProperties,
-    RegEx: RegEx,
-    Schema: Schema,
-    SchemaError: SchemaError,
-    SchemaField: SchemaField
+    }
 };

@@ -5,3 +5,4 @@ src
 test
 .gitignore
 webpack.config.js
+dist/aio

@@ -22,31 +22,25 @@
  * SOFTWARE.
  */
 
-const path = require("path");
-const Package = require("./package.json");
-const isProd = process.argv.indexOf("-p") !== -1;
-const filename = Package.name + (isProd ? ".min" : "");
+import {Schema} from "../dist/schema";
+import {SchemaError} from "../dist/schema-error";
+import {SchemaField} from "../dist/schema-field";
 
-module.exports = {
-    entry: {
-        bundle: path.join(__dirname, "src", `index.js`)
-    },
-    output: {
-        libraryTarget: "umd",
-        path: path.join(__dirname, "dist", "aio"),
-        filename: `${filename}.js`
-    },
-    resolve: {
-        extensions: [".js"],
-        modules: [path.join(__dirname, "src"), "node_modules"]
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: "babel-loader"
-            }
-        ]
-    }
-};
+describe(`Schema`, () => {
+    it(`should be importable from package`, () => {
+        expect(typeof Schema).toEqual("function");
+    });
+});
+
+describe(`SchemaError`, () => {
+    it(`should be importable from package`, () => {
+        expect(typeof SchemaError).toEqual("function");
+    });
+});
+
+describe(`SchemaField`, () => {
+    it(`should be importable from package`, () => {
+        expect(typeof SchemaField).toEqual("function");
+    });
+});
+
