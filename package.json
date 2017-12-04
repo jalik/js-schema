@@ -1,6 +1,6 @@
 {
   "name": "jk-schema",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Validates objects using schemas",
   "license": "MIT",
   "keywords": [
@@ -20,16 +20,16 @@
   "bugs": {
     "url": "https://github.com/jalik/jk-schema/issues"
   },
-  "main": "dist/jk-schema.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack --config webpack.config.js",
-    "build:prod": "./node_modules/.bin/webpack --config webpack.config.js -p",
+    "build": "./node_modules/.bin/gulp build && ./node_modules/.bin/webpack --config webpack.config.js",
+    "build:prod": "./node_modules/.bin/gulp prepublish && ./node_modules/.bin/webpack --config webpack.config.js -p",
+    "dev": "./node_modules/.bin/webpack-dev-server --hot --watch",
     "prepublish": "npm run build && npm run build:prod && npm test",
     "test": "jest",
     "watch": "./node_modules/.bin/webpack --config webpack.config.js --watch"
   },
   "dependencies": {
-    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -37,7 +37,11 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-strip-comments": "^2.5.1",
+    "gulp-watch": "^4.3.11",
     "jest": "^21.2.1",
-    "webpack": "^3.8.1"
+    "webpack": "^3.9.1"
   }
 }

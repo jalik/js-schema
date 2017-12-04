@@ -22,31 +22,12 @@
  * SOFTWARE.
  */
 
-const path = require("path");
-const Package = require("./package.json");
-const isProd = process.argv.indexOf("-p") !== -1;
-const filename = Package.name + (isProd ? ".min" : "");
+export class SchemaError extends Error {
 
-module.exports = {
-    entry: {
-        bundle: path.join(__dirname, "src", `index.js`)
-    },
-    output: {
-        libraryTarget: "umd",
-        path: path.join(__dirname, "dist"),
-        filename: `${filename}.js`
-    },
-    resolve: {
-        extensions: [".js"],
-        modules: [path.join(__dirname, "src"), "node_modules"]
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: "babel-loader"
-            }
-        ]
+    constructor(reason, message, context) {
+        super(message);
+        this.context = context;
+        this.name = "SchemaError";
+        this.reason = reason;
     }
-};
+}

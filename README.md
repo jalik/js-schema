@@ -356,6 +356,29 @@ catch (err) {
 
 ## Changelog
 
+### v0.4.0
+- Adds method `Schema.removeUnknownFields(obj)`
+- Adds method `SchemaField.getAllowedValues()`
+- Adds method `SchemaField.getCheckFunction()`
+- Adds method `SchemaField.getCleanFunction()`
+- Adds method `SchemaField.getDefaultValue()`
+- Adds method `SchemaField.getDeniedValues()`
+- Adds method `SchemaField.getLabel()`
+- Adds method `SchemaField.getLength()`
+- Adds method `SchemaField.getMaxValue()`
+- Adds method `SchemaField.getMaxWords()`
+- Adds method `SchemaField.getMinValue()`
+- Adds method `SchemaField.getMinWords()`
+- Adds method `SchemaField.getRegEx()`
+- Adds method `SchemaField.getType()`
+- Adds method `SchemaField.isDecimal()`
+- Adds method `SchemaField.isNullable()`
+- Adds method `SchemaField.isRequired()`
+- Adds field option `defaultValue` to set default value, works only if field is required but has its value `undefined`
+- Renames method `SchemaField.dynamicValue()` to `SchemaField.computeValue()`
+- The method `SchemaField.validate()` now returns the processed value (ex: default value or cleaned value)
+- Updates documentation
+
 ### v0.3.4
 - Updates documentation
 
