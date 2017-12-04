@@ -33,7 +33,7 @@ import {SchemaError} from "./schema-error";
 export const fieldProperties = [
     "allowed",
     "check",
-    "cleanFunction",
+    "clean",
     "decimal",
     "defaultValue",
     "denied",
@@ -53,13 +53,11 @@ export const fieldProperties = [
 export class SchemaField {
 
     constructor(fieldName, props) {
-        this.name = fieldName;
-
         // Default properties
         props = SchemaUtils.extend({
             allowed: undefined,
             check: undefined,
-            cleanFunction: undefined,
+            clean: undefined,
             decimal: undefined,
             defaultValue: undefined,
             denied: undefined,
@@ -75,6 +73,12 @@ export class SchemaField {
             type: undefined
         }, props);
 
+        // Field name
+        this.name = fieldName;
+
+        // Field properties
+        this.properties = {};
+
         // Check field properties
         for (let prop in props) {
             if (props.hasOwnProperty(prop)) {
@@ -82,7 +86,7 @@ export class SchemaField {
                     console.warn(`Unknown schema field property "${fieldName}.${prop}"`);
                 }
                 // Assign property
-                this[prop] = props[prop];
+                this.properties[prop] = props[prop];
             }
         }
 
@@ -113,8 +117,8 @@ export class SchemaField {
         }
 
         // Check custom check function
-        if (props.cleanFunction !== undefined && typeof props.cleanFunction !== "function") {
-            throw new TypeError(`${fieldName}.cleanFunction must be a function`);
+        if (props.clean !== undefined && typeof props.clean !== "function") {
+            throw new TypeError(`${fieldName}.clean must be a function`);
         }
 
         // Check number decimal
@@ -205,8 +209,8 @@ export class SchemaField {
                 case "string":
                     if (typeof value === "string") {
                         // Execute custom clean function
-                        if (typeof this.cleanFunction === "function") {
-                            value = this.cleanFunction(value);
+                        if (typeof this.getCleanFunction() === "function") {
+                            value = this.getCleanFunction()(value);
                         } else {
                             value = value.trim();
                         }
@@ -223,15 +227,15 @@ export class SchemaField {
 
     /**
      * Returns the value of the object
-     * @param obj
+     * @param value
      * @param context
      * @return {*}
      */
-    computeValue(obj, context) {
-        if (typeof obj === "function") {
-            return obj(context);
+    computeValue(value, context) {
+        if (typeof value === "function") {
+            return value(context);
         }
-        return obj;
+        return value;
     }
 
     /**
@@ -239,7 +243,7 @@ export class SchemaField {
      * @return {*}
      */
     getAllowedValues() {
-        return this.allowed;
+        return this.properties.allowed;
     }
 
     /**
@@ -247,7 +251,7 @@ export class SchemaField {
      * @return {*}
      */
     getCheckFunction() {
-        return this.check;
+        return this.properties.check;
     }
 
     /**
@@ -255,7 +259,7 @@ export class SchemaField {
      * @return {*}
      */
     getCleanFunction() {
-        return this.cleanFunction;
+        return this.properties.clean;
     }
 
     /**
@@ -263,7 +267,7 @@ export class SchemaField {
      * @return {*}
      */
     getDefaultValue() {
-        return this.defaultValue;
+        return this.properties.defaultValue;
     }
 
     /**
@@ -271,7 +275,7 @@ export class SchemaField {
      * @return {*}
      */
     getDeniedValues() {
-        return this.denied;
+        return this.properties.denied;
     }
 
     /**
@@ -279,7 +283,7 @@ export class SchemaField {
      * @return {*}
      */
     getLabel() {
-        return this.label;
+        return this.properties.label;
     }
 
     /**
@@ -287,7 +291,7 @@ export class SchemaField {
      * @return {*}
      */
     getLength() {
-        return this.length;
+        return this.properties.length;
     }
 
     /**
@@ -295,7 +299,7 @@ export class SchemaField {
      * @return {*}
      */
     getMaxValue() {
-        return this.max;
+        return this.properties.max;
     }
 
     /**
@@ -303,7 +307,7 @@ export class SchemaField {
      * @return {*}
      */
     getMaxWords() {
-        return this.maxWords;
+        return this.properties.maxWords;
     }
 
     /**
@@ -311,7 +315,7 @@ export class SchemaField {
      * @return {*}
      */
     getMinValue() {
-        return this.min;
+        return this.properties.min;
     }
 
     /**
@@ -319,7 +323,15 @@ export class SchemaField {
      * @return {*}
      */
     getMinWords() {
-        return this.minWords;
+        return this.properties.minWords;
+    }
+
+    /**
+     * Returns field's properties
+     * @return {Object}
+     */
+    getProperties() {
+        return this.properties;
     }
 
     /**
@@ -327,7 +339,7 @@ export class SchemaField {
      * @return {*}
      */
     getRegEx() {
-        return this.regEx;
+        return this.properties.regEx;
     }
 
     /**
@@ -335,7 +347,7 @@ export class SchemaField {
      * @return {*}
      */
     getType() {
-        return this.type;
+        return this.properties.type;
     }
 
     /**
@@ -343,7 +355,7 @@ export class SchemaField {
      * @return {*}
      */
     isDecimal() {
-        return this.decimal;
+        return this.properties.decimal;
     }
 
     /**
@@ -351,7 +363,7 @@ export class SchemaField {
      * @return {boolean}
      */
     isNullable() {
-        return this.nullable === true;
+        return this.properties.nullable === true;
     }
 
     /**
@@ -359,7 +371,7 @@ export class SchemaField {
      * @return {boolean}
      */
     isRequired() {
-        return this.required === true;
+        return this.properties.required === true;
     }
 
     /**
@@ -517,7 +529,7 @@ export class SchemaField {
      * @param options
      */
     validate(value, options) {
-        const props = this;
+        const props = this.properties;
         const type = props.type;
 
         // Default options
@@ -584,14 +596,14 @@ export class SchemaField {
                     this.throwFieldTypeError(label, "number");
                 }
                 if (props.decimal !== undefined) {
-                    const decimal = this.computeValue(props.decimal, context);
+                    const isDecimal = this.computeValue(props.decimal, context);
 
                     // Check decimal
-                    if (decimal !== undefined) {
-                        if (decimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(value))) {
+                    if (isDecimal !== undefined) {
+                        if (isDecimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(value))) {
                             this.throwFieldTypeError(label, "float");
                         }
-                        if (decimal === false && !/^[0-9]+$/.test(String(value))) {
+                        if (isDecimal === false && !/^[0-9]+$/.test(String(value))) {
                             this.throwFieldTypeError(label, "integer");
                         }
                     }

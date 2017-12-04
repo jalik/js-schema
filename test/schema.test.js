@@ -113,8 +113,8 @@ describe(`Schema`, () => {
                 child: {type: ChildSchema}
             });
             expect(() => {
-                return ParentSchema.resolveField("child[phones][number]").type === String
-                    && ParentSchema.resolveField("child[phones][0][number]").type === String;
+                ParentSchema.resolveField("child[phones][number]").getType();
+                ParentSchema.resolveField("child[phones][0][number]").getType();
             }).not.toThrow(Error);
         });
     });
@@ -139,9 +139,9 @@ describe(`Schema`, () => {
                     required: true
                 }
             });
-            expect(PersonSchema.getField("name").required).toEqual(true);
-            expect(PersonSchema.getField("phone[number]").required).toEqual(false);
-            expect(PhoneSchema.getField("number").required).toEqual(true);
+            expect(PersonSchema.getField("name").isRequired()).toEqual(true);
+            expect(PersonSchema.getField("phone[number]").isRequired()).toEqual(false);
+            expect(PhoneSchema.getField("number").isRequired()).toEqual(true);
         });
     });
 

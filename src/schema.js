@@ -84,15 +84,15 @@ export class Schema {
      * @return {Schema}
      */
     clone() {
-        const schema = this.getFields();
-        const fields = [];
+        const fields = this.getFields();
+        const fieldNames = [];
 
-        for (let field in schema) {
-            if (schema.hasOwnProperty(field)) {
-                fields.push(field);
+        for (let fieldName in fields) {
+            if (fields.hasOwnProperty(fieldName)) {
+                fieldNames.push(fieldName);
             }
         }
-        return this.pick(fields);
+        return this.pick(fieldNames);
     }
 
     /**
@@ -101,7 +101,15 @@ export class Schema {
      * @return {Schema}
      */
     extend(fields) {
-        return new Schema(SchemaUtils.extend({}, this.getFields(), fields));
+        const fieldProperties = {};
+        const schemaFields = this.getFields();
+
+        for (let fieldName in schemaFields) {
+            if (schemaFields.hasOwnProperty(fieldName)) {
+                fieldProperties[fieldName] = schemaFields[fieldName].getProperties();
+            }
+        }
+        return new Schema(SchemaUtils.extend({}, fieldProperties, fields));
     }
 
     /**
@@ -115,7 +123,7 @@ export class Schema {
 
     /**
      * Returns fields
-     * @return {[SchemaField]}
+     * @return {Object}
      */
     getFields() {
         return this._fields;
@@ -138,21 +146,21 @@ export class Schema {
 
     /**
      * Creates a sub schema from selected fields
-     * @param fields
+     * @param fieldNames
      * @return {Schema}
      */
-    pick(fields) {
-        let newSchema = {};
-        const schema = this.getFields();
+    pick(fieldNames) {
+        let fields = {};
+        const schemaFields = this.getFields();
 
-        for (let i = 0; i < fields.length; i += 1) {
-            const field = fields[i];
+        for (let i = 0; i < fieldNames.length; i += 1) {
+            const fieldName = fieldNames[i];
 
-            if (schema.hasOwnProperty(field)) {
-                newSchema[field] = schema[field];
+            if (schemaFields.hasOwnProperty(fieldName)) {
+                fields[fieldName] = schemaFields[fieldName].getProperties();
             }
         }
-        return new Schema(newSchema);
+        return new Schema(fields);
     }
 
     /**
@@ -224,7 +232,7 @@ export class Schema {
 
             // Check sub field
             if (subTree && subTree.length) {
-                const schema = field.type;
+                const schema = field.getType();
 
                 if (schema instanceof Schema) {
                     return schema.resolveField(subTree);
@@ -249,13 +257,13 @@ export class Schema {
      * @return {Schema}
      */
     update(fields) {
-        const schema = this.getFields();
+        const schemaFields = this.getFields();
 
-        for (let key in fields) {
-            if (fields.hasOwnProperty(key)) {
-                const props = fields[key];
-                const field = schema[key] || {};
-                this.addField(key, SchemaUtils.extend({}, field, props));
+        for (let fieldName in fields) {
+            if (fields.hasOwnProperty(fieldName)) {
+                const props = fields[fieldName];
+                const field = schemaFields[fieldName].getProperties() || {};
+                this.addField(fieldName, SchemaUtils.extend({}, field, props));
             }
         }
         return this;

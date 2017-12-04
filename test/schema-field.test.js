@@ -57,14 +57,14 @@ describe(`SchemaField`, () => {
 
     describe(`getCleanFunction()`, () => {
         it(`should return clean function`, () => {
-            const cleanFunction = (value) => {
+            const clean = (value) => {
                 return value && value.trim();
             };
             const field = new SchemaField("text", {
                 type: String,
-                cleanFunction: cleanFunction
+                clean: clean
             });
-            expect(field.getCleanFunction()).toEqual(cleanFunction);
+            expect(field.getCleanFunction()).toEqual(clean);
         });
     });
 
@@ -310,7 +310,7 @@ describe(`SchemaField`, () => {
                 type: String,
                 nullable: false,
                 required: false,
-                cleanFunction(value) {
+                clean(value) {
                     return value && value.length ? value.trim().toLowerCase() : value;
                 }
             });
