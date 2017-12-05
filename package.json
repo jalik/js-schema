@@ -1,6 +1,6 @@
 {
   "name": "jk-schema",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Validates objects using schemas",
   "license": "MIT",
   "keywords": [

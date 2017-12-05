@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import SchemaUtils from "./index";
+import SchemaUtils from "./utils";
 import {SchemaError} from "./schema-error";
 import {SchemaField} from "./schema-field";
 

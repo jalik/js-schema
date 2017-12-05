@@ -22,60 +22,16 @@
  * SOFTWARE.
  */
 
+import RegExp from "./regex";
+import Utils from "./utils";
+import {Schema} from "./schema";
+import {SchemaError} from "./schema-error";
+import {SchemaField} from "./schema-field";
+
 export default {
-
-    /**
-     * Checks if value is in list
-     * @param list
-     * @param value
-     * @return {boolean}
-     */
-    contains(list, value) {
-        let result = false;
-
-        if (list instanceof Array) {
-            for (let i = 0; i < list.length; i += 1) {
-                if (list[i] === value) {
-                    result = true;
-                    break;
-                }
-            }
-        }
-        return result;
-    },
-
-    /**
-     * Merge objects
-     * @return {*}
-     */
-    extend() {
-        const args = Array.prototype.slice.call(arguments);
-        let recursive = false;
-        let a = args.shift();
-
-        if (typeof a === "boolean") {
-            recursive = a;
-            a = args.shift();
-        }
-
-        for (let i = 0; i < args.length; i += 1) {
-            const b = args[i];
-
-            if (typeof b === "object" && b !== null && b !== undefined
-                && typeof a === "object" && a !== null && a !== undefined) {
-                for (let key in b) {
-                    if (b.hasOwnProperty(key)) {
-                        if (recursive && typeof b[key] === "object" && b[key] !== null && b[key] !== undefined) {
-                            a[key] = this.extend(a[key], b[key]);
-                        } else {
-                            a[key] = b[key];
-                        }
-                    }
-                }
-            } else if (b !== null && b !== undefined) {
-                a = b;
-            }
-        }
-        return a;
-    }
-};
+    Utils,
+    RegExp: RegExp,
+    Schema: Schema,
+    SchemaError: SchemaError,
+    SchemaField: SchemaField
+}

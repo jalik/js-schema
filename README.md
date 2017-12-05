@@ -18,7 +18,7 @@ to check if the data is valid or not.
 You can use any of the given properties to define a field.
 
 ```js
-import {Schema} from "jk-schema";
+import {Schema} from "jk-schema/dist/schema";
 
 const ExampleSchema = new Schema({
 
@@ -50,7 +50,7 @@ const ExampleSchema = new Schema({
     denied: {
         type: Number,
         // will throw an error if these values are present
-        denied: ["yes", "no"]
+        denied: [0, 1]
     },
     
     // LABEL
@@ -63,22 +63,22 @@ const ExampleSchema = new Schema({
     // LENGTH
     arrayLength: {
         type: [Number],
-        // must contain 2 values
+        // array must contain exactly two values
         length: 2
     },
     fixedLength: {
         type: String,
-        // length must be 10
+        // length must be exactly 10
         length: 10
     },
     maxLength: {
         type: String,
-        // max = 10, min = 0
+        // max length is 10, min length is 0
         length: [0, 10]
     },
     minLength: {
         type: String,
-        // min = 2, no max
+        // min length is 2, there is no max length
         length: [2]
     },
 
@@ -89,38 +89,45 @@ const ExampleSchema = new Schema({
     },
     maxNumber: {
         type: Number,
+        // max value is 10
         max: 10
     },
     
     // MAX WORDS
     maxWords: {
         type: String,
-        maxWords:50
+        // there must have 50 words max
+        maxWords: 50
     },
 
     // MIN
     minDate: {
         type: Date,
+        // min value is now minus 10 hours
         min: new Date(Date.now() - 3600*1000)
     },
     minNumber: {
         type: Number,
+        // min value is 0
         min: 0
     },
     
     // MIN WORDS
     minWords: {
         type: String,
-        minWords:5
+        // there must have 5 words minimum
+        minWords: 5
     },
 
     // NULLABLE
     nullable: {
         type: String,
+        // field cannot be null
         nullable: false
     },
     notNullable: {
         type: String,
+        // field can be null
         nullable: true
     },
     
@@ -179,7 +186,7 @@ Almost all properties (excepted `type`) accept a function instead of the usual v
 The given function is called with a single argument representing the current context (data) being validated by the schema.
 
 ```js
-import {Schema} from "jk-schema";
+import {Schema} from "jk-schema/dist/schema";
 
 const isPublishing = function(context) {
     // context refers to the data being validated
@@ -229,8 +236,8 @@ PostSchema.validate({
 To create a schema, use the `Schema` class.
 
 ```js
-import RegEx from "jk-schema/regex";
-import {Schema} from "jk-schema";
+import RegEx from "jk-schema/dist/regex";
+import {Schema} from "jk-schema/dist/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -267,7 +274,7 @@ The update creates fields that do not exist, but only modifies existing properti
 so you can keep properties that have already been defined.
 
 ```js
-import {Schema} from "jk-schema";
+import {Schema} from "jk-schema/dist/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -287,7 +294,7 @@ PersonSchema.update({
 The extend operation creates a new schema based on the current one.
 
 ```js
-import {Schema} from "jk-schema";
+import {Schema} from "jk-schema/dist/schema";
 
 const PersonSchema = new Schema({
     age: {type: Number},
@@ -309,7 +316,7 @@ const ParentSchema = PersonSchema.extend({
 ## Cloning a schema
 
 ```js
-import {Schema} from "jk-schema";
+import {Schema} from "jk-schema/dist/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -324,7 +331,7 @@ const ClonedSchema = PersonSchema.clone();
 ## Updating a schema
 
 ```js
-import {Schema} from "jk-schema";
+import {Schema} from "jk-schema/dist/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -352,8 +359,8 @@ To validate data using a schema, use the method `schema.validate(obj)`.
 If the validation fails, it will throw a `SchemaError` containing information about the error.
 
 ```js
-import RegEx from "jk-schema/regex";
-import {Schema} from "jk-schema";
+import RegEx from "jk-schema/dist/regex";
+import {Schema} from "jk-schema/dist/schema";
 
 const AddressSchema = new Schema({
     city: {
@@ -447,6 +454,10 @@ catch (err) {
 ```
 
 ## Changelog
+
+### v0.4.1
+- Fixes main file exports
+- Fixes documentation for importing classes and methods
 
 ### v0.4.0
 - Explodes classes in multiple files (see doc to import classes and methods)
