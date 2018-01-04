@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Karl STEIN
+ * Copyright (c) 2018 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -200,11 +200,8 @@ export class Schema {
             const opening = path.match(/\[/g).length;
             const closing = path.match(/]/g).length;
 
-            if (opening > closing) {
-                throw new SyntaxError(`Missing closing ']' in '${path}'`);
-            }
-            else if (closing < opening) {
-                throw new SyntaxError(`Missing opening '[' in '${path}'`);
+            if (opening !== closing) {
+                throw new SyntaxError(`Missing opening '[' or closing ']' in '${path}'`);
             }
         }
 
@@ -318,8 +315,9 @@ export class Schema {
                 if (value === undefined && options.ignoreMissing) {
                     continue;
                 }
-                // Validate field
-                fields[key].validate(value, options);
+
+                // Validate field and return processed value
+                obj[key] = fields[key].validate(value, options);
             }
         }
     }

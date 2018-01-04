@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Karl STEIN
+ * Copyright (c) 2018 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -322,7 +322,7 @@ describe(`SchemaField`, () => {
 
         describe(`defaultValue: (*|Function)`, () => {
 
-            describe(`defaultValue: Array`, () => {
+            describe(`defaultValue: String`, () => {
 
                 const field = new SchemaField("optional", {
                     type: String,
@@ -339,7 +339,7 @@ describe(`SchemaField`, () => {
                 });
             });
 
-            describe(`defaultValue: Array`, () => {
+            describe(`defaultValue: [Number]`, () => {
 
                 const field = new SchemaField("numbers", {
                     type: [Number],
@@ -350,7 +350,8 @@ describe(`SchemaField`, () => {
 
                 describe(`empty array`, () => {
                     it(`should return default values`, () => {
-                        expect(field.validate(undefined)).toEqual(field.getDefaultValue());
+                        expect(field.validate(undefined)).toEqual([0, 2]);
+                        expect(field.validate(null)).toEqual([0, 2]);
                     });
                 });
 

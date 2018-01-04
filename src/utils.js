@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Karl STEIN
+ * Copyright (c) 2018 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -61,11 +61,11 @@ export default {
         for (let i = 0; i < args.length; i += 1) {
             const b = args[i];
 
-            if (typeof b === "object" && b !== null && b !== undefined
-                && typeof a === "object" && a !== null && a !== undefined) {
+            if (typeof b === "object" && b !== null && typeof b !== "undefined"
+                && typeof a === "object" && a !== null && typeof a !== "undefined") {
                 for (let key in b) {
                     if (b.hasOwnProperty(key)) {
-                        if (recursive && typeof b[key] === "object" && b[key] !== null && b[key] !== undefined) {
+                        if (recursive && typeof b[key] === "object" && b[key] !== null && typeof b[key] !== "undefined") {
                             a[key] = this.extend(a[key], b[key]);
                         } else {
                             a[key] = b[key];

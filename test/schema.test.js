@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Karl STEIN
+ * Copyright (c) 2018 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,8 +35,10 @@ describe(`Schema`, () => {
 
     const TestSchema = new Schema({
         array: {
-            type: Array,
-            required: true
+            type: [Number],
+            nullable: false,
+            required: true,
+            defaultValue: []
         },
         number: {
             type: Number,
@@ -154,6 +156,13 @@ describe(`Schema`, () => {
                     });
                 }).not.toThrow(Error);
             });
+            it(`should not use default value for undefined fields`, () => {
+                const obj = {number: 1};
+                TestSchema.validate(obj, {
+                    ignoreMissing: true
+                });
+                expect(obj).toEqual({number: 1});
+            });
         });
 
         describe(`ignoreMissing: false`, () => {
@@ -163,6 +172,20 @@ describe(`Schema`, () => {
                         ignoreMissing: false
                     });
                 }).toThrow(Error);
+            });
+            it(`should use default value for undefined fields`, () => {
+                const obj = {number: 1, string: "a"};
+                TestSchema.validate(obj, {
+                    ignoreMissing: false
+                });
+                expect(obj).toEqual({array: [], number: 1, string: "a"});
+            });
+            it(`should use default value for null fields`, () => {
+                const obj = {array: null, number: 1, string: "a"};
+                TestSchema.validate(obj, {
+                    ignoreMissing: false
+                });
+                expect(obj).toEqual({array: [], number: 1, string: "a"});
             });
         });
 

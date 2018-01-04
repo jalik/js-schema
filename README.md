@@ -46,6 +46,11 @@ const ExampleSchema = new Schema({
         }
     },
     
+    defaultField: {
+      type: Number,
+      defaultValue: 1337  
+    },
+    
     // DENIED
     denied: {
         type: Number,
@@ -454,6 +459,14 @@ catch (err) {
 ```
 
 ## Changelog
+
+### v0.4.2
+- Adds method `SchemaField.getName()`
+- Adds method `SchemaField.throwFieldNullError()`
+- Adds unit tests for `defaultValue` option
+- Uses return value of `SchemaField.validate()` to modify field value
+- Uses empty array `[]` as default value for `Array` fields defined as required and non-null
+- Throws missing field error only when a required field is `undefined` (does not depend on `nullable` option anymore)
 
 ### v0.4.1
 - Fixes main file exports

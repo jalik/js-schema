@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 Karl STEIN
+ * Copyright (c) 2018 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -327,6 +327,14 @@ export class SchemaField {
     }
 
     /**
+     * Returns field name
+     * @return {string}
+     */
+    getName() {
+        return this.name;
+    }
+
+    /**
      * Returns field's properties
      * @return {Object}
      */
@@ -493,6 +501,14 @@ export class SchemaField {
     /**
      *
      * @param field
+     */
+    throwFieldNullError(field) {
+        throw new SchemaError(`field-null`, `The field "${field}" cannot be null.`, {field});
+    }
+
+    /**
+     *
+     * @param field
      * @param regEx
      */
     throwFieldRegExError(field, regEx) {
@@ -527,6 +543,7 @@ export class SchemaField {
      * Validates the field
      * @param value
      * @param options
+     * @return {*}
      */
     validate(value, options) {
         const props = this.properties;
@@ -541,6 +558,7 @@ export class SchemaField {
         const label = this.computeValue(props.label, context);
         const isNullable = this.computeValue(props.nullable, context);
         const isRequired = this.computeValue(props.required, context);
+        const isArray = props.type === Array || props.type instanceof Array;
 
         // Clean value
         if (options.clean) {
@@ -548,17 +566,24 @@ export class SchemaField {
         }
 
         // Use default value
-        if (isRequired && value === undefined && props.defaultValue !== undefined) {
-            value = this.computeValue(props.defaultValue, context);
+        if (isRequired && (value === undefined || value === null)) {
+            // Compute default value
+            if (props.defaultValue !== undefined) {
+                value = this.computeValue(props.defaultValue, context);
+            }
+            // Use empty array for required non-null array field
+            if (isArray && (value === null || value === undefined)) {
+                value = [];
+            }
         }
 
         // Check null value
         if (!isNullable && value === null) {
-            this.throwFieldMissingError(label);
+            this.throwFieldNullError(label);
         }
 
         // Check if value is missing
-        if (isRequired && (value === undefined || value === null)) {
+        if (isRequired && value === undefined) {
             this.throwFieldMissingError(label);
         }
 
@@ -714,12 +739,12 @@ export class SchemaField {
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
                     if (!SchemaUtils.contains(allowed, value[i])) {
-                        this.throwFieldBadValueError(label, allowed);
+                        this.throwFieldBadValueError(label);
                     }
                 }
             }
             else if (!SchemaUtils.contains(allowed, value)) {
-                this.throwFieldBadValueError(label, allowed);
+                this.throwFieldBadValueError(label);
             }
         }
         // Check denied values
@@ -729,12 +754,12 @@ export class SchemaField {
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
                     if (SchemaUtils.contains(denied, value[i])) {
-                        this.throwFieldDeniedValueError(label, denied);
+                        this.throwFieldDeniedValueError(label);
                     }
                 }
             }
             else if (SchemaUtils.contains(denied, value)) {
-                this.throwFieldDeniedValueError(label, denied);
+                this.throwFieldDeniedValueError(label);
             }
         }
 
