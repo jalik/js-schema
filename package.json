@@ -24,13 +24,13 @@
   "scripts": {
     "build": "./node_modules/.bin/gulp build",
     "build:prod": "./node_modules/.bin/gulp prepublish",
-    "prepublish": "npm run build && npm run build:prod && npm test",
-    "prepublishOnly": "npm run build && npm run build:prod && npm test",
+    "package": "./node_modules/.bin/webpack && ./node_modules/.bin/webpack -p",
+    "prepare": "npm run build:prod && npm test",
+    "prepublishOnly": "npm test",
     "test": "jest",
     "watch": "./node_modules/.bin/gulp watch"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
