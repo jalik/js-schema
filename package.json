@@ -22,13 +22,12 @@
   },
   "main": "dist/index.js",
   "scripts": {
-    "build": "./node_modules/.bin/gulp build && ./node_modules/.bin/webpack --config webpack.config.js",
-    "build:prod": "./node_modules/.bin/gulp prepublish && ./node_modules/.bin/webpack --config webpack.config.js -p",
-    "dev": "./node_modules/.bin/webpack-dev-server --hot --watch",
+    "build": "./node_modules/.bin/gulp build",
+    "build:prod": "./node_modules/.bin/gulp prepublish",
     "prepublish": "npm run build && npm run build:prod && npm test",
     "prepublishOnly": "npm run build && npm run build:prod && npm test",
     "test": "jest",
-    "watch": "./node_modules/.bin/webpack --config webpack.config.js --watch"
+    "watch": "./node_modules/.bin/gulp watch"
   },
   "dependencies": {
   },

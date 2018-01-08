@@ -35,7 +35,7 @@ gulp.task("build", () => {
     ])
         .pipe(babel({presets: ["env"]}))
         .pipe(stripComments())
-        .pipe(gulp.dest(`${distDir}`));
+        .pipe(gulp.dest(distDir));
 });
 
 // Compile source files
