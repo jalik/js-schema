@@ -273,27 +273,6 @@ const PersonSchema = new Schema({
 });
 ```
 
-## Updating a schema
-
-The update creates fields that do not exist, but only modifies existing properties of fields,
-so you can keep properties that have already been defined.
-
-```js
-import {Schema} from "jk-schema/dist/schema";
-
-const PersonSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    }
-});
-
-PersonSchema.update({
-    age: {type: Number},
-    name: {length:[0,20]}
-});
-```
-
 ## Extending a schema (inheritance)
 
 The extend operation creates a new schema based on the current one.
@@ -334,6 +313,9 @@ const ClonedSchema = PersonSchema.clone();
 ```
 
 ## Updating a schema
+
+The update creates fields that do not exist, but only modifies existing properties of fields,
+so you can keep properties that have already been defined.
 
 ```js
 import {Schema} from "jk-schema/dist/schema";
