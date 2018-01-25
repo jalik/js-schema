@@ -72,7 +72,7 @@ export default {
                         }
                     }
                 }
-            } else if (b !== null && b !== undefined) {
+            } else if (b !== null && typeof b !== "undefined") {
                 a = b;
             }
         }

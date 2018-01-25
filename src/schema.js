@@ -312,7 +312,7 @@ export class Schema {
                 const value = obj[key];
 
                 // Ignore missing fields
-                if (value === undefined && options.ignoreMissing) {
+                if (typeof value === "undefined" && options.ignoreMissing) {
                     continue;
                 }
 

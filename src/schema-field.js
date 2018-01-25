@@ -91,7 +91,7 @@ export class SchemaField {
         }
 
         // Check field type
-        if (props.type === undefined || props.type === null) {
+        if (typeof props.type === "undefined" || props.type === null) {
             throw new TypeError(`${fieldName}.type is missing`);
         }
         else if (props.type instanceof Array) {
@@ -107,37 +107,37 @@ export class SchemaField {
         }
 
         // Check allowed values
-        if (props.allowed !== undefined && !(props.allowed instanceof Array) && typeof props.allowed !== "function") {
+        if (typeof props.allowed !== "undefined" && !(props.allowed instanceof Array) && typeof props.allowed !== "function") {
             throw new TypeError(`${fieldName}.allowed must be an array or function`);
         }
 
         // Check custom check function
-        if (props.check !== undefined && typeof props.check !== "function") {
+        if (typeof props.check !== "undefined" && typeof props.check !== "function") {
             throw new TypeError(`${fieldName}.check must be a function`);
         }
 
         // Check custom check function
-        if (props.clean !== undefined && typeof props.clean !== "function") {
+        if (typeof props.clean !== "undefined" && typeof props.clean !== "function") {
             throw new TypeError(`${fieldName}.clean must be a function`);
         }
 
         // Check number decimal
-        if (props.decimal !== undefined && !SchemaUtils.contains(["function", "boolean"], typeof props.decimal)) {
+        if (typeof props.decimal !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.decimal)) {
             throw new TypeError(`${fieldName}.decimal must be a boolean or function`);
         }
 
         // Check denied values
-        if (props.denied !== undefined && !(props.denied instanceof Array) && typeof props.denied !== "function") {
+        if (typeof props.denied !== "undefined" && !(props.denied instanceof Array) && typeof props.denied !== "function") {
             throw new TypeError(`${fieldName}.denied must be an array or function`);
         }
 
         // Set default label if missing
-        if (props.label !== undefined && !SchemaUtils.contains(["function", "string"], typeof props.label)) {
+        if (typeof props.label !== "undefined" && !SchemaUtils.contains(["function", "string"], typeof props.label)) {
             throw new TypeError(`${fieldName}.label must be a string or function`);
         }
 
         // Check length
-        if (props.length !== undefined) {
+        if (typeof props.length !== "undefined") {
             if (props.length instanceof Array) {
                 if (props.length.length > 2) {
                     throw new RangeError(`${fieldName}.length must only have 2 values [min, max]`);
@@ -148,37 +148,37 @@ export class SchemaField {
         }
 
         // Check max value
-        if (props.max !== undefined && !SchemaUtils.contains(["function", "number", "string"], typeof props.max) && !(props.max instanceof Date)) {
+        if (typeof props.max !== "undefined" && !SchemaUtils.contains(["function", "number", "string"], typeof props.max) && !(props.max instanceof Date)) {
             throw new TypeError(`${fieldName}.max must be a date, number, string or function`);
         }
 
         // Check max words
-        if (props.maxWords !== undefined && !SchemaUtils.contains(["function", "number"], typeof props.maxWords)) {
+        if (typeof props.maxWords !== "undefined" && !SchemaUtils.contains(["function", "number"], typeof props.maxWords)) {
             throw new TypeError(`${fieldName}.maxWords must be a number or function`);
         }
 
         // Check min value
-        if (props.min !== undefined && !SchemaUtils.contains(["function", "number", "string"], typeof props.min) && !(props.min instanceof Date)) {
+        if (typeof props.min !== "undefined" && !SchemaUtils.contains(["function", "number", "string"], typeof props.min) && !(props.min instanceof Date)) {
             throw new TypeError(`${fieldName}.min must be a date, number, string or function`);
         }
 
         // Check min words
-        if (props.minWords !== undefined && !SchemaUtils.contains(["function", "number"], typeof props.minWords)) {
+        if (typeof props.minWords !== "undefined" && !SchemaUtils.contains(["function", "number"], typeof props.minWords)) {
             throw new TypeError(`${fieldName}.minWords must be a number or function`);
         }
 
         // Check if field is nullable
-        if (props.nullable !== undefined && !SchemaUtils.contains(["function", "boolean"], typeof props.nullable)) {
+        if (typeof props.nullable !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.nullable)) {
             throw new TypeError(`${fieldName}.nullable must be a boolean or function`);
         }
 
         // Check regular expression
-        if (props.regEx !== undefined && !SchemaUtils.contains(["function"], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
+        if (typeof props.regEx !== "undefined" && !SchemaUtils.contains(["function"], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
             throw new TypeError(`${fieldName}.regEx must be a regular expression or function`);
         }
 
         // Check required
-        if (props.required !== undefined && !SchemaUtils.contains(["function", "boolean"], typeof props.required)) {
+        if (typeof props.required !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.required)) {
             throw new TypeError(`${fieldName}.required must be a boolean or function`);
         }
     }
@@ -189,7 +189,7 @@ export class SchemaField {
      * @return {*}
      */
     clean(value) {
-        if (value !== null && value !== undefined) {
+        if (value !== null && typeof value !== "undefined") {
             switch (typeof value) {
 
                 case "array":
@@ -566,13 +566,13 @@ export class SchemaField {
         }
 
         // Use default value
-        if (isRequired && (value === undefined || value === null)) {
+        if (isRequired && (typeof value === "undefined" || value === null)) {
             // Compute default value
-            if (props.defaultValue !== undefined) {
+            if (typeof props.defaultValue !== "undefined") {
                 value = this.computeValue(props.defaultValue, context);
             }
             // Use empty array for required non-null array field
-            if (isArray && (value === null || value === undefined)) {
+            if (isArray && (value === null || typeof value === "undefined")) {
                 value = [];
             }
         }
@@ -583,12 +583,12 @@ export class SchemaField {
         }
 
         // Check if value is missing
-        if (isRequired && value === undefined) {
+        if (isRequired && typeof value === "undefined") {
             this.throwFieldMissingError(label);
         }
 
         // Ignore empty value
-        if (value === undefined || value === null) {
+        if (typeof value === "undefined" || value === null) {
             return value;
         }
 
@@ -620,11 +620,11 @@ export class SchemaField {
                 if (typeof value !== "number" || isNaN(value)) {
                     this.throwFieldTypeError(label, "number");
                 }
-                if (props.decimal !== undefined) {
+                if (typeof props.decimal !== "undefined") {
                     const isDecimal = this.computeValue(props.decimal, context);
 
                     // Check decimal
-                    if (isDecimal !== undefined) {
+                    if (typeof isDecimal !== "undefined") {
                         if (isDecimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(value))) {
                             this.throwFieldTypeError(label, "float");
                         }
@@ -733,7 +733,7 @@ export class SchemaField {
         }
 
         // Check allowed values
-        if (props.allowed !== undefined) {
+        if (typeof props.allowed !== "undefined") {
             const allowed = this.computeValue(props.allowed, context);
 
             if (value instanceof Array) {
@@ -748,7 +748,7 @@ export class SchemaField {
             }
         }
         // Check denied values
-        else if (props.denied !== undefined) {
+        else if (typeof props.denied !== "undefined") {
             const denied = this.computeValue(props.denied, context);
 
             if (value instanceof Array) {
@@ -764,7 +764,7 @@ export class SchemaField {
         }
 
         // Check length if value has the length attribute
-        if (props.length !== undefined && value.length !== undefined) {
+        if (typeof props.length !== "undefined" && typeof value.length !== "undefined") {
             const length = this.computeValue(props.length, context);
 
             // Ranged length
@@ -786,7 +786,7 @@ export class SchemaField {
         }
 
         // Check min value
-        if (props.min !== undefined) {
+        if (typeof props.min !== "undefined") {
             const min = this.computeValue(props.min, context);
 
             if (value < min) {
@@ -795,7 +795,7 @@ export class SchemaField {
         }
 
         // Check min words
-        if (props.minWords !== undefined && typeof value === "string") {
+        if (typeof props.minWords !== "undefined" && typeof value === "string") {
             const min = this.computeValue(props.minWords, context);
 
             if (value.split(" ").length < min) {
@@ -804,7 +804,7 @@ export class SchemaField {
         }
 
         // Check max value
-        if (props.max !== undefined) {
+        if (typeof props.max !== "undefined") {
             const max = this.computeValue(props.max, context);
 
             if (value > max) {
@@ -813,7 +813,7 @@ export class SchemaField {
         }
 
         // Check max words
-        if (props.maxWords !== undefined && typeof value === "string") {
+        if (typeof props.maxWords !== "undefined" && typeof value === "string") {
             const max = this.computeValue(props.maxWords, context);
 
             if (value.split(" ").length > max) {
@@ -822,7 +822,7 @@ export class SchemaField {
         }
 
         // Test regular expression
-        if (props.regEx !== undefined) {
+        if (typeof props.regEx !== "undefined") {
             const regEx = this.computeValue(props.regEx, context);
 
             if (!regEx.test(value)) {
@@ -831,7 +831,7 @@ export class SchemaField {
         }
 
         // Test custom checks
-        if (props.check !== undefined) {
+        if (typeof props.check !== "undefined") {
             if (props.check.call(this, value, context) === false) {
                 this.throwFieldBadValueError(label);
             }
