@@ -148,6 +148,28 @@ describe(`SchemaField`, () => {
         });
     });
 
+    describe(`getName()`, () => {
+        it(`should return field name`, () => {
+            const field = new SchemaField("text", {
+                type: String
+            });
+            expect(field.getName()).toEqual("text");
+        });
+    });
+
+    describe(`getPrepareFunction()`, () => {
+        it(`should return prepare function`, () => {
+            const prepareFunction = (value) => {
+                return String(value);
+            };
+            const field = new SchemaField("text", {
+                type: String,
+                prepare: prepareFunction
+            });
+            expect(field.getPrepareFunction()).toEqual(prepareFunction);
+        });
+    });
+
     describe(`isDecimal()`, () => {
         it(`should return a boolean`, () => {
             const field = new SchemaField("quantity", {
@@ -317,6 +339,20 @@ describe(`SchemaField`, () => {
 
             it(`should execute function on field value`, () => {
                 expect(field.validate(" HELLO  ", {clean: true})).toEqual("hello");
+            });
+        });
+
+        describe(`prepare: Function`, () => {
+
+            const field = new SchemaField("price", {
+                type: String,
+                prepare(value) {
+                    return String(value) + "F";
+                }
+            });
+
+            it(`should execute function on field value`, () => {
+                expect(field.validate(1000)).toEqual("1000F");
             });
         });
 

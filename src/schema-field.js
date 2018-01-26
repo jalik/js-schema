@@ -45,6 +45,7 @@ export const fieldProperties = [
     "minWords",
     "name",
     "nullable",
+    "prepare",
     "regEx",
     "required",
     "type"
@@ -68,6 +69,7 @@ export class SchemaField {
             min: undefined,
             minWords: undefined,
             nullable: true,
+            prepare: undefined,
             regEx: undefined,
             required: true,
             type: undefined
@@ -116,7 +118,7 @@ export class SchemaField {
             throw new TypeError(`${fieldName}.check must be a function`);
         }
 
-        // Check custom check function
+        // Check custom clean function
         if (typeof props.clean !== "undefined" && typeof props.clean !== "function") {
             throw new TypeError(`${fieldName}.clean must be a function`);
         }
@@ -170,6 +172,11 @@ export class SchemaField {
         // Check if field is nullable
         if (typeof props.nullable !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.nullable)) {
             throw new TypeError(`${fieldName}.nullable must be a boolean or function`);
+        }
+
+        // Check custom prepare function
+        if (typeof props.prepare !== "undefined" && typeof props.prepare !== "function") {
+            throw new TypeError(`${fieldName}.prepare must be a function`);
         }
 
         // Check regular expression
@@ -248,7 +255,7 @@ export class SchemaField {
 
     /**
      * Returns field's check function
-     * @return {*}
+     * @return {Function|*}
      */
     getCheckFunction() {
         return this.properties.check;
@@ -256,7 +263,7 @@ export class SchemaField {
 
     /**
      * Returns field's clean function
-     * @return {*}
+     * @return {Function|*}
      */
     getCleanFunction() {
         return this.properties.clean;
@@ -332,6 +339,14 @@ export class SchemaField {
      */
     getName() {
         return this.name;
+    }
+
+    /**
+     * Returns field's prepare function
+     * @return {Function|*}
+     */
+    getPrepareFunction() {
+        return this.properties.prepare;
     }
 
     /**
@@ -559,6 +574,11 @@ export class SchemaField {
         const isNullable = this.computeValue(props.nullable, context);
         const isRequired = this.computeValue(props.required, context);
         const isArray = props.type === Array || props.type instanceof Array;
+
+        // Prepare value
+        if (typeof props.prepare === "function") {
+            value = props.prepare.call(this, value, context);
+        }
 
         // Clean value
         if (options.clean) {
@@ -830,8 +850,8 @@ export class SchemaField {
             }
         }
 
-        // Test custom checks
-        if (typeof props.check !== "undefined") {
+        // Execute custom checks
+        if (typeof props.check === "function") {
             if (props.check.call(this, value, context) === false) {
                 this.throwFieldBadValueError(label);
             }

@@ -35,7 +35,7 @@ const ExampleSchema = new Schema({
         type: Number,
         // cehck that number is even
         check(value) { return value % 2 === 0; }
-    }, 
+    },
     
     // CLEAN FUNCTION
     // accept a function that is called on each 
@@ -134,6 +134,19 @@ const ExampleSchema = new Schema({
         type: String,
         // field can be null
         nullable: true
+    },
+    
+    // PREPARE FUNCTION
+    // execute the prepare function on field value
+    // before clean and check execution.
+    // It can be useful in some case
+    // where clean cannot be used to do what you want.
+    orderedNumbers: {
+        type: [Number],
+        prepare(numbers) {
+            // sort numbers
+            return numbers.sort();
+        }
     },
     
     // REGEX
@@ -441,6 +454,11 @@ catch (err) {
 ```
 
 ## Changelog
+
+### v0.5.0
+- Adds method `SchemaField.getPrepareFunction()`
+- Adds field option `prepare` to execute a function on the field value before `clean` and `check` functions
+- Adds unit tests for `prepare` field option
 
 ### v0.4.2
 - Adds method `SchemaField.getName()`
