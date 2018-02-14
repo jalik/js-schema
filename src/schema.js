@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import SchemaUtils from "./utils";
+import utils from "./utils";
 import {SchemaError} from "./schema-error";
 import {SchemaField} from "./schema-field";
 
@@ -56,7 +56,7 @@ export class Schema {
      */
     clean(obj, options) {
         // Default options
-        options = SchemaUtils.extend({
+        options = utils.extend({
             removeUnknown: true
         }, options);
 
@@ -109,7 +109,7 @@ export class Schema {
                 fieldProperties[fieldName] = schemaFields[fieldName].getProperties();
             }
         }
-        return new Schema(SchemaUtils.extend({}, fieldProperties, fields));
+        return new Schema(utils.extend({}, fieldProperties, fields));
     }
 
     /**
@@ -260,7 +260,7 @@ export class Schema {
             if (fields.hasOwnProperty(fieldName)) {
                 const props = fields[fieldName];
                 const field = schemaFields[fieldName].getProperties() || {};
-                this.addField(fieldName, SchemaUtils.extend({}, field, props));
+                this.addField(fieldName, utils.extend({}, field, props));
             }
         }
         return this;
@@ -273,7 +273,7 @@ export class Schema {
      */
     validate(obj, options) {
         // Default options
-        options = SchemaUtils.extend({
+        options = utils.extend({
             clean: true,
             ignoreMissing: false,
             ignoreUnknown: false,

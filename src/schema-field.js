@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import SchemaUtils from "./utils";
+import utils from "./utils";
 import {Schema} from "./schema";
 import {SchemaError} from "./schema-error";
 
@@ -55,7 +55,7 @@ export class SchemaField {
 
     constructor(fieldName, props) {
         // Default properties
-        props = SchemaUtils.extend({
+        props = utils.extend({
             allowed: undefined,
             check: undefined,
             clean: undefined,
@@ -84,7 +84,7 @@ export class SchemaField {
         // Check field properties
         for (let prop in props) {
             if (props.hasOwnProperty(prop)) {
-                if (!SchemaUtils.contains(fieldProperties, prop)) {
+                if (!utils.contains(fieldProperties, prop)) {
                     console.warn(`Unknown schema field property "${fieldName}.${prop}"`);
                 }
                 // Assign property
@@ -93,19 +93,18 @@ export class SchemaField {
         }
 
         // Check field type
-        if (typeof props.type === "undefined" || props.type === null) {
-            throw new TypeError(`${fieldName}.type is missing`);
-        }
-        else if (props.type instanceof Array) {
-            const arrayType = props.type[0];
+        if (typeof props.type !== "undefined" && props.type !== null) {
+            if (props.type instanceof Array) {
+                const arrayType = props.type[0];
 
-            // Check that array type is a function or class
-            if (typeof arrayType !== "function" && typeof arrayType !== "object") {
-                throw new TypeError(`${fieldName}.type[] must contain a class or a function`);
+                // Check that array type is a function or class
+                if (typeof arrayType !== "function" && typeof arrayType !== "object") {
+                    throw new TypeError(`${fieldName}.type[] must contain a class or a function`);
+                }
             }
-        }
-        else if (!SchemaUtils.contains(["function", "object"], typeof props.type)) {
-            throw new TypeError(`${fieldName}.type = "${props.type}" is not a valid type`);
+            else if (!utils.contains(["function", "object"], typeof props.type)) {
+                throw new TypeError(`${fieldName}.type = "${props.type}" is not a valid type`);
+            }
         }
 
         // Check allowed values
@@ -124,7 +123,7 @@ export class SchemaField {
         }
 
         // Check number decimal
-        if (typeof props.decimal !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.decimal)) {
+        if (typeof props.decimal !== "undefined" && !utils.contains(["function", "boolean"], typeof props.decimal)) {
             throw new TypeError(`${fieldName}.decimal must be a boolean or function`);
         }
 
@@ -134,7 +133,7 @@ export class SchemaField {
         }
 
         // Set default label if missing
-        if (typeof props.label !== "undefined" && !SchemaUtils.contains(["function", "string"], typeof props.label)) {
+        if (typeof props.label !== "undefined" && !utils.contains(["function", "string"], typeof props.label)) {
             throw new TypeError(`${fieldName}.label must be a string or function`);
         }
 
@@ -144,33 +143,33 @@ export class SchemaField {
                 if (props.length.length > 2) {
                     throw new RangeError(`${fieldName}.length must only have 2 values [min, max]`);
                 }
-            } else if (!SchemaUtils.contains(["function", "number"], typeof props.length)) {
+            } else if (!utils.contains(["function", "number"], typeof props.length)) {
                 throw new TypeError(`${fieldName}.length must be a function, a number or an array[min, max]`);
             }
         }
 
         // Check max value
-        if (typeof props.max !== "undefined" && !SchemaUtils.contains(["function", "number", "string"], typeof props.max) && !(props.max instanceof Date)) {
+        if (typeof props.max !== "undefined" && !utils.contains(["function", "number", "string"], typeof props.max) && !(props.max instanceof Date)) {
             throw new TypeError(`${fieldName}.max must be a date, number, string or function`);
         }
 
         // Check max words
-        if (typeof props.maxWords !== "undefined" && !SchemaUtils.contains(["function", "number"], typeof props.maxWords)) {
+        if (typeof props.maxWords !== "undefined" && !utils.contains(["function", "number"], typeof props.maxWords)) {
             throw new TypeError(`${fieldName}.maxWords must be a number or function`);
         }
 
         // Check min value
-        if (typeof props.min !== "undefined" && !SchemaUtils.contains(["function", "number", "string"], typeof props.min) && !(props.min instanceof Date)) {
+        if (typeof props.min !== "undefined" && !utils.contains(["function", "number", "string"], typeof props.min) && !(props.min instanceof Date)) {
             throw new TypeError(`${fieldName}.min must be a date, number, string or function`);
         }
 
         // Check min words
-        if (typeof props.minWords !== "undefined" && !SchemaUtils.contains(["function", "number"], typeof props.minWords)) {
+        if (typeof props.minWords !== "undefined" && !utils.contains(["function", "number"], typeof props.minWords)) {
             throw new TypeError(`${fieldName}.minWords must be a number or function`);
         }
 
         // Check if field is nullable
-        if (typeof props.nullable !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.nullable)) {
+        if (typeof props.nullable !== "undefined" && !utils.contains(["function", "boolean"], typeof props.nullable)) {
             throw new TypeError(`${fieldName}.nullable must be a boolean or function`);
         }
 
@@ -180,12 +179,12 @@ export class SchemaField {
         }
 
         // Check regular expression
-        if (typeof props.regEx !== "undefined" && !SchemaUtils.contains(["function"], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
+        if (typeof props.regEx !== "undefined" && !utils.contains(["function"], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
             throw new TypeError(`${fieldName}.regEx must be a regular expression or function`);
         }
 
         // Check required
-        if (typeof props.required !== "undefined" && !SchemaUtils.contains(["function", "boolean"], typeof props.required)) {
+        if (typeof props.required !== "undefined" && !utils.contains(["function", "boolean"], typeof props.required)) {
             throw new TypeError(`${fieldName}.required must be a boolean or function`);
         }
     }
@@ -562,10 +561,9 @@ export class SchemaField {
      */
     validate(value, options) {
         const props = this.properties;
-        const type = props.type;
 
         // Default options
-        options = SchemaUtils.extend({
+        options = utils.extend({
             context: {[this.name]: value}
         }, options);
 
@@ -613,7 +611,7 @@ export class SchemaField {
         }
 
         // Check type
-        switch (type) {
+        switch (props.type) {
             case Array:
                 if (!(value instanceof Array)) {
                     this.throwFieldTypeError(label, "array");
@@ -668,10 +666,10 @@ export class SchemaField {
                 break;
 
             default:
-                if (type instanceof Schema) {
-                    type.validate(value, options);
+                if (props.type instanceof Schema) {
+                    props.type.validate(value, options);
                 }
-                else if (type instanceof Array) {
+                else if (props.type instanceof Array) {
                     // Check that value is an array
                     if (!(value instanceof Array)) {
                         this.throwFieldTypeError(label, "array");
@@ -680,7 +678,7 @@ export class SchemaField {
                     else if (value.length === 0 && !isRequired) {
                         return value;
                     }
-                    const arrayType = type[0];
+                    const arrayType = props.type[0];
 
                     // Validate array items
                     if (arrayType instanceof Schema) {
@@ -741,9 +739,9 @@ export class SchemaField {
                         }
                     }
                 }
-                else if (typeof type === "function") {
+                else if (typeof props.type === "function") {
                     // Check if value is an instance of the function
-                    if (!(value instanceof type)) {
+                    if (!(value instanceof props.type)) {
                         this.throwFieldInstanceError(label);
                     }
                 }
@@ -758,12 +756,12 @@ export class SchemaField {
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
-                    if (!SchemaUtils.contains(allowed, value[i])) {
+                    if (!utils.contains(allowed, value[i])) {
                         this.throwFieldBadValueError(label);
                     }
                 }
             }
-            else if (!SchemaUtils.contains(allowed, value)) {
+            else if (!utils.contains(allowed, value)) {
                 this.throwFieldBadValueError(label);
             }
         }
@@ -773,12 +771,12 @@ export class SchemaField {
 
             if (value instanceof Array) {
                 for (let i = 0; i < value.length; i += 1) {
-                    if (SchemaUtils.contains(denied, value[i])) {
+                    if (utils.contains(denied, value[i])) {
                         this.throwFieldDeniedValueError(label);
                     }
                 }
             }
-            else if (SchemaUtils.contains(denied, value)) {
+            else if (utils.contains(denied, value)) {
                 this.throwFieldDeniedValueError(label);
             }
         }

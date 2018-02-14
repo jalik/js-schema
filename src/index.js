@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-import RegExp from "./regex";
-import Utils from "./utils";
+import regExp from "./regex";
+import utils from "./utils";
 import {Schema} from "./schema";
 import {SchemaError} from "./schema-error";
 import {SchemaField} from "./schema-field";
 
 export default {
-    Utils,
-    RegExp: RegExp,
+    Utils: utils,
+    RegExp: regExp,
     Schema: Schema,
     SchemaError: SchemaError,
     SchemaField: SchemaField

@@ -455,6 +455,9 @@ catch (err) {
 
 ## Changelog
 
+### v0.5.1
+- Makes `type` field option optional
+
 ### v0.5.0
 - Adds method `SchemaField.getPrepareFunction()`
 - Adds field option `prepare` to execute a function on the field value before `clean` and `check` functions
