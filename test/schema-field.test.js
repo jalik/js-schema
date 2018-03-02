@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import chai from "chai";
 import {SchemaField} from "../src/schema-field";
 import {Schema} from "../src/schema";
 
@@ -592,49 +591,49 @@ describe(`SchemaField`, () => {
 
                 describe(`Array field with a wrong length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             FixedLengthSchema.validate({array: [1]});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`Array field with the exact length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3]});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
 
                 describe(`Object field with a wrong length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             FixedLengthSchema.validate({object: {length: 8}});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`Object field with the exact length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             FixedLengthSchema.validate({object: {length: 22}});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
 
                 describe(`String field with a wrong length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             FixedLengthSchema.validate({string: "xx"});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`String field with the exact length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({string: "aaaaa"});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
             });
@@ -643,48 +642,48 @@ describe(`SchemaField`, () => {
 
                 describe(`Array field with length < min length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({array: [1]});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`Array field with length > min length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3, 4]});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
 
                 describe(`Object field with length < min length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({object: {length: 0}});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
                 describe(`Object field with length > min length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({object: {length: 5}});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
 
                 describe(`String field with length < min length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({string: "shor"});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`String field with length > min length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({string: "123456"});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
             });
@@ -693,49 +692,49 @@ describe(`SchemaField`, () => {
 
                 describe(`Array field with length > max length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3, 4, 5, 6, 7, 8]});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`Array field with length < max length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({array: [1, 2, 3]});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
 
                 describe(`Object field with length > max length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({object: {length: 99}});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`Object field with length < max length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({object: {length: 6}});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
 
                 describe(`String field with length > max length`, () => {
                     it(`should throw an Error`, () => {
-                        chai.assert.throws(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({string: "loooooooooong"});
-                        }, Error);
+                        }).toThrow()
                     });
                 });
 
                 describe(`String field with length < max length`, () => {
                     it(`should not throw an Error`, () => {
-                        chai.assert.doesNotThrow(() => {
+                        expect(() => {
                             LimitedLengthSchema.validate({string: "1234567"});
-                        }, Error);
+                        }).not.toThrow()
                     });
                 });
             });
@@ -763,49 +762,49 @@ describe(`SchemaField`, () => {
 
             describe(`Array field with values higher than max`, () => {
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         MaxSchema.validate({array: [99]});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Array field with values lower than max`, () => {
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         MaxSchema.validate({array: [9, 5, 0, -100]});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Date field with value higher than max`, () => {
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         MaxSchema.validate({date: new Date(Date.now() + 10000)});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Date field with value lower than max`, () => {
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         MaxSchema.validate({date: new Date(Date.now() - 10000)});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Number field with value higher than max`, () => {
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         MaxSchema.validate({number: 99});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Number field with value lower than max`, () => {
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         MaxSchema.validate({number: 5});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
         });
@@ -832,49 +831,49 @@ describe(`SchemaField`, () => {
 
             describe(`Array field with values lower than min`, () => {
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         MinSchema.validate({array: [-5]});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Array field with values higher than min`, () => {
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         MinSchema.validate({array: [20, 30, 40]});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Date field with value lower than min`, () => {
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         MinSchema.validate({date: new Date(Date.now() - 10000)});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Date field with value higher than min`, () => {
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         MinSchema.validate({date: new Date(Date.now() + 10000)});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Number field with value lower than min`, () => {
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         MinSchema.validate({number: 0});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Number field with value higher than min`, () => {
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         MinSchema.validate({number: 100});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
         });
@@ -884,7 +883,7 @@ describe(`SchemaField`, () => {
             describe(`Not nullable field with null value`, () => {
 
                 it(`should throw an Error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -892,14 +891,14 @@ describe(`SchemaField`, () => {
                                 required: false
                             }
                         }).validate({text: null});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Nullable field with null value`, () => {
 
                 it(`should not throw an Error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -907,7 +906,7 @@ describe(`SchemaField`, () => {
                                 required: false
                             }
                         }).validate({text: null});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
         });
@@ -953,23 +952,23 @@ describe(`SchemaField`, () => {
 
             describe(`Dynamically required field with undefined value`, () => {
                 it(`should throw an error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         PostSchema.validate({status: "published"});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Dynamically not required field with undefined value`, () => {
                 it(`should not throw an error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         PostSchema.validate({status: "draft"});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Required field with undefined value`, () => {
                 it(`should throw an error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -981,13 +980,13 @@ describe(`SchemaField`, () => {
                             address: {},
                             name: "karl"
                         });
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Required field with null value`, () => {
                 it(`should throw an error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -995,13 +994,13 @@ describe(`SchemaField`, () => {
                                 nullable: false
                             }
                         }).validate({text: null});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Required field with empty string`, () => {
                 it(`should throw an error`, () => {
-                    chai.assert.throws(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -1009,13 +1008,13 @@ describe(`SchemaField`, () => {
                                 nullable: false
                             }
                         }).validate({text: ""});
-                    }, Error);
+                    }).toThrow()
                 });
             });
 
             describe(`Not required field with undefined value`, () => {
                 it(`should not throw an error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -1023,13 +1022,13 @@ describe(`SchemaField`, () => {
                                 nullable: true
                             }
                         }).validate({});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Not required field with null value`, () => {
                 it(`should not throw an error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -1037,13 +1036,13 @@ describe(`SchemaField`, () => {
                                 nullable: true
                             }
                         }).validate({text: null});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
 
             describe(`Not required field with string value`, () => {
                 it(`should not throw an error`, () => {
-                    chai.assert.doesNotThrow(() => {
+                    expect(() => {
                         new Schema({
                             text: {
                                 type: String,
@@ -1051,7 +1050,7 @@ describe(`SchemaField`, () => {
                                 nullable: true
                             }
                         }).validate({text: "abc"});
-                    }, Error);
+                    }).not.toThrow()
                 });
             });
         });

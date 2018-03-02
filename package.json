@@ -32,15 +32,13 @@
     "test": "jest",
     "watch": "./node_modules/.bin/gulp watch"
   },
-  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "chai": "^4.1.2",
     "gulp": "^3.9.1",
-    "gulp-babel": "^7.0.0",
+    "gulp-babel": "^7.0.1",
     "gulp-strip-comments": "^2.5.1",
     "gulp-watch": "^4.3.11",
     "jest": "^21.2.1",
