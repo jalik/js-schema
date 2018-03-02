@@ -23,6 +23,7 @@
  */
 
 import utils from "./utils";
+import {extendRecursively} from "@jalik/extend";
 import {Schema} from "./schema";
 import {SchemaError} from "./schema-error";
 
@@ -55,7 +56,7 @@ export class SchemaField {
 
     constructor(fieldName, props) {
         // Default properties
-        props = utils.extend({
+        props = extendRecursively({
             allowed: undefined,
             check: undefined,
             clean: undefined,
@@ -563,7 +564,7 @@ export class SchemaField {
         const props = this.properties;
 
         // Default options
-        options = utils.extend({
+        options = extendRecursively({
             context: {[this.name]: value}
         }, options);
 
