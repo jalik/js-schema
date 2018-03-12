@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import Schema from "../dist/schema";
 import Index from "../dist/index";
+import Schema from "../dist/schema";
 
 describe(`Schema`, () => {
     it(`should be importable from package`, () => {

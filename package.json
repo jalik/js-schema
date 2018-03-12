@@ -2,6 +2,7 @@
   "name": "@jalik/schema",
   "version": "1.0.0",
   "description": "Validates objects using schemas",
+  "main": "dist/index.js",
   "license": "MIT",
   "keywords": [
     "check",
@@ -22,7 +23,6 @@
   "bugs": {
     "url": "https://github.com/jalik/jk-schema/issues"
   },
-  "main": "dist/index.js",
   "scripts": {
     "build": "./node_modules/.bin/gulp build",
     "build:prod": "./node_modules/.bin/gulp prepublish",
