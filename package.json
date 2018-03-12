@@ -1,6 +1,6 @@
 {
-  "name": "jk-schema",
-  "version": "0.5.1",
+  "name": "@jalik/schema",
+  "version": "1.0.0",
   "description": "Validates objects using schemas",
   "license": "MIT",
   "keywords": [
@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "babel-loader": "^7.1.4",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",

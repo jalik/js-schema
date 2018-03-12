@@ -22,10 +22,7 @@
  * SOFTWARE.
  */
 
-import {Schema} from "../dist/schema";
-import {SchemaError} from "../dist/schema-error";
-import {SchemaField} from "../dist/schema-field";
-
+import Schema from "../dist/schema";
 import Index from "../dist/index";
 
 describe(`Schema`, () => {
@@ -33,25 +30,7 @@ describe(`Schema`, () => {
         expect(typeof Schema).toEqual("function");
     });
     it(`should be importable from index`, () => {
-        expect(typeof Index.Schema).toEqual("function");
-    });
-});
-
-describe(`SchemaError`, () => {
-    it(`should be importable from package`, () => {
-        expect(typeof SchemaError).toEqual("function");
-    });
-    it(`should be importable from index`, () => {
-        expect(typeof Index.SchemaError).toEqual("function");
-    });
-});
-
-describe(`SchemaField`, () => {
-    it(`should be importable from package`, () => {
-        expect(typeof SchemaField).toEqual("function");
-    });
-    it(`should be importable from index`, () => {
-        expect(typeof Index.SchemaField).toEqual("function");
+        expect(typeof Index).toEqual("function");
     });
 });
 

@@ -23,9 +23,9 @@
  */
 
 import utils from "./utils";
+import Schema from "./schema";
+import SchemaError from "./schema-error";
 import {extendRecursively} from "@jalik/extend";
-import {Schema} from "./schema";
-import {SchemaError} from "./schema-error";
 
 /**
  * Schema field properties
@@ -859,3 +859,5 @@ export class SchemaField {
         return value;
     }
 }
+
+export default SchemaField;

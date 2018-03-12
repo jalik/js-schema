@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
+import SchemaError from "./schema-error";
+import SchemaField from "./schema-field";
 import {extendRecursively} from "@jalik/extend";
-import {SchemaError} from "./schema-error";
-import {SchemaField} from "./schema-field";
 
 export class Schema {
 
@@ -322,3 +322,5 @@ export class Schema {
         }
     }
 }
+
+export default Schema;

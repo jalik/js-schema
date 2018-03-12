@@ -1,4 +1,4 @@
-# jk-schema
+# Schema
 
 This package allows you to validate complex objects using schemas.
 
@@ -18,7 +18,7 @@ to check if the data is valid or not.
 You can use any of the given properties to define a field.
 
 ```js
-import {Schema} from "jk-schema/dist/schema";
+import Schema from "@jalik/schema";
 
 const ExampleSchema = new Schema({
 
@@ -204,7 +204,7 @@ Almost all properties (excepted `type`) accept a function instead of the usual v
 The given function is called with a single argument representing the current context (data) being validated by the schema.
 
 ```js
-import {Schema} from "jk-schema/dist/schema";
+import Schema from "@jalik/schema";
 
 const isPublishing = function(context) {
     // context refers to the data being validated
@@ -254,8 +254,8 @@ PostSchema.validate({
 To create a schema, use the `Schema` class.
 
 ```js
-import RegEx from "jk-schema/dist/regex";
-import {Schema} from "jk-schema/dist/schema";
+import RegEx from "@jalik/schema/dist/regex";
+import Schema from "@jalik/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -291,7 +291,7 @@ const PersonSchema = new Schema({
 The extend operation creates a new schema based on the current one.
 
 ```js
-import {Schema} from "jk-schema/dist/schema";
+import Schema from "@jalik/schema";
 
 const PersonSchema = new Schema({
     age: {type: Number},
@@ -313,7 +313,7 @@ const ParentSchema = PersonSchema.extend({
 ## Cloning a schema
 
 ```js
-import {Schema} from "jk-schema/dist/schema";
+import Schema from "@jalik/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -331,7 +331,7 @@ The update creates fields that do not exist, but only modifies existing properti
 so you can keep properties that have already been defined.
 
 ```js
-import {Schema} from "jk-schema/dist/schema";
+import Schema from "@jalik/schema";
 
 const PersonSchema = new Schema({
     name: {
@@ -359,8 +359,8 @@ To validate data using a schema, use the method `schema.validate(obj)`.
 If the validation fails, it will throw a `SchemaError` containing information about the error.
 
 ```js
-import RegEx from "jk-schema/dist/regex";
-import {Schema} from "jk-schema/dist/schema";
+import RegEx from "@jalik/schema/dist/regex";
+import Schema from "@jalik/schema";
 
 const AddressSchema = new Schema({
     city: {
@@ -454,6 +454,11 @@ catch (err) {
 ```
 
 ## Changelog
+
+### v1.0.0
+- Exports `Schema` using ES6 default export
+- Exports `SchemaError` using ES6 default export
+- Exports `SchemaField` using ES6 default export
 
 ### v0.5.1
 - Makes `type` field option optional

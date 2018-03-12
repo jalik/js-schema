@@ -22,16 +22,6 @@
  * SOFTWARE.
  */
 
-import regExp from "./regex";
-import utils from "./utils";
-import {Schema} from "./schema";
-import {SchemaError} from "./schema-error";
-import {SchemaField} from "./schema-field";
+import Schema from "./schema";
 
-export default {
-    Utils: utils,
-    RegExp: regExp,
-    Schema: Schema,
-    SchemaError: SchemaError,
-    SchemaField: SchemaField
-}
+export default Schema;

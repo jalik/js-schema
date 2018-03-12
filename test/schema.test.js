@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import {Schema} from "../src/schema";
+import Schema from "../src/schema";
 
 describe(`Schema`, () => {
 

@@ -23,6 +23,7 @@
  */
 
 export default {
+
     /**
      * Basic alphabetic
      */

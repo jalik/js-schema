@@ -31,3 +31,5 @@ export class SchemaError extends Error {
         this.reason = reason;
     }
 }
+
+export default SchemaError;

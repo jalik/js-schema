@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import {SchemaField} from "../src/schema-field";
-import {Schema} from "../src/schema";
+import SchemaField from "../src/schema-field";
+import Schema from "../src/schema";
 
 describe(`SchemaField`, () => {
 
