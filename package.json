@@ -1,8 +1,7 @@
 {
   "name": "@jalik/schema",
   "version": "1.0.0",
-  "description": "Validates objects using schemas",
-  "main": "dist/index.js",
+  "description": "A utility to validate complex objects using schemas ",
   "license": "MIT",
   "keywords": [
     "check",
@@ -12,7 +11,7 @@
     "validation"
   ],
   "author": {
-    "name": "Karl STEIN",
+    "name": "Karl Stein",
     "email": "karl.stein.pro@gmail.com",
     "url": "https://github.com/jalik"
   },
@@ -23,13 +22,14 @@
   "bugs": {
     "url": "https://github.com/jalik/jk-schema/issues"
   },
+  "main": "dist/index.js",
   "scripts": {
     "build": "./node_modules/.bin/gulp build",
     "build:prod": "./node_modules/.bin/gulp prepublish",
     "package": "./node_modules/.bin/webpack && ./node_modules/.bin/webpack -p",
     "prepare": "npm run build:prod && npm test",
     "prepublishOnly": "npm test",
-    "test": "jest",
+    "test": "./node_modules/.bin/jest",
     "watch": "./node_modules/.bin/gulp watch"
   },
   "dependencies": {
