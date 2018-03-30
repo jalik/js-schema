@@ -15,21 +15,21 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
 
-export class SchemaError extends Error {
-
-    constructor(reason, message, context) {
-        super(message);
-        this.context = context;
-        this.name = "SchemaError";
-        this.reason = reason;
-    }
+class SchemaError extends Error {
+  constructor(reason, message, context) {
+    super();
+    this.context = context;
+    this.message = message;
+    this.name = 'SchemaError';
+    this.reason = reason;
+  }
 }
 
 export default SchemaError;

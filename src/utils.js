@@ -15,7 +15,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -23,24 +23,23 @@
  */
 
 export default {
+  /**
+   * Checks if value is in list
+   * @param list
+   * @param value
+   * @return {boolean}
+   */
+  contains(list, value) {
+    let result = false;
 
-    /**
-     * Checks if value is in list
-     * @param list
-     * @param value
-     * @return {boolean}
-     */
-    contains(list, value) {
-        let result = false;
-
-        if (list instanceof Array) {
-            for (let i = 0; i < list.length; i += 1) {
-                if (list[i] === value) {
-                    result = true;
-                    break;
-                }
-            }
+    if (list instanceof Array) {
+      for (let i = 0; i < list.length; i += 1) {
+        if (list[i] === value) {
+          result = true;
+          break;
         }
-        return result;
+      }
     }
+    return result;
+  },
 };

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.1
+- Makes method `SchemaField.computeValue` static
+
 ## v1.0.0
 - Exports `Schema` using ES6 default export
 - Exports `SchemaError` using ES6 default export

@@ -15,312 +15,323 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
 
-import SchemaError from "./schema-error";
-import SchemaField from "./schema-field";
-import {extendRecursively} from "@jalik/extend";
+import { extendRecursively } from '@jalik/extend';
+import SchemaError from './schema-error';
+import SchemaField from './schema-field';
 
-export class Schema {
+class Schema {
+  constructor(fields) {
+    this.fields = {};
 
-    constructor(fields) {
-        this._fields = {};
+    const fieldsKeys = Object.keys(fields);
+    const fieldsLength = fieldsKeys.length;
 
-        // Prepare fields
-        for (let name in fields) {
-            if (fields.hasOwnProperty(name)) {
-                this.addField(name, fields[name]);
-            }
-        }
+    // Prepare fields
+    for (let i = 0; i < fieldsLength; i += 1) {
+      const field = fieldsKeys[i];
+      this.addField(field, fields[field]);
+    }
+  }
+
+  /**
+   * Adds field to the schema
+   * @param name
+   * @param props
+   */
+  addField(name, props) {
+    this.fields[name] = new SchemaField(name, props);
+  }
+
+  /**
+   * Cleans the object based on the schema
+   * @param obj
+   * @param options
+   * @return {*}
+   */
+  clean(obj, options) {
+    // Default options
+    const opt = extendRecursively({
+      removeUnknown: true,
+    }, options);
+
+    const fields = this.getFields();
+    const keys = Object.keys(obj);
+    const keysLength = keys.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const key = keys[i];
+      const field = fields[key];
+
+      if (field) {
+        const value = obj[key];
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = field.clean(value);
+      } else if (opt.removeUnknown) {
+        // Remove unknown field
+        // eslint-disable-next-line no-param-reassign
+        delete obj[key];
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Clones the schema
+   * @return {Schema}
+   */
+  clone() {
+    const fields = this.getFields();
+    const fieldNames = [];
+    const keys = Object.keys(fields);
+    const keysLength = keys.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const fieldName = keys[i];
+      fieldNames.push(fieldName);
+    }
+    return this.pick(fieldNames);
+  }
+
+  /**
+   * Creates a new schema based on current schema
+   * @param fields
+   * @return {Schema}
+   */
+  extend(fields) {
+    const fieldProperties = {};
+    const schemaFields = this.getFields();
+    const keys = Object.keys(schemaFields);
+    const keysLength = keys.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const fieldName = keys[i];
+      fieldProperties[fieldName] = schemaFields[fieldName].getProperties();
+    }
+    return new Schema(extendRecursively({}, fieldProperties, fields));
+  }
+
+  /**
+   * Returns field
+   * @param name
+   * @return {SchemaField}
+   */
+  getField(name) {
+    return this.resolveField(name);
+  }
+
+  /**
+   * Returns fields
+   * @return {Object}
+   */
+  getFields() {
+    return this.fields;
+  }
+
+  /**
+   * Checks if the object is valid
+   * @param obj
+   * @param options
+   * @return {boolean}
+   */
+  isValid(obj, options) {
+    try {
+      this.validate(obj, options);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  /**
+   * Creates a sub schema from selected fields
+   * @param fieldNames
+   * @return {Schema}
+   */
+  pick(fieldNames) {
+    const fields = {};
+    const schemaFields = this.getFields();
+    const keysLength = fieldNames.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const fieldName = fieldNames[i];
+
+      if (typeof schemaFields[fieldName] !== 'undefined') {
+        fields[fieldName] = schemaFields[fieldName].getProperties();
+      }
+    }
+    return new Schema(fields);
+  }
+
+  /**
+   * Remove unknown fields
+   * @param obj
+   * @return {*}
+   */
+  removeUnknownFields(obj) {
+    const fields = this.getFields();
+    const keys = Object.keys(obj);
+    const keysLength = keys.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const key = keys[i];
+      const field = fields[key];
+
+      if (!field) {
+        // eslint-disable-next-line no-param-reassign
+        delete obj[key];
+      }
+    }
+    return obj;
+  }
+
+  /**
+   * Builds an object from a string (ex: [colors][0][code])
+   * @param path (ex: address[country][code])
+   * @return {SchemaField|null}
+   */
+  resolveField(path) {
+    let value;
+    const fields = this.getFields();
+    const index = path.indexOf('[');
+
+    // Remove array indexes
+    const newPath = path.replace(/\[[0-9]+]/g, '');
+
+    // Check missing brackets
+    if (index !== -1) {
+      const opening = newPath.match(/\[/g).length;
+      const closing = newPath.match(/]/g).length;
+
+      if (opening !== closing) {
+        throw new SyntaxError(`Missing opening '[' or closing ']' in '${newPath}'`);
+      }
     }
 
-    /**
-     * Adds field to the schema
-     * @param name
-     * @param props
-     */
-    addField(name, props) {
-        this._fields[name] = new SchemaField(name, props);
+    let fieldName;
+    let subTree = '';
+
+    if (index < 0) {
+      fieldName = newPath;
+    } else if (index > 0) {
+      fieldName = newPath.substring(0, index);
+      subTree = newPath.substring(index);
+    } else if (index === 0) {
+      fieldName = newPath.substring(1, newPath.indexOf(']'));
+      const index2 = newPath.indexOf('[', 1);
+
+      if (index2 !== -1) {
+        subTree = newPath.substring(index2);
+      }
     }
 
-    /**
-     * Cleans the object based on the schema
-     * @param obj
-     * @param options
-     * @return {*}
-     */
-    clean(obj, options) {
-        // Default options
-        options = extendRecursively({
-            removeUnknown: true
-        }, options);
+    if (typeof fields[fieldName] !== 'undefined') {
+      const field = fields[fieldName];
 
-        const fields = this.getFields();
+      // Check sub field
+      if (subTree && subTree.length) {
+        const schema = field.getType();
 
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                const field = fields[key];
-
-                if (field) {
-                    const value = obj[key];
-                    obj[key] = field.clean(value);
-                }
-                // Remove unknown field
-                else if (options.removeUnknown) {
-                    delete obj[key];
-                }
-            }
+        if (schema instanceof Schema) {
+          value = schema.resolveField(subTree);
+        } else if (schema instanceof Array) {
+          if (schema[0] instanceof Schema) {
+            value = schema[0].resolveField(subTree);
+          }
+        } else {
+          throw new TypeError(`Unknown field type for "${fieldName}".`);
         }
-        return obj;
+      } else if (newPath === fieldName || newPath === `[${fieldName}]`) {
+        value = field;
+      }
+    }
+    return value;
+  }
+
+  /**
+   * Updates existing fields
+   * @param fields
+   * @return {Schema}
+   */
+  update(fields) {
+    const schemaFields = this.getFields();
+    const keys = Object.keys(fields);
+    const keysLength = keys.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const fieldName = keys[i];
+      const props = fields[fieldName];
+      const field = schemaFields[fieldName].getProperties() || {};
+      this.addField(fieldName, extendRecursively({}, field, props));
+    }
+    return this;
+  }
+
+  /**
+   * Validates the object
+   * @param obj
+   * @param options
+   */
+  validate(obj, options) {
+    // Default options
+    const opt = extendRecursively({
+      clean: true,
+      ignoreMissing: false,
+      ignoreUnknown: false,
+      removeUnknown: false,
+    }, options);
+
+    const fields = this.getFields();
+
+    // Check if object is null
+    if (typeof obj !== 'object' || obj === null) {
+      throw new SchemaError('object-invalid', 'cannot validate null object');
     }
 
-    /**
-     * Clones the schema
-     * @return {Schema}
-     */
-    clone() {
-        const fields = this.getFields();
-        const fieldNames = [];
+    // Check unknown fields
+    if (!opt.ignoreUnknown) {
+      const keys = Object.keys(obj);
+      const keyLength = keys.length;
 
-        for (let fieldName in fields) {
-            if (fields.hasOwnProperty(fieldName)) {
-                fieldNames.push(fieldName);
-            }
+      for (let i = 0; i < keyLength; i += 1) {
+        const key = keys[i];
+
+        if (!fields[key]) {
+          throw new SchemaError('field-unknown', `The field "${key}" is unknown`, { key });
         }
-        return this.pick(fieldNames);
+      }
     }
 
-    /**
-     * Creates a new schema based on current schema
-     * @param fields
-     * @return {Schema}
-     */
-    extend(fields) {
-        const fieldProperties = {};
-        const schemaFields = this.getFields();
-
-        for (let fieldName in schemaFields) {
-            if (schemaFields.hasOwnProperty(fieldName)) {
-                fieldProperties[fieldName] = schemaFields[fieldName].getProperties();
-            }
-        }
-        return new Schema(extendRecursively({}, fieldProperties, fields));
+    // Remove unknown fields
+    if (opt.removeUnknown) {
+      this.removeUnknownFields(obj);
     }
 
-    /**
-     * Returns field
-     * @param name
-     * @return {SchemaField}
-     */
-    getField(name) {
-        return this.resolveField(name);
+    // Add object as context of validation
+    opt.context = obj;
+
+    const keys = Object.keys(fields);
+    const keyLength = keys.length;
+
+    // Validate fields
+    for (let i = 0; i < keyLength; i += 1) {
+      const key = keys[i];
+      const value = obj[key];
+
+      // Ignore missing fields
+      if (typeof value !== 'undefined' || !opt.ignoreMissing) {
+        // Validate field and return processed value
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = fields[key].validate(value, opt);
+      }
     }
-
-    /**
-     * Returns fields
-     * @return {Object}
-     */
-    getFields() {
-        return this._fields;
-    }
-
-    /**
-     * Checks if the object is valid
-     * @param obj
-     * @param options
-     * @return {boolean}
-     */
-    isValid(obj, options) {
-        try {
-            this.validate(obj, options);
-            return true;
-        } catch (err) {
-            return false;
-        }
-    }
-
-    /**
-     * Creates a sub schema from selected fields
-     * @param fieldNames
-     * @return {Schema}
-     */
-    pick(fieldNames) {
-        let fields = {};
-        const schemaFields = this.getFields();
-
-        for (let i = 0; i < fieldNames.length; i += 1) {
-            const fieldName = fieldNames[i];
-
-            if (schemaFields.hasOwnProperty(fieldName)) {
-                fields[fieldName] = schemaFields[fieldName].getProperties();
-            }
-        }
-        return new Schema(fields);
-    }
-
-    /**
-     * Remove unknown fields
-     * @param obj
-     * @return {*}
-     */
-    removeUnknownFields(obj) {
-        const fields = this.getFields();
-
-        for (let key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                const field = fields[key];
-
-                if (!field) {
-                    delete obj[key];
-                }
-            }
-        }
-        return obj;
-    }
-
-    /**
-     * Builds an object from a string (ex: [colors][0][code])
-     * @param path (ex: address[country][code])
-     * @return {SchemaField|null}
-     */
-    resolveField(path) {
-        const fields = this.getFields();
-        const index = path.indexOf("[");
-
-        // Remove array indexes
-        path = path.replace(/\[[0-9]+]/g, "");
-
-        // Check missing brackets
-        if (index !== -1) {
-            const opening = path.match(/\[/g).length;
-            const closing = path.match(/]/g).length;
-
-            if (opening !== closing) {
-                throw new SyntaxError(`Missing opening '[' or closing ']' in '${path}'`);
-            }
-        }
-
-        let fieldName;
-        let subTree = "";
-
-        if (index < 0) {
-            fieldName = path;
-        }
-        else if (index > 0) {
-            fieldName = path.substring(0, index);
-            subTree = path.substring(index);
-        }
-        else if (index === 0) {
-            fieldName = path.substring(1, path.indexOf("]"));
-            const index = path.indexOf("[", 1);
-
-            if (index !== -1) {
-                subTree = path.substring(index);
-            }
-        }
-
-        if (fields.hasOwnProperty(fieldName)) {
-            const field = fields[fieldName];
-
-            // Check sub field
-            if (subTree && subTree.length) {
-                const schema = field.getType();
-
-                if (schema instanceof Schema) {
-                    return schema.resolveField(subTree);
-                }
-                else if (schema instanceof Array) {
-                    if (schema[0] instanceof Schema) {
-                        return schema[0].resolveField(subTree);
-                    }
-                } else {
-                    throw new TypeError(`Unknown field type for "${fieldName}".`);
-                }
-            }
-            else if (path === fieldName || path === `[${fieldName}]`) {
-                return field;
-            }
-        }
-    }
-
-    /**
-     * Updates existing fields
-     * @param fields
-     * @return {Schema}
-     */
-    update(fields) {
-        const schemaFields = this.getFields();
-
-        for (let fieldName in fields) {
-            if (fields.hasOwnProperty(fieldName)) {
-                const props = fields[fieldName];
-                const field = schemaFields[fieldName].getProperties() || {};
-                this.addField(fieldName, extendRecursively({}, field, props));
-            }
-        }
-        return this;
-    }
-
-    /**
-     * Validates the object
-     * @param obj
-     * @param options
-     */
-    validate(obj, options) {
-        // Default options
-        options = extendRecursively({
-            clean: true,
-            ignoreMissing: false,
-            ignoreUnknown: false,
-            removeUnknown: false
-        }, options);
-
-        const fields = this.getFields();
-
-        // Check if object is null
-        if (typeof obj !== "object" || obj === null) {
-            throw new SchemaError("object-invalid", "cannot validate null object");
-        }
-
-        // Check unknown fields
-        if (!options.ignoreUnknown) {
-            for (let key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    if (!fields[key]) {
-                        throw new SchemaError(`field-unknown`, `The field "${key}" is unknown`, {key});
-                    }
-                }
-            }
-        }
-
-        // Remove unknown fields
-        if (options.removeUnknown) {
-            this.removeUnknownFields(obj);
-        }
-
-        // Add context
-        options.context = obj;
-
-        // Validate fields
-        for (let key in fields) {
-            if (fields.hasOwnProperty(key)) {
-                const value = obj[key];
-
-                // Ignore missing fields
-                if (typeof value === "undefined" && options.ignoreMissing) {
-                    continue;
-                }
-
-                // Validate field and return processed value
-                obj[key] = fields[key].validate(value, options);
-            }
-        }
-    }
+  }
 }
 
 export default Schema;

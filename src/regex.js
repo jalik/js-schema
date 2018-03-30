@@ -15,7 +15,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * FITNESS FOR A PARTICULAR PURPOSE AND NON INFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
@@ -23,34 +23,28 @@
  */
 
 export default {
-
-    /**
-     * Basic alphabetic
-     */
-    Alpha: /^[a-zA-Z]+$/,
-
-    /**
-     * Basic alphanumeric
-     */
-    Alphanumeric: /^[a-zA-Z0-9]+$/,
-
-    /**
-     * Email
-     */
-    Email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
-
-    /**
-     * Extended alphanumeric [_-]
-     */
-    ExtAlphanumeric: /^[a-zA-Z0-9_-]+$/,
-
-    /**
-     * Fully Qualified Domain Name
-     */
-    FQDN: /(?:[a-zA-Z0-9])(?:[a-zA-Z0-9-\.]){1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+|\[(?:(?:(?:[a-fA-F0-9]){1,4})(?::(?:[a-fA-F0-9]){1,4}){7}|::1|::)\]|(?:(?:[0-9]{1,3})(?:\.[0-9]{1,3}){3})/,
-
-    /**
-     * IPv4 network address
-     */
-    IPv4: /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+  /**
+   * Basic alphabetic
+   */
+  Alpha: /^[a-zA-Z]+$/,
+  /**
+   * Basic alphanumeric
+   */
+  Alphanumeric: /^[a-zA-Z0-9]+$/,
+  /**
+   * Email
+   */
+  Email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
+  /**
+   * Extended alphanumeric [_-]
+   */
+  ExtAlphanumeric: /^[a-zA-Z0-9_-]+$/,
+  /**
+   * Fully Qualified Domain Name
+   */
+  FQDN: /(?:[a-zA-Z0-9])(?:[a-zA-Z0-9-.]){1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+|\[(?:(?:(?:[a-fA-F0-9]){1,4})(?::(?:[a-fA-F0-9]){1,4}){7}|::1|::)\]|(?:(?:[0-9]{1,3})(?:\.[0-9]{1,3}){3})/,
+  /**
+   * IPv4 network address
+   */
+  IPv4: /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
 };
