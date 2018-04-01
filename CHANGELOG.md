@@ -2,6 +2,21 @@
 
 ## v1.0.1
 - Makes method `SchemaField.computeValue` static
+- Makes method `SchemaField.throwFieldBadValueError` static
+- Makes method `SchemaField.throwFieldDeniedValueError` static
+- Makes method `SchemaField.throwFieldInstanceError` static
+- Makes method `SchemaField.throwFieldLengthError` static
+- Makes method `SchemaField.throwFieldMaxLengthError` static
+- Makes method `SchemaField.throwFieldMaxValueError` static
+- Makes method `SchemaField.throwFieldMaxWordsError` static
+- Makes method `SchemaField.throwFieldMinLengthError` static
+- Makes method `SchemaField.throwFieldMinValueError` static
+- Makes method `SchemaField.throwFieldMinWordsError` static
+- Makes method `SchemaField.throwFieldMissingError` static
+- Makes method `SchemaField.throwFieldNullError` static
+- Makes method `SchemaField.throwFieldRegExError` static
+- Makes method `SchemaField.throwFieldTypeError` static
+- Makes method `SchemaField.throwFieldValueTypesError` static
 
 ## v1.0.0
 - Exports `Schema` using ES6 default export

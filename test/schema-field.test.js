@@ -847,6 +847,17 @@ describe('SchemaField', () => {
     });
 
     describe('nullable: (Boolean|Function)', () => {
+      it('should equals true by default', () => {
+        expect(() => {
+          new Schema({
+            text: {
+              type: String,
+              required: false,
+            },
+          }).validate({ text: null });
+        }).not.toThrow();
+      });
+
       describe('Not nullable field with null value', () => {
         it('should throw an Error', () => {
           expect(() => {
