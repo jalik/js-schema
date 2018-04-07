@@ -100,6 +100,22 @@ describe('Schema', () => {
       const schema = new Schema({ a: { type: Number } });
       expect(schema.removeUnknownFields({ a: 1, b: 2, c: 3 })).toEqual({ a: 1 });
     });
+    it('should remove nested unknown fields', () => {
+      const schema = new Schema({
+        a: { type: Number },
+        b: { type: new Schema({ b: { type: Number } }) },
+      });
+      expect(schema.removeUnknownFields({
+        a: 1,
+        b: {
+          b: 2, d: 9,
+        },
+        c: 3,
+      })).toEqual({
+        a: 1,
+        b: { b: 2 },
+      });
+    });
   });
 
   describe('resolveField(String)', () => {

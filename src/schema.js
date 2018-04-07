@@ -170,7 +170,7 @@ class Schema {
   }
 
   /**
-   * Remove unknown fields
+   * Returns the object without unknown fields
    * @param obj
    * @return {*}
    */
@@ -186,6 +186,9 @@ class Schema {
       if (!field) {
         // eslint-disable-next-line no-param-reassign
         delete obj[key];
+      } else if (field.getType() instanceof Schema) {
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = field.getType().removeUnknownFields(obj[key]);
       }
     }
     return obj;
@@ -194,6 +197,7 @@ class Schema {
   /**
    * Builds an object from a string (ex: [colors][0][code])
    * @param path (ex: address[country][code])
+   * @throws SyntaxError|TypeError
    * @return {SchemaField|null}
    */
   resolveField(path) {
@@ -277,6 +281,8 @@ class Schema {
    * Validates the object
    * @param obj
    * @param options
+   * @throws Error
+   * @return {*}
    */
   validate(obj, options) {
     // Default options
@@ -294,6 +300,12 @@ class Schema {
       throw new SchemaError('object-invalid', 'cannot validate null object');
     }
 
+    // Remove unknown fields
+    if (opt.removeUnknown) {
+      // eslint-disable-next-line no-param-reassign
+      obj = this.removeUnknownFields(obj);
+    }
+
     // Check unknown fields
     if (!opt.ignoreUnknown) {
       const keys = Object.keys(obj);
@@ -306,11 +318,6 @@ class Schema {
           throw new SchemaError('field-unknown', `The field "${key}" is unknown`, { key });
         }
       }
-    }
-
-    // Remove unknown fields
-    if (opt.removeUnknown) {
-      this.removeUnknownFields(obj);
     }
 
     // Add object as context of validation
@@ -331,6 +338,7 @@ class Schema {
         obj[key] = fields[key].validate(value, opt);
       }
     }
+    return obj;
   }
 }
 

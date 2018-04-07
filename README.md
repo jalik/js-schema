@@ -21,7 +21,6 @@ You can use any of the given properties to define a field.
 import Schema from "@jalik/schema";
 
 const ExampleSchema = new Schema({
-
     // ALLOWED
     allowed: {
         type: String,

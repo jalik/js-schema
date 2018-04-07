@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Fixes `Schema.removeUnknownFields()` to remove unknown nested fields
+
 ## v1.0.1
 - Makes method `SchemaField.computeValue` static
 - Makes method `SchemaField.throwFieldBadValueError` static
