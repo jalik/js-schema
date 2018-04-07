@@ -1,6 +1,11 @@
 # Changelog
 
 ## UNRELEASED
+- Adds option `parse: Boolean` to `Schema.validate(Object)`
+- Adds method `Schema.parse(Object)`
+- Adds method `SchemaField.getParseFunction()`
+- Adds method `SchemaField.parse(String)`
+- Adds option `parse: Function` to `SchemaField` constructor
 - Fixes `Schema.removeUnknownFields()` to remove unknown nested fields
 
 ## v1.0.1
@@ -27,17 +32,15 @@
 - Exports `SchemaField` using ES6 default export
 
 ## v0.5.1
-- Makes `type` field option optional
+- Makes option `type: *` optional for `SchemaField` constructor
 
 ## v0.5.0
 - Adds method `SchemaField.getPrepareFunction()`
-- Adds field option `prepare` to execute a function on the field value before `clean` and `check` functions
-- Adds unit tests for `prepare` field option
+- Adds option `prepare: Function` for `SchemaField` constructor
 
 ## v0.4.2
 - Adds method `SchemaField.getName()`
 - Adds method `SchemaField.throwFieldNullError()`
-- Adds unit tests for `defaultValue` option
 - Uses return value of `SchemaField.validate()` to modify field value
 - Uses empty array `[]` as default value for `Array` fields defined as required and non-null
 - Throws missing field error only when a required field is `undefined` (does not depend on `nullable` option anymore)
@@ -75,17 +78,18 @@
 - Updates documentation
 
 ## v0.3.3
-- Fixes `Unknown property "field.name"` when assigning a name to a field
+- Fixes console warning `Unknown property "field.name"` when assigning a name to a field
 
 ## v0.3.2
-- Allows to pass function for `decimal`, `label`, `nullable` and `required` field properties
+- Allows to use function for `decimal`, `label`, `nullable` and `required` constructor options in
+ `SchemaField`
 - Changes error messages
 
 ## v0.3.1
 - Adds value as first argument of `check(value)` field property
 
 ## v0.3.0
-- Fixes `nullable` and `required` field options
+- Fixes options `nullable` and `required` in `SchemaField` constructor
 
 ## v0.2.9
 - Adds class `SchemaField`
@@ -101,7 +105,6 @@
 
 ## v0.2.7
 - Adds `getField(name)` method
-- Adds unit tests to check `length` field option
 - Uses field name as first parameter of `validateField(name, value)` method instead of field properties
 
 ## v0.2.6

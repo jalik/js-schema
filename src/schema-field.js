@@ -46,6 +46,7 @@ export const fieldProperties = [
   'minWords',
   'name',
   'nullable',
+  'parse',
   'prepare',
   'regEx',
   'required',
@@ -69,6 +70,7 @@ class SchemaField {
       min: undefined,
       minWords: undefined,
       nullable: true,
+      parse: undefined,
       prepare: undefined,
       regEx: undefined,
       required: true,
@@ -173,6 +175,11 @@ class SchemaField {
     // Check if field is nullable
     if (typeof props.nullable !== 'undefined' && !utils.contains(['function', 'boolean'], typeof props.nullable)) {
       throw new TypeError(`${name}.nullable must be a boolean or function`);
+    }
+
+    // Check custom parse function
+    if (typeof props.parse !== 'undefined' && typeof props.parse !== 'function') {
+      throw new TypeError(`${name}.parse must be a function`);
     }
 
     // Check custom prepare function
@@ -349,6 +356,14 @@ class SchemaField {
   }
 
   /**
+   * Returns field's parsing function
+   * @return {Function|*}
+   */
+  getParseFunction() {
+    return this.properties.parse;
+  }
+
+  /**
    * Returns field's prepare function
    * @return {Function|*}
    */
@@ -402,6 +417,37 @@ class SchemaField {
    */
   isRequired() {
     return this.properties.required === true;
+  }
+
+  /**
+   * Parses value
+   * @param value
+   * @return {*}
+   */
+  parse(value) {
+    let newValue = value;
+
+    if (typeof value === 'string') {
+      const type = this.getType();
+
+      switch (type) {
+        case Boolean:
+          newValue = /^(?:1|true)$/i.test(value);
+          break;
+        case Number:
+          newValue = Number(value);
+          break;
+        case String:// do nothing
+          break;
+        default: {
+          if (typeof type === 'function' && !(type instanceof Schema)
+            && typeof this.getParseFunction() === 'function') {
+            newValue = this.getParseFunction()(value);
+          }
+        }
+      }
+    }
+    return newValue;
   }
 
   /**

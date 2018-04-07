@@ -15,9 +15,15 @@ to check if the data is valid or not.
 
 ## Schema field properties
 
-You can use any of the given properties to define a field.
+A schema is defined using fields and attributes,
+it's similar to a `CREATE TABLE (...)` in SQL.
+So you define all fields, with their constraints.
+
+Below is an example of use of all available attributes,
+to show what can be achieved in terms of constraints.
 
 ```js
+import moment from 'moment';
 import Schema from "@jalik/schema";
 
 const ExampleSchema = new Schema({
@@ -134,7 +140,16 @@ const ExampleSchema = new Schema({
         // field can be null
         nullable: true
     },
-    
+
+    // PARSE FUNCTION
+    date: {
+      type: Date,
+      parse(value) {
+        // Returns a Date using moment to parse the string
+        return moment(value, 'YYYY-MM-DD').toDate();
+      }
+    },
+
     // PREPARE FUNCTION
     // execute the prepare function on field value
     // before clean and check execution.

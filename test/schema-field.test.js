@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import moment from 'moment';
 import Schema from '../src/schema';
 import SchemaField from '../src/schema-field';
 
@@ -191,6 +192,37 @@ describe('SchemaField', () => {
       expect(field.isRequired()).toEqual(true);
     });
   });
+
+  describe('parse(Object)', () => {
+    it('should parse boolean fields', () => {
+      const field = new SchemaField('boolean', { type: Boolean });
+      expect(field.parse('false')).toEqual(false);
+      expect(field.parse('true')).toEqual(true);
+      expect(field.parse('FALSE')).toEqual(false);
+      expect(field.parse('TRUE')).toEqual(true);
+      expect(field.parse('0')).toEqual(false);
+      expect(field.parse('1')).toEqual(true);
+    });
+
+    it('should parse number fields', () => {
+      const field = new SchemaField('number', { type: Number });
+      expect(field.parse('01010')).toEqual(1010);
+      expect(field.parse('12345')).toEqual(12345);
+      expect(field.parse('99.99')).toEqual(99.99);
+    });
+
+    it('should parse fields using custom function if present', () => {
+      const field = new SchemaField('date', {
+        type: Date,
+        parse(value) {
+          return moment(value, 'YYYY-MM-DD').toDate();
+        },
+      });
+      expect(field.parse('2018-04-05')).toEqual(new Date(2018, 3, 5));
+    });
+  });
+
+  // todo test SchemaField.validate()
 
   describe('constructor(name, props)', () => {
     describe('allowed: (Array|Function)', () => {

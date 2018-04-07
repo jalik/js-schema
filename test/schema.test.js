@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import moment from 'moment';
 import Schema from '../src/schema';
 
 describe('Schema', () => {
@@ -92,6 +93,40 @@ describe('Schema', () => {
     it('should return all fields', () => {
       const schema = new Schema({ field: { type: Array } });
       expect(schema.getFields() !== null).toEqual(true);
+    });
+  });
+
+  describe('parse(Object)', () => {
+    it('should parse boolean fields', () => {
+      const schema = new Schema({ boolean: { type: Boolean } });
+      expect(schema.parse({ boolean: 'true' })).toEqual({ boolean: true });
+      expect(schema.parse({ boolean: 'FALSE' })).toEqual({ boolean: false });
+      expect(schema.parse({ boolean: 'TRUE' })).toEqual({ boolean: true });
+      expect(schema.parse({ boolean: '0' })).toEqual({ boolean: false });
+      expect(schema.parse({ boolean: '1' })).toEqual({ boolean: true });
+    });
+
+    it('should parse number fields', () => {
+      const schema = new Schema({ number: { type: Number } });
+      expect(schema.parse({ number: '01010' })).toEqual({ number: 1010 });
+      expect(schema.parse({ number: '12345' })).toEqual({ number: 12345 });
+      expect(schema.parse({ number: '99.99' })).toEqual({ number: 99.99 });
+    });
+
+    it('should parse fields using custom function if present', () => {
+      const schema = new Schema({
+        date: {
+          type: Date,
+          parse(value) {
+            return moment(value, 'YYYY-MM-DD').toDate();
+          },
+        },
+      });
+      expect(schema.parse({
+        date: '2018-04-05',
+      })).toEqual({
+        date: new Date(2018, 3, 5),
+      });
     });
   });
 

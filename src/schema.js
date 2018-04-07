@@ -150,6 +150,28 @@ class Schema {
   }
 
   /**
+   * Parses object fields
+   * @param obj
+   * @return {*}
+   */
+  parse(obj) {
+    const fields = this.getFields();
+    const keys = Object.keys(fields);
+    const keysLength = keys.length;
+
+    for (let i = 0; i < keysLength; i += 1) {
+      const key = keys[i];
+      const field = fields[key];
+
+      if (key in obj) {
+        // eslint-disable-next-line no-param-reassign
+        obj[key] = field.parse(obj[key]);
+      }
+    }
+    return obj;
+  }
+
+  /**
    * Creates a sub schema from selected fields
    * @param fieldNames
    * @return {Schema}
@@ -290,6 +312,7 @@ class Schema {
       clean: true,
       ignoreMissing: false,
       ignoreUnknown: false,
+      parse: true,
       removeUnknown: false,
     }, options);
 
@@ -318,6 +341,12 @@ class Schema {
           throw new SchemaError('field-unknown', `The field "${key}" is unknown`, { key });
         }
       }
+    }
+
+    // Parse object fields
+    if (opt.parse) {
+      // eslint-disable-next-line no-param-reassign
+      obj = this.parse(obj);
     }
 
     // Add object as context of validation

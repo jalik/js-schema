@@ -55,6 +55,7 @@
     "gulp-strip-comments": "^2.5.1",
     "gulp-watch": "^4.3.11",
     "jest": "^21.2.1",
+    "moment": "^2.22.0",
     "webpack": "^3.9.1"
   }
 }
