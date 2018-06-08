@@ -91,6 +91,7 @@ class SchemaField {
       const prop = propsKeys[i];
 
       if (!utils.contains(fieldProperties, prop)) {
+        // eslint-disable-next-line no-console
         console.warn(`Unknown schema field property "${name}.${prop}"`);
       }
       // Assign property
