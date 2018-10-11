@@ -33,4 +33,3 @@ describe('Schema', () => {
     expect(typeof Index).toEqual('function');
   });
 });
-

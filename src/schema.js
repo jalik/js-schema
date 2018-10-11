@@ -24,6 +24,7 @@
 
 import { extendRecursively } from '@jalik/extend';
 import SchemaError from './schema-error';
+// eslint-disable-next-line import/no-cycle
 import SchemaField from './schema-field';
 
 class Schema {

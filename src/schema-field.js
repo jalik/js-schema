@@ -23,6 +23,7 @@
  */
 
 import { extendRecursively } from '@jalik/extend';
+// eslint-disable-next-line import/no-cycle
 import Schema from './schema';
 import SchemaError from './schema-error';
 import utils from './utils';
