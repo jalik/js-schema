@@ -1,4 +1,4 @@
-# Schema
+# @jalik/schema
 
 This package allows you to validate complex objects using schemas.
 
