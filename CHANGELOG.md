@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.2
+- Updates dependencies
+- Removes unused devDependencies
+
 ## v1.1.1
 - Updates dependencies
 
