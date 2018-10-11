@@ -8,6 +8,7 @@
   "extends": "airbnb",
   "plugins": [
     "import",
-    "jest"
+    "jest",
+    "jsx-a11y"
   ]
 }
