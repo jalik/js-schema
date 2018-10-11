@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jalik/jk-schema.git"
+    "url": "https://github.com/jalik/js-schema.git"
   },
   "bugs": {
-    "url": "https://github.com/jalik/jk-schema/issues"
+    "url": "https://github.com/jalik/js-schema/issues"
   },
   "main": "dist/index.js",
   "scripts": {
