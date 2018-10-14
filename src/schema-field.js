@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { extendRecursively } from '@jalik/extend';
+import deepExtend from '@jalik/deep-extend';
 // eslint-disable-next-line import/no-cycle
 import Schema from './schema';
 import SchemaError from './schema-error';
@@ -57,7 +57,7 @@ export const fieldProperties = [
 class SchemaField {
   constructor(name, properties) {
     // Default properties
-    const props = extendRecursively({
+    const props = deepExtend({
       allowed: undefined,
       check: undefined,
       clean: undefined,
@@ -617,7 +617,7 @@ class SchemaField {
    */
   validate(value, options) {
     // Default options
-    const opt = extendRecursively({
+    const opt = deepExtend({
       context: { [this.name]: value },
     }, options);
 

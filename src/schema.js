@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import { extendRecursively } from '@jalik/extend';
+import deepExtend from '@jalik/deep-extend';
 import SchemaError from './schema-error';
 // eslint-disable-next-line import/no-cycle
 import SchemaField from './schema-field';
@@ -58,7 +58,7 @@ class Schema {
    */
   clean(obj, options) {
     // Default options
-    const opt = extendRecursively({
+    const opt = deepExtend({
       removeUnknown: true,
     }, options);
 
@@ -115,7 +115,7 @@ class Schema {
       const fieldName = keys[i];
       fieldProperties[fieldName] = schemaFields[fieldName].getProperties();
     }
-    return new Schema(extendRecursively({}, fieldProperties, fields));
+    return new Schema(deepExtend({}, fieldProperties, fields));
   }
 
   /**
@@ -295,7 +295,7 @@ class Schema {
       const fieldName = keys[i];
       const props = fields[fieldName];
       const field = schemaFields[fieldName].getProperties() || {};
-      this.addField(fieldName, extendRecursively({}, field, props));
+      this.addField(fieldName, deepExtend({}, field, props));
     }
     return this;
   }
@@ -309,7 +309,7 @@ class Schema {
    */
   validate(obj, options) {
     // Default options
-    const opt = extendRecursively({
+    const opt = deepExtend({
       clean: true,
       ignoreMissing: false,
       ignoreUnknown: false,

@@ -11,7 +11,7 @@ With a schema you can tell how your object must be defined.
 And when your schema is created you can then validate any data against it
 to check if the data is valid or not.
 
-**This library is well tested with more than 120+ unit tests.**
+**This library is well tested with more than 120 unit tests.**
 
 ## Schema field properties
 
