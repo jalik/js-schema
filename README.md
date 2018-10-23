@@ -27,15 +27,6 @@ import moment from 'moment';
 import Schema from '@jalik/schema';
 
 const ExampleSchema = new Schema({
-    // CLEAN FUNCTION
-    // accept a function that is called on each 
-    clean: {
-        type: String,
-        clean(value) {
-            return value.trim().toLowerCase();
-        }
-    },
-
     // PARSE FUNCTION
     date: {
       type: Date,
@@ -338,6 +329,23 @@ const schema = new Schema({
     type: Number,
     check: value => value % 2 === 0
   }
+});
+```
+
+## Cleaning value with custom function
+
+The value(s) of a field can be cleaned using a custom function with the following option:
+- `clean: Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // Every items in the list will be trimmed and lowercase.
+  list: {
+    type: [String],
+    clean: list => list.map(item => item.trim().toLowerCase())
+  },
 });
 ```
 
