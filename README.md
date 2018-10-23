@@ -69,35 +69,12 @@ const ExampleSchema = new Schema({
         type: String,
         label: "Labelled field"
     },
-
-    // MAX
-    maxDate: {
-        type: Date,
-        max: new Date(Date.now() + 3600*1000)
-    },
-    maxNumber: {
-        type: Number,
-        // max value is 10
-        max: 10
-    },
     
     // MAX WORDS
     maxWords: {
         type: String,
         // there must have 50 words max
         maxWords: 50
-    },
-
-    // MIN
-    minDate: {
-        type: Date,
-        // min value is now minus 10 hours
-        min: new Date(Date.now() - 3600*1000)
-    },
-    minNumber: {
-        type: Number,
-        // min value is 0
-        min: 0
     },
     
     // MIN WORDS
@@ -190,7 +167,7 @@ const ExampleSchema = new Schema({
 });
 ```
 
-## Constraints on length
+## Checking length
 
 The length of an object can be checked with the following options:
 - `length: Number or Function`
@@ -229,6 +206,50 @@ const schema = new Schema({
     minLength: 5,
     maxLength: 10
   }
+});
+```
+
+## Checking maximum value
+
+The maximum value of an object can be checked with the following option:
+- `max: Number or Function`
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The date must be between now and the next hour.
+  date: {
+    type: Date,
+    max: () => new Date(Date.now() + 3600 * 1000)
+  },
+  // The number must be negative.
+  number: {
+    type: Number,
+    max: 0
+  },
+});
+```
+
+## Checking minimum value
+
+The minimum value of an object can be checked with the following option:
+- `min: Number or Function`
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The date must be between now and the previous hour.
+  date: {
+    type: Date,
+    min: () => new Date(Date.now() - 3600 * 1000)
+  },
+  // The number must be positive.
+  number: {
+    type: Number,
+    min: 0
+  },
 });
 ```
 
