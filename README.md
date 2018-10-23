@@ -79,13 +79,6 @@ const ExampleSchema = new Schema({
             return numbers.sort();
         }
     },
-    
-    // REGEX
-    regEx: {
-        type: String,
-         // force time format "00:00"
-        regEx:/^\d{1,2}:\d{1,2}$/
-    },
 
     // TYPE
     boolean: {
@@ -253,6 +246,23 @@ const schema = new Schema({
   required: {
     type: String,
     required: true
+  },
+});
+```
+
+## Checking with regular expression
+
+The value of a `String` can be tested against a regular expression with the following option:
+- `regEx: RegExp or Function`
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The time must be like "HH:mm".
+  time: {
+    type: String,
+    regEx:/^\d{1,2}:\d{1,2}$/
   },
 });
 ```
