@@ -24,14 +24,14 @@ to show what can be achieved in terms of constraints.
 
 ```js
 import moment from 'moment';
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const ExampleSchema = new Schema({
     // ALLOWED
     allowed: {
         type: String,
         // force binary values
-        allowed:["0","1"]
+        allowed:['0','1']
      },
     
     // CHECK FUNCTION
@@ -79,36 +79,71 @@ const ExampleSchema = new Schema({
             return numbers.sort();
         }
     },
+});
+```
 
-    // TYPE
-    boolean: {
-        type: Boolean
-    },
-    booleanArray: {
-        type: [Boolean]
-    },
-    float: {
-        type: Number,
-        decimal: true
-    },
-    // note: we don't have float array yet
-    integer: {
-        type: Number,
-        decimal: false
-    },
-    // note: we don't have integer array yet
-    number: {
-        type: Number
-    },
-    numberArray: {
-        type: [Number]
-    },
-    string: {
-        type: String
-    },
-    stringArray: {
-        type: [String]
-    },
+## Checking field's type
+
+The type of a field can be checked with the following option:
+- `type: Array or Boolean or Number or String or Schema`
+
+```js
+import Schema from '@jalik/schema';
+import UserSchema from './UserSchema';
+
+const schema = new Schema({
+  // The field must be a boolean.
+  checked: {
+    type: Boolean
+  },
+  // The field must be a number.
+  number: {
+    type: Number
+  },
+  // The field must be a string.
+  string: {
+    type: String
+  },
+  // The field must be an array of any values.
+  array: {
+    type: Array
+  },
+  // The field must be an array of booleans.
+  booleanArray: {
+    type: [Boolean]
+  },
+  // The field must be an array of numbers.
+  numberArray: {
+    type: [Number]
+  },
+  // The field must be an array of strings.
+  stringArray: {
+    type: [String]
+  },
+  // The field must match user's schema.
+  user: UserSchema
+});
+```
+
+## Checking floating/integer number
+
+The type of a number can be checked with the following option:
+- `decimal: Boolean or Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // The field must be a float.
+  float: {
+    type: Number,
+    decimal: true
+  },
+  // The field must be an integer.
+  integer: {
+    type: Number,
+    decimal: false
+  },
 });
 ```
 
@@ -122,7 +157,7 @@ The length of a field can be checked with the following options:
 This works on any object with a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will work too.
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   // The array must have exactly two values.
@@ -161,7 +196,7 @@ The maximum/minimum value of an object can be checked with the following options
 - `min: Number or Function`
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   // The date must be between the previous hour and the next hour.
@@ -189,7 +224,7 @@ The `null` value of a field can be checked with the following options:
 - `nullable: Boolean or Function`
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   // The field cannot be null
@@ -212,7 +247,7 @@ The number of words in a `String` can be checked with the following options:
 - `minWords: Number or Function`
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   // The summary must not have more than 50 words.
@@ -234,7 +269,7 @@ The presence of a field can be checked with the following option:
 - `required: Boolean or Function`
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   // The field is optional.
@@ -256,10 +291,10 @@ The value of a `String` can be tested against a regular expression with the foll
 - `regEx: RegExp or Function`
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
-  // The time must be like "HH:mm".
+  // The time must be like 'HH:mm'.
   time: {
     type: String,
     regEx:/^\d{1,2}:\d{1,2}$/
@@ -275,7 +310,7 @@ The default value of a field can be set with the following options:
 Note that the default value will only be used if the value is `null` or `undefined` and the field is declared as `required: true`.
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   // The default value will be the current date at the execution time.
@@ -299,12 +334,12 @@ The label of a field can be set with the following option:
 Note that the label could be used in errors, and if the label is not set, the field's name is used instead.
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const schema = new Schema({
   birthday: {
     type: Date,
-    label: "Date of Birth"
+    label: 'Date of Birth'
   },
 });
 ```
@@ -315,11 +350,11 @@ Almost all properties (excepted `type`) accept a function instead of the usual v
 The given function is called with a single argument representing the current context (data) being validated by the schema.
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const isPublishing = function(context) {
     // context refers to the data being validated
-    return context.status === "published";
+    return context.status === 'published';
 };
 
 const PostSchema = new Schema({
@@ -336,27 +371,27 @@ const PostSchema = new Schema({
     status: {
         type: String,
         required: true,
-        allowed: ["published", "draft"]
+        allowed: ['published', 'draft']
     }
 });
 
 // So this is valid
 PostSchema.validate({
-    title: "Hello World",
-    text: "This is a hello world post !",
-    status: "published"
+    title: 'Hello World',
+    text: 'This is a hello world post !',
+    status: 'published'
 });
 
 // And this is valid too..
 PostSchema.validate({
-    status: "draft"
+    status: 'draft'
 });
 
 // But this is not valid !
 PostSchema.validate({
-    title: "Hello World",
+    title: 'Hello World',
     text: null,
-    status: "published"
+    status: 'published'
 });
 ```
 
@@ -365,8 +400,8 @@ PostSchema.validate({
 To create a schema, use the `Schema` class.
 
 ```js
-import RegEx from "@jalik/schema/dist/regex";
-import Schema from "@jalik/schema";
+import RegEx from '@jalik/schema/dist/regex';
+import Schema from '@jalik/schema';
 
 const PersonSchema = new Schema({
     name: {
@@ -402,7 +437,7 @@ const PersonSchema = new Schema({
 The extend operation creates a new schema based on the current one.
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const PersonSchema = new Schema({
     age: {type: Number},
@@ -424,7 +459,7 @@ const ParentSchema = PersonSchema.extend({
 ## Cloning a schema
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const PersonSchema = new Schema({
     name: {
@@ -442,7 +477,7 @@ The update creates fields that do not exist, but only modifies existing properti
 so you can keep properties that have already been defined.
 
 ```js
-import Schema from "@jalik/schema";
+import Schema from '@jalik/schema';
 
 const PersonSchema = new Schema({
     name: {
@@ -470,8 +505,8 @@ To validate data using a schema, use the method `schema.validate(obj)`.
 If the validation fails, it will throw a `SchemaError` containing information about the error.
 
 ```js
-import RegEx from "@jalik/schema/dist/regex";
-import Schema from "@jalik/schema";
+import RegEx from '@jalik/schema/dist/regex';
+import Schema from '@jalik/schema';
 
 const AddressSchema = new Schema({
     city: {
@@ -482,7 +517,7 @@ const AddressSchema = new Schema({
     country: {
         type: String,
         required: true,
-        allowed: ["PF", "FR", "US", "CA"]
+        allowed: ['PF', 'FR', 'US', 'CA']
     }
 });
 
@@ -543,8 +578,8 @@ try {
         birthday: null,
         email: 'karl@mail.com',
         postalAddress: {
-            city: "Papeete",
-            country: "PF"
+            city: 'Papeete',
+            country: 'PF'
         }
     });
     
@@ -553,8 +588,8 @@ try {
         email: 'karl@mail.com',
         birthday: '1999-12-20',
         postalAddress: {
-            city: "Papeete",
-            country: "PF"
+            city: 'Papeete',
+            country: 'PF'
         }
     });
 }
