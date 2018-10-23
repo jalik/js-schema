@@ -27,15 +27,6 @@ import moment from 'moment';
 import Schema from '@jalik/schema';
 
 const ExampleSchema = new Schema({
-    // PARSE FUNCTION
-    date: {
-      type: Date,
-      parse(value) {
-        // Returns a Date using moment to parse the string
-        return moment(value, 'YYYY-MM-DD').toDate();
-      }
-    },
-
     // PREPARE FUNCTION
     // execute the prepare function on field value
     // before clean and check execution.
@@ -345,6 +336,24 @@ const schema = new Schema({
   list: {
     type: [String],
     clean: list => list.map(item => item.trim().toLowerCase())
+  },
+});
+```
+
+## Parsing value with custom function
+
+The value(s) of a field can be parsed using a custom function with the following option:
+- `parse: Function`
+
+```js
+import Schema from '@jalik/schema';
+import moment from 'moment';
+
+const schema = new Schema({
+  // The date is formatted to ISO8601 using moment.
+  birthday: {
+    type: String,
+    parse: value => moment(value, 'DD-MM-YYYY').format()
   },
 });
 ```
