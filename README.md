@@ -51,11 +51,6 @@ const ExampleSchema = new Schema({
         }
     },
     
-    defaultField: {
-      type: Number,
-      defaultValue: 1337  
-    },
-    
     // DENIED
     denied: {
         type: Number,
@@ -143,7 +138,7 @@ const ExampleSchema = new Schema({
 
 ## Checking length
 
-The length of an object can be checked with the following options:
+The length of a field can be checked with the following options:
 - `length: Number or Function`
 - `minLength: Number or Function`
 - `maxLength: Number or Function`
@@ -214,7 +209,7 @@ const schema = new Schema({
 
 ## Checking nullable value
 
-The `null` value can be checked with the following options:
+The `null` value of a field can be checked with the following options:
 - `nullable: Boolean or Function`
 
 ```js
@@ -254,6 +249,30 @@ const schema = new Schema({
     type: String,
     minWords: 10
   },
+});
+```
+
+## Defining the default value
+
+The default value of a field can be set with the following options:
+- `defaultValue: *`
+
+Note that the default value will only be used if the value is `null` or `undefined` and the field is declared as `required: true`.
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The default value will be the current date at the execution time.
+  createdAt: {
+    type: Date,
+    defaultValue: () => new Date()  
+  },
+  // The default priority is zero.
+  priority: {
+    type: Number,
+    defaultValue: 0
+  }
 });
 ```
 
