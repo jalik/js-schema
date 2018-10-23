@@ -26,14 +26,7 @@ to show what can be achieved in terms of constraints.
 import moment from 'moment';
 import Schema from '@jalik/schema';
 
-const ExampleSchema = new Schema({
-    // ALLOWED
-    allowed: {
-        type: String,
-        // force binary values
-        allowed:['0','1']
-     },
-    
+const ExampleSchema = new Schema({    
     // CHECK FUNCTION
     // accept a function that is called after all native validations
     check: {
@@ -49,13 +42,6 @@ const ExampleSchema = new Schema({
         clean(value) {
             return value.trim().toLowerCase();
         }
-    },
-    
-    // DENIED
-    denied: {
-        type: Number,
-        // will throw an error if these values are present
-        denied: [0, 1]
     },
 
     // PARSE FUNCTION
@@ -79,6 +65,50 @@ const ExampleSchema = new Schema({
             return numbers.sort();
         }
     },
+});
+```
+
+## Checking allowed values
+
+The value(s) of a field can be checked against a whitelist with the following option:
+- `allowed: Boolean or Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // The string must contain only '0' and '1'.
+  binaryString: {
+    type: String,
+    allowed: ['0', '1']
+  },
+  // The array must contain only 0 and 1 as numbers.
+  binaryNumber: {
+    type: [Number],
+    allowed: [0, 1]
+ },
+  // The array must contain only hot colors.
+  hotColors: {
+    type: [String],
+    allowed: ['red', 'yellow', 'orange']
+ },
+});
+```
+
+## Checking denied values
+
+The value(s) of a field can be checked against a blacklist with the following option:
+- `denied: Boolean or Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // The array of strings must not contain 'yes' or 'no'.
+  message: {
+    type: [String],
+    denied: ['yes', 'no']
+  },
 });
 ```
 
