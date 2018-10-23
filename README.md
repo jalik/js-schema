@@ -69,20 +69,6 @@ const ExampleSchema = new Schema({
         type: String,
         label: "Labelled field"
     },
-    
-    // MAX WORDS
-    maxWords: {
-        type: String,
-        // there must have 50 words max
-        maxWords: 50
-    },
-    
-    // MIN WORDS
-    minWords: {
-        type: String,
-        // there must have 5 words minimum
-        minWords: 5
-    },
 
     // NULLABLE
     nullable: {
@@ -209,46 +195,54 @@ const schema = new Schema({
 });
 ```
 
-## Checking maximum value
+## Checking maximum and minimum value
 
-The maximum value of an object can be checked with the following option:
+The maximum/minimum value of an object can be checked with the following options:
 - `max: Number or Function`
-
-```js
-import Schema from "@jalik/schema";
-
-const schema = new Schema({
-  // The date must be between now and the next hour.
-  date: {
-    type: Date,
-    max: () => new Date(Date.now() + 3600 * 1000)
-  },
-  // The number must be negative.
-  number: {
-    type: Number,
-    max: 0
-  },
-});
-```
-
-## Checking minimum value
-
-The minimum value of an object can be checked with the following option:
 - `min: Number or Function`
 
 ```js
 import Schema from "@jalik/schema";
 
 const schema = new Schema({
-  // The date must be between now and the previous hour.
+  // The date must be between the previous hour and the next hour.
   date: {
     type: Date,
-    min: () => new Date(Date.now() - 3600 * 1000)
+    min: () => new Date(Date.now() - 3600 * 1000),
+    max: () => new Date(Date.now() + 3600 * 1000)
+  },
+  // The number must be negative.
+  negativeNumber: {
+    type: Number,
+    max: -1
   },
   // The number must be positive.
-  number: {
+  positiveNumber: {
     type: Number,
     min: 0
+  }
+});
+```
+
+## Checking words count
+
+The number of words in a `String` can be checked with the following options:
+- `maxWords: Number or Function`
+- `minWords: Number or Function`
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The summary must not have more than 50 words.
+  summary: {
+    type: String,
+    maxWords: 50
+  },
+  // The description must have at least ten words.
+  description: {
+    type: String,
+    minWords: 10
   },
 });
 ```
