@@ -26,15 +26,7 @@ to show what can be achieved in terms of constraints.
 import moment from 'moment';
 import Schema from '@jalik/schema';
 
-const ExampleSchema = new Schema({    
-    // CHECK FUNCTION
-    // accept a function that is called after all native validations
-    check: {
-        type: Number,
-        // cehck that number is even
-        check(value) { return value % 2 === 0; }
-    },
-    
+const ExampleSchema = new Schema({
     // CLEAN FUNCTION
     // accept a function that is called on each 
     clean: {
@@ -65,50 +57,6 @@ const ExampleSchema = new Schema({
             return numbers.sort();
         }
     },
-});
-```
-
-## Checking allowed values
-
-The value(s) of a field can be checked against a whitelist with the following option:
-- `allowed: Boolean or Function`
-
-```js
-import Schema from '@jalik/schema';
-
-const schema = new Schema({
-  // The string must contain only '0' and '1'.
-  binaryString: {
-    type: String,
-    allowed: ['0', '1']
-  },
-  // The array must contain only 0 and 1 as numbers.
-  binaryNumber: {
-    type: [Number],
-    allowed: [0, 1]
- },
-  // The array must contain only hot colors.
-  hotColors: {
-    type: [String],
-    allowed: ['red', 'yellow', 'orange']
- },
-});
-```
-
-## Checking denied values
-
-The value(s) of a field can be checked against a blacklist with the following option:
-- `denied: Boolean or Function`
-
-```js
-import Schema from '@jalik/schema';
-
-const schema = new Schema({
-  // The array of strings must not contain 'yes' or 'no'.
-  message: {
-    type: [String],
-    denied: ['yes', 'no']
-  },
 });
 ```
 
@@ -315,6 +263,50 @@ const schema = new Schema({
 });
 ```
 
+## Checking allowed values
+
+The value(s) of a field can be checked against a whitelist with the following option:
+- `allowed: Boolean or Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // The string must contain only '0' and '1'.
+  binaryString: {
+    type: String,
+    allowed: ['0', '1']
+  },
+  // The array must contain only 0 and 1 as numbers.
+  binaryNumber: {
+    type: [Number],
+    allowed: [0, 1]
+ },
+  // The array must contain only hot colors.
+  hotColors: {
+    type: [String],
+    allowed: ['red', 'yellow', 'orange']
+ },
+});
+```
+
+## Checking denied values
+
+The value(s) of a field can be checked against a blacklist with the following option:
+- `denied: Boolean or Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // The array of strings must not contain 'yes' or 'no'.
+  message: {
+    type: [String],
+    denied: ['yes', 'no']
+  },
+});
+```
+
 ## Checking with regular expression
 
 The value of a `String` can be tested against a regular expression with the following option:
@@ -329,6 +321,23 @@ const schema = new Schema({
     type: String,
     regEx:/^\d{1,2}:\d{1,2}$/
   },
+});
+```
+
+## Checking with custom function
+
+The value(s) of a field can be checked using a custom function with the following option:
+- `check: Function`
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+  // The number must be even.
+  evenNumber: {
+    type: Number,
+    check: value => value % 2 === 0
+  }
 });
 ```
 
