@@ -70,18 +70,6 @@ const ExampleSchema = new Schema({
         label: "Labelled field"
     },
 
-    // NULLABLE
-    nullable: {
-        type: String,
-        // field cannot be null
-        nullable: false
-    },
-    notNullable: {
-        type: String,
-        // field can be null
-        nullable: true
-    },
-
     // PARSE FUNCTION
     date: {
       type: Date,
@@ -221,6 +209,28 @@ const schema = new Schema({
     type: Number,
     min: 0
   }
+});
+```
+
+## Checking nullable value
+
+The `null` value can be checked with the following options:
+- `nullable: Boolean or Function`
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The field cannot be null
+  notNullable: {
+    type: String,
+    nullable: false
+  },
+  // The field can be null
+  nullable: {
+    type: String,
+    nullable: true
+  },
 });
 ```
 
