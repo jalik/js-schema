@@ -1,45 +1,186 @@
 # @jalik/schema
 
-This package allows you to validate complex objects using schemas.
+This lib allows you to easily validate complex (nested) objects using schemas.
+You can even create forms or UI components by using a schema, or schema fields.
 
 ## Introduction
 
 A schema is a definition of all characteristics of an object.
-For example, a person has a first name, age, gender and so on...
+For example, a person has a name, age, gender and so on...
 some information are required while others are optional.
-With a schema you can tell how your object must be defined.
-And when your schema is created you can then validate any data against it
-to check if the data is valid or not.
+Schemas are a powerful way to describe structures of data and define constraints to validate objects.
 
-**This library is well tested with more than 120 unit tests.**
+**This library has been unit tested.**
 
-## Schema field properties
+## Creating a schema
 
-A schema is defined using fields and attributes,
-it's similar to a `CREATE TABLE (...)` in SQL.
-So you define all fields, with their constraints.
-
-Below is an example of use of all available attributes,
-to show what can be achieved in terms of constraints.
+Let's start with the following schema that describes a person.
 
 ```js
-import moment from 'moment';
 import Schema from '@jalik/schema';
 
-const ExampleSchema = new Schema({
-    // PREPARE FUNCTION
-    // execute the prepare function on field value
-    // before clean and check execution.
-    // It can be useful in some case
-    // where clean cannot be used to do what you want.
-    orderedNumbers: {
-        type: [Number],
-        prepare(numbers) {
-            // sort numbers
-            return numbers.sort();
-        }
-    },
+const PersonSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    maxLength: 50
+  },
+  age: {
+    type: Number,
+    min: 1,
+    max: 100
+  },
+  gender: {
+    type: String,
+    allowed: ['male', 'female'],
+  },
+  hobbies: {
+    type: [String],
+    allowed: ['coding', 'playing', 'trolling']
+  }
 });
+
+export default PersonSchema;
+```
+
+## Extending a schema (inheritance)
+
+The extend operation allows you to build schema on top of another.
+Let's reuse the `PersonSchema` and create a `ParentSchema`.
+
+```js
+import Schema from '@jalik/schema';
+import PersonSchema from './PersonSchema';
+
+const ParentSchema = PersonSchema.extend({
+  // This fields is an array of persons.
+  children: {
+    type: [PersonSchema]
+  },
+  wifeOrHusband: {
+    type: PersonSchema
+  }
+});
+```
+
+## Cloning a schema
+
+The basic cloning method that returns a clone of the schema (just in case).
+
+```js
+import Schema from '@jalik/schema';
+
+const ProductSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    min: 0.0,
+    required: true
+  }
+});
+
+const ProductASchema = ProductSchema.clone();
+const ProductBSchema = ProductSchema.clone();
+const ProductCSchema = ProductSchema.clone();
+```
+
+## Updating a schema
+
+You may want to update a schema programmatically, so here is how to do it. The update works like `extend()`, but operates on the schema directly instead of creating a new one.
+
+```js
+import Schema from '@jalik/schema';
+import PersonSchema from './PersonSchema';
+
+// This only changes specified fields
+// and creates new one.
+PersonSchema.update({
+  nickName: {
+    type: String,
+    required: false
+  }
+});
+```
+
+## Validating data using a schema
+
+Ok, here is the most important part, the validation.
+You have defined your schemas and now you want to check data, let see how to do that.
+
+```js
+import Schema from '@jalik/schema';
+
+const AddressSchema = new Schema({
+  city: {
+    type: String,
+    maxLength: 100,
+    required: true
+  },
+  country: {
+    type: String,
+    allowed: ['PF', 'FR', 'US', 'CA'],
+    required: true
+  }
+});
+
+const PhoneSchema = new Schema({
+  number: {
+    type: String,
+    required: true,
+    regEx: /^\+[0-9.]+$/
+  },
+  type: {
+    type: String,
+    allowed: ['mobile', 'home', 'business']
+  }
+});
+
+const UserSchema = new Schema({
+  name: {
+    type: String,
+    maxLength: 50,
+    required: true,
+  },
+  email: {
+    type: String,
+    maxLength: 255,
+    // Don't use this regexp, it's just for the example.
+    regEx: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+/,
+    required: true,
+  },
+  phones: {
+    type: [PhoneSchema],
+    minLength: 1,
+    required: false
+  },
+  address: {
+    type: AddressSchema,
+    required: true
+  }
+});
+
+try {
+  // This won't throw any error because data is valid.
+  UserSchema.validate({
+    name: 'karl',
+    email: 'jalik@mail.com',
+    phones:[{
+      number: '+689.87.123.456',
+      type: 'mobile'
+    }],
+    address: {
+      city: 'Punaauia',
+      country: 'PF'
+    }
+  });
+}
+catch (error) {
+  // error is an instance of SchemaError
+  console.error(error.message);
+}
 ```
 
 ## Checking field's type
@@ -306,6 +447,28 @@ const schema = new Schema({
 });
 ```
 
+## Preparing value with custom function
+
+The value(s) of a field can be prepared using a custom function with the following option:
+- `prepare: Function`
+
+Note that the `prepare` function is executed before any checks.
+
+```js
+import Schema from '@jalik/schema';
+
+const schema = new Schema({
+    // Execute the prepare function on field value
+    // before clean and check execution.
+    // It can be useful in some case
+    // where clean cannot be used to do what you want.
+    orderedNumbers: {
+        type: [Number],
+        prepare: numbers => numbers.sort()
+    },
+});
+```
+
 ## Checking with custom function
 
 The value(s) of a field can be checked using a custom function with the following option:
@@ -358,7 +521,7 @@ const schema = new Schema({
 });
 ```
 
-## Defining the default value
+## Setting default value
 
 The default value of a field can be set with the following options:
 - `defaultValue: *`
@@ -382,7 +545,7 @@ const schema = new Schema({
 });
 ```
 
-## Defining the label of a field
+## Setting field's label
 
 The label of a field can be set with the following option:
 - `label: String or Function`
@@ -449,210 +612,6 @@ PostSchema.validate({
     text: null,
     status: 'published'
 });
-```
-
-## Creating a schema
-
-To create a schema, use the `Schema` class.
-
-```js
-import RegEx from '@jalik/schema/dist/regex';
-import Schema from '@jalik/schema';
-
-const PersonSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        length: [3, 30] // min 3, max 30
-    },
-    presentation: {
-        type: String,
-        required: false,
-        length: [0, 500],
-        minWords: 10
-    },
-    email: {
-        type :String,
-        regEx: RegEx.Email,
-        required: false
-    },
-    birthday: {
-        type: Date,
-        required: false,
-        nullable: true,
-        max() {
-            const YEARS_18 = 18*365*24*60*60*1000;
-            return new Date(Date.now() - YEARS_18);
-        }
-    }
-});
-```
-
-## Extending a schema (inheritance)
-
-The extend operation creates a new schema based on the current one.
-
-```js
-import Schema from '@jalik/schema';
-
-const PersonSchema = new Schema({
-    age: {type: Number},
-    name: {
-        type: String,
-        required: true
-    }
-});
-
-const ParentSchema = PersonSchema.extend({
-    children: {
-        type: [PersonSchema],
-        required: true,
-        length: [0] // min = 0, no max
-    }
-});
-```
-
-## Cloning a schema
-
-```js
-import Schema from '@jalik/schema';
-
-const PersonSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    }
-});
-
-const ClonedSchema = PersonSchema.clone();
-```
-
-## Updating a schema
-
-The update creates fields that do not exist, but only modifies existing properties of fields,
-so you can keep properties that have already been defined.
-
-```js
-import Schema from '@jalik/schema';
-
-const PersonSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    }
-});
-
-// This only changes specified fields
-// and creates new one.
-PersonSchema.update({
-    name:{
-        required: false
-    },
-    age:{
-        type: Number,
-        required: false
-    }
-});
-```
-
-## Validating data using a schema
-
-To validate data using a schema, use the method `schema.validate(obj)`.
-If the validation fails, it will throw a `SchemaError` containing information about the error.
-
-```js
-import RegEx from '@jalik/schema/dist/regex';
-import Schema from '@jalik/schema';
-
-const AddressSchema = new Schema({
-    city: {
-        type: String,
-        required: true,
-        length: [1, 30]
-    },
-    country: {
-        type: String,
-        required: true,
-        allowed: ['PF', 'FR', 'US', 'CA']
-    }
-});
-
-const PhoneSchema = new Schema({
-    number: {
-        type: String,
-        required: true,
-        regEx: /^[0-9 -.]+$/
-    }
-});
-
-const PersonSchema = new Schema({
-    birthday: {
-        type: Date,
-        required: false,
-        nullable: true,
-        max: function() {
-            const YEARS_18 = 18*365*24*60*60*1000;
-            return new Date(Date.now() - YEARS_18);
-        }
-    },
-    email: {
-        type :String,
-        regEx: RegEx.Email,
-        required: false
-    },
-    name: {
-        type: String,
-        required: true,
-        length: [3, 30] // min 3, max 30
-    },
-    phones: {
-        type: [PhoneSchema],
-        required: false
-    },
-    postalAddress: {
-        // Inherit from AddressSchema
-        type: AddressSchema.extend({
-            postalCode: {
-                type: Number,
-                required: false
-            }
-        }),
-        required: true
-    },
-    presentation: {
-        type: String,
-        required: false,
-        length: [0, 500],
-        minWords: 10
-    }
-});
-
-try {
-    // This won't throw any error because data is valid
-    PersonSchema.validate({
-        name: 'karl',
-        birthday: null,
-        email: 'karl@mail.com',
-        postalAddress: {
-            city: 'Papeete',
-            country: 'PF'
-        }
-    });
-    
-    // This will throw an error because date is not valid
-    PersonSchema.validate({
-        email: 'karl@mail.com',
-        birthday: '1999-12-20',
-        postalAddress: {
-            city: 'Papeete',
-            country: 'PF'
-        }
-    });
-}
-catch (err) {
-    // err is an instance of SchemaError
-    console.error(err.message);
-}
 ```
 
 ## Changelog

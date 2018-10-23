@@ -1,6 +1,6 @@
 # Changelog
 
-## CURRENT
+## v1.2.0
 - Adds method `SchemaField.getMaxLength()`
 - Adds method `SchemaField.getMinLength()`
 - Adds option `maxLength: Number or Function` to `SchemaField(options)`
