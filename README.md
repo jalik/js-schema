@@ -94,16 +94,6 @@ const ExampleSchema = new Schema({
         regEx:/^\d{1,2}:\d{1,2}$/
     },
 
-    // REQUIRED
-    optional: {
-        type: String,
-        required: false
-    },
-    required: {
-        type: String,
-        required: true
-    },
-
     // TYPE
     boolean: {
         type: Boolean
@@ -248,6 +238,28 @@ const schema = new Schema({
   description: {
     type: String,
     minWords: 10
+  },
+});
+```
+
+## Checking required field
+
+The presence of a field can be checked with the following option:
+- `required: Boolean or Function`
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The field is optional.
+  optional: {
+    type: String,
+    required: false
+  },
+  // The field must be present.
+  required: {
+    type: String,
+    required: true
   },
 });
 ```
