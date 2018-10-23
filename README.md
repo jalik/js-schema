@@ -57,13 +57,6 @@ const ExampleSchema = new Schema({
         // will throw an error if these values are present
         denied: [0, 1]
     },
-    
-    // LABEL
-    // used in errors for a more human description
-    labelled: {
-        type: String,
-        label: "Labelled field"
-    },
 
     // PARSE FUNCTION
     date: {
@@ -285,6 +278,24 @@ const schema = new Schema({
     type: Number,
     defaultValue: 0
   }
+});
+```
+
+## Defining the label of a field
+
+The label of a field can be set with the following option:
+- `label: String or Function`
+
+Note that the label could be used in errors, and if the label is not set, the field's name is used instead.
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  birthday: {
+    type: Date,
+    label: "Date of Birth"
+  },
 });
 ```
 
