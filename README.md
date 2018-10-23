@@ -70,28 +70,6 @@ const ExampleSchema = new Schema({
         label: "Labelled field"
     },
 
-    // LENGTH
-    arrayLength: {
-        type: [Number],
-        // array must contain exactly two values
-        length: 2
-    },
-    fixedLength: {
-        type: String,
-        // length must be exactly 10
-        length: 10
-    },
-    maxLength: {
-        type: String,
-        // max length is 10, min length is 0
-        length: [0, 10]
-    },
-    minLength: {
-        type: String,
-        // min length is 2, there is no max length
-        length: [2]
-    },
-
     // MAX
     maxDate: {
         type: Date,
@@ -209,6 +187,48 @@ const ExampleSchema = new Schema({
     stringArray: {
         type: [String]
     },
+});
+```
+
+## Constraints on length
+
+The length of an object can be checked with the following options:
+- `length: Number or Function`
+- `minLength: Number or Function`
+- `maxLength: Number or Function`
+
+This works on any object with a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will work too.
+
+```js
+import Schema from "@jalik/schema";
+
+const schema = new Schema({
+  // The array must have exactly two values.
+  arrayLength: {
+    type: Array,
+    length: 2
+  },
+  // The string must have exactly ten characters.
+  fixedLength: {
+    type: String,
+    length: 10
+  },
+  // The string must have at least three characters.
+  minLength: {
+    type: String,
+    minLength: 3
+  },
+  // The array must have ten values or less.
+  maxLength: {
+    type: String,
+    maxLength: 10
+  },
+  // The string must have between five and ten characters (inclusive).
+  minMaxLength: {
+    type: String,
+    minLength: 5,
+    maxLength: 10
+  }
 });
 ```
 

@@ -42,8 +42,10 @@ export const fieldProperties = [
   'label',
   'length',
   'max',
+  'maxLength',
   'maxWords',
   'min',
+  'minLength',
   'minWords',
   'name',
   'nullable',
@@ -67,8 +69,10 @@ class SchemaField {
       label: name,
       length: undefined,
       max: undefined,
+      maxLength: undefined,
       maxWords: undefined,
       min: undefined,
+      minLength: undefined,
       minWords: undefined,
       nullable: true,
       parse: undefined,
@@ -159,6 +163,11 @@ class SchemaField {
       throw new TypeError(`${name}.max must be a date, number, string or function`);
     }
 
+    // Check max length
+    if (typeof props.maxLength !== 'undefined' && !utils.contains(['function', 'number'], typeof props.maxLength)) {
+      throw new TypeError(`${name}.maxLength must be a number or function`);
+    }
+
     // Check max words
     if (typeof props.maxWords !== 'undefined' && !utils.contains(['function', 'number'], typeof props.maxWords)) {
       throw new TypeError(`${name}.maxWords must be a number or function`);
@@ -167,6 +176,11 @@ class SchemaField {
     // Check min value
     if (typeof props.min !== 'undefined' && !utils.contains(['function', 'number', 'string'], typeof props.min) && !(props.min instanceof Date)) {
       throw new TypeError(`${name}.min must be a date, number, string or function`);
+    }
+
+    // Check min length
+    if (typeof props.minLength !== 'undefined' && !utils.contains(['function', 'number'], typeof props.minLength)) {
+      throw new TypeError(`${name}.minLength must be a number or function`);
     }
 
     // Check min words
@@ -318,6 +332,14 @@ class SchemaField {
   }
 
   /**
+   * Returns field's maximal length
+   * @return {null|number}
+   */
+  getMaxLength() {
+    return this.properties.maxLength;
+  }
+
+  /**
    * Returns field's maximal value
    * @return {*}
    */
@@ -331,6 +353,14 @@ class SchemaField {
    */
   getMaxWords() {
     return this.properties.maxWords;
+  }
+
+  /**
+   * Returns field's minimal length
+   * @return {null|number}
+   */
+  getMinLength() {
+    return this.properties.minLength;
   }
 
   /**
@@ -457,7 +487,11 @@ class SchemaField {
    * @param field
    */
   static throwFieldBadValueError(field) {
-    throw new SchemaError('field-bad-value', `The field "${field}" contains a bad value.`, { field });
+    throw new SchemaError(
+      'field-bad-value',
+      `The field "${field}" contains a bad value.`,
+      { field },
+    );
   }
 
   /**
@@ -465,7 +499,11 @@ class SchemaField {
    * @param field
    */
   static throwFieldDeniedValueError(field) {
-    throw new SchemaError('field-denied-value', `The field "${field}" contains a denied value.`, { field });
+    throw new SchemaError(
+      'field-denied-value',
+      `The field "${field}" contains a denied value.`,
+      { field },
+    );
   }
 
   /**
@@ -473,7 +511,11 @@ class SchemaField {
    * @param field
    */
   static throwFieldInstanceError(field) {
-    throw new SchemaError('field-instance', `The field "${field}" is not a valid instance.`, { field });
+    throw new SchemaError(
+      'field-instance',
+      `The field "${field}" is not a valid instance.`,
+      { field },
+    );
   }
 
   /**
@@ -482,10 +524,11 @@ class SchemaField {
    * @param length
    */
   static throwFieldLengthError(field, length) {
-    throw new SchemaError('field-length', `Length of field "${field}" must be exactly ${length}.`, {
-      field,
-      length,
-    });
+    throw new SchemaError(
+      'field-length',
+      `Length of field "${field}" must be exactly ${length}.`,
+      { field, length },
+    );
   }
 
   /**
@@ -494,10 +537,11 @@ class SchemaField {
    * @param max
    */
   static throwFieldMaxLengthError(field, max) {
-    throw new SchemaError('field-max-length', `Length of field "${field}" must be at more ${max}.`, {
-      field,
-      max,
-    });
+    throw new SchemaError(
+      'field-max-length',
+      `Length of field "${field}" must be at more ${max}.`,
+      { field, max },
+    );
   }
 
   /**
@@ -506,10 +550,11 @@ class SchemaField {
    * @param max
    */
   static throwFieldMaxValueError(field, max) {
-    throw new SchemaError('field-max-value', `The field "${field}" must be lesser than or equals to ${max}.`, {
-      field,
-      max,
-    });
+    throw new SchemaError(
+      'field-max-value',
+      `The field "${field}" must be lesser than or equals to ${max}.`,
+      { field, max },
+    );
   }
 
   /**
@@ -518,10 +563,11 @@ class SchemaField {
    * @param min
    */
   static throwFieldMaxWordsError(field, min) {
-    throw new SchemaError('field-max-words', `The field "${field}" must contain ${min} words max.`, {
-      field,
-      min,
-    });
+    throw new SchemaError(
+      'field-max-words',
+      `The field "${field}" must contain ${min} words max.`,
+      { field, min },
+    );
   }
 
   /**
@@ -530,10 +576,11 @@ class SchemaField {
    * @param min
    */
   static throwFieldMinLengthError(field, min) {
-    throw new SchemaError('field-min-length', `Length of field "${field}" must be at least ${min}.`, {
-      field,
-      min,
-    });
+    throw new SchemaError(
+      'field-min-length',
+      `Length of field "${field}" must be at least ${min}.`,
+      { field, min },
+    );
   }
 
   /**
@@ -542,10 +589,11 @@ class SchemaField {
    * @param min
    */
   static throwFieldMinValueError(field, min) {
-    throw new SchemaError('field-min-value', `The field "${field}" must be greater than or equals to ${min}.`, {
-      field,
-      min,
-    });
+    throw new SchemaError(
+      'field-min-value',
+      `The field "${field}" must be greater than or equals to ${min}.`,
+      { field, min },
+    );
   }
 
   /**
@@ -554,10 +602,11 @@ class SchemaField {
    * @param min
    */
   static throwFieldMinWordsError(field, min) {
-    throw new SchemaError('field-min-words', `The field "${field}" must contain at least ${min} words.`, {
-      field,
-      min,
-    });
+    throw new SchemaError(
+      'field-min-words',
+      `The field "${field}" must contain at least ${min} words.`,
+      { field, min },
+    );
   }
 
   /**
@@ -565,7 +614,11 @@ class SchemaField {
    * @param field
    */
   static throwFieldMissingError(field) {
-    throw new SchemaError('field-missing', `The field "${field}" is missing.`, { field });
+    throw new SchemaError(
+      'field-missing',
+      `The field "${field}" is missing.`,
+      { field },
+    );
   }
 
   /**
@@ -573,7 +626,11 @@ class SchemaField {
    * @param field
    */
   static throwFieldNullError(field) {
-    throw new SchemaError('field-null', `The field "${field}" cannot be null.`, { field });
+    throw new SchemaError(
+      'field-null',
+      `The field "${field}" cannot be null.`,
+      { field },
+    );
   }
 
   /**
@@ -582,10 +639,11 @@ class SchemaField {
    * @param regEx
    */
   static throwFieldRegExError(field, regEx) {
-    throw new SchemaError('field-regex', `The field "${field}" does not match the pattern ${regEx}.`, {
-      field,
-      regEx,
-    });
+    throw new SchemaError(
+      'field-regex',
+      `The field "${field}" does not match the pattern ${regEx}.`,
+      { field, regEx },
+    );
   }
 
   /**
@@ -594,7 +652,11 @@ class SchemaField {
    * @param type
    */
   static throwFieldTypeError(field, type) {
-    throw new SchemaError('field-type', `The field "${field}" is not of type ${type}.`, { field });
+    throw new SchemaError(
+      'field-type',
+      `The field "${field}" is not of type ${type}.`,
+      { field },
+    );
   }
 
   /**
@@ -603,10 +665,11 @@ class SchemaField {
    * @param type
    */
   static throwFieldValueTypesError(field, type) {
-    throw new SchemaError('field-values-type', `The field "${field}" contains values of incorrect type.`, {
-      field,
-      type,
-    });
+    throw new SchemaError(
+      'field-values-type',
+      `The field "${field}" contains values of incorrect type.`,
+      { field, type },
+    );
   }
 
   /**
@@ -848,16 +911,36 @@ class SchemaField {
       }
     }
 
-    // Check min value
-    if (typeof props.min !== 'undefined') {
-      const min = SchemaField.computeValue(props.min, context);
+    // Check maximal length
+    if (typeof props.maxLength !== 'undefined') {
+      const { length } = newVal;
+      const maxLength = SchemaField.computeValue(props.maxLength, context);
 
-      if (newVal < min) {
-        SchemaField.throwFieldMinValueError(label, min);
+      if (length > maxLength) {
+        SchemaField.throwFieldMinLengthError(label, maxLength);
       }
     }
 
-    // Check min words
+    // Check minimal length
+    if (typeof props.minLength !== 'undefined') {
+      const { length } = newVal;
+      const minLength = SchemaField.computeValue(props.minLength, context);
+
+      if (length < minLength) {
+        SchemaField.throwFieldMinLengthError(label, minLength);
+      }
+    }
+
+    // Check maximal words
+    if (typeof props.maxWords !== 'undefined' && typeof newVal === 'string') {
+      const max = SchemaField.computeValue(props.maxWords, context);
+
+      if (newVal.split(' ').length > max) {
+        SchemaField.throwFieldMaxWordsError(label, max);
+      }
+    }
+
+    // Check minimal words
     if (typeof props.minWords !== 'undefined' && typeof newVal === 'string') {
       const min = SchemaField.computeValue(props.minWords, context);
 
@@ -866,7 +949,7 @@ class SchemaField {
       }
     }
 
-    // Check max value
+    // Check maximal value
     if (typeof props.max !== 'undefined') {
       const max = SchemaField.computeValue(props.max, context);
 
@@ -875,12 +958,12 @@ class SchemaField {
       }
     }
 
-    // Check max words
-    if (typeof props.maxWords !== 'undefined' && typeof newVal === 'string') {
-      const max = SchemaField.computeValue(props.maxWords, context);
+    // Check minimal value
+    if (typeof props.min !== 'undefined') {
+      const min = SchemaField.computeValue(props.min, context);
 
-      if (newVal.split(' ').length > max) {
-        SchemaField.throwFieldMaxWordsError(label, max);
+      if (newVal < min) {
+        SchemaField.throwFieldMinValueError(label, min);
       }
     }
 
