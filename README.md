@@ -49,7 +49,6 @@ The extend operation allows you to build schema on top of another.
 Let's reuse the `PersonSchema` and create a `ParentSchema`.
 
 ```js
-import Schema from '@jalik/schema';
 import PersonSchema from './PersonSchema';
 
 const ParentSchema = PersonSchema.extend({
@@ -61,6 +60,8 @@ const ParentSchema = PersonSchema.extend({
     type: PersonSchema
   }
 });
+
+export default ParentSchema;
 ```
 
 ## Cloning a schema
@@ -82,9 +83,11 @@ const ProductSchema = new Schema({
   }
 });
 
-const ProductASchema = ProductSchema.clone();
-const ProductBSchema = ProductSchema.clone();
-const ProductCSchema = ProductSchema.clone();
+export default ProductSchema;
+
+export const ProductASchema = ProductSchema.clone();
+export const ProductBSchema = ProductSchema.clone();
+export const ProductCSchema = ProductSchema.clone();
 ```
 
 ## Updating a schema
@@ -92,12 +95,12 @@ const ProductCSchema = ProductSchema.clone();
 You may want to update a schema programmatically, so here is how to do it. The update works like `extend()`, but operates on the schema directly instead of creating a new one.
 
 ```js
-import Schema from '@jalik/schema';
 import PersonSchema from './PersonSchema';
 
 // This only changes specified fields
 // and creates new one.
 PersonSchema.update({
+  // Add or update this field
   nickName: {
     type: String,
     required: false
@@ -109,6 +112,7 @@ PersonSchema.update({
 
 Ok, here is the most important part, the validation.
 You have defined your schemas and now you want to check data, let see how to do that.
+The following code shows how to validate a user structure, note how it's easy to do a validation in cascade just by passing a schema in the type of a field (phones, address and friends).
 
 ```js
 import Schema from '@jalik/schema';
@@ -151,6 +155,10 @@ const UserSchema = new Schema({
     regEx: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+/,
     required: true,
   },
+  friends: {
+    type: [UserSchema],
+    required: false,
+  },
   phones: {
     type: [PhoneSchema],
     minLength: 1,
@@ -162,24 +170,67 @@ const UserSchema = new Schema({
   }
 });
 
+// Define a first user with only the minimum required fields.
+const Kevin = {
+  name: 'kevin',
+  email: 'kevin@something.com',
+  address: {
+    city: 'Faa\'a',
+    country: 'PF'
+  },
+}
+
+// Then define a second user that links the first one.
+const Karl = {
+  name: 'karl',
+  email: 'jalik@something.com',
+  phones:[{
+    number: '+689.87.123.456',
+    type: 'mobile'
+  }],
+  address: {
+    city: 'Punaauia',
+    country: 'PF'
+  },
+  friends: [Kevin]
+}
+
 try {
   // This won't throw any error because data is valid.
-  UserSchema.validate({
-    name: 'karl',
-    email: 'jalik@mail.com',
-    phones:[{
-      number: '+689.87.123.456',
-      type: 'mobile'
-    }],
-    address: {
-      city: 'Punaauia',
-      country: 'PF'
-    }
-  });
+  UserSchema.validate(Karl);
 }
 catch (error) {
-  // error is an instance of SchemaError
+  // Error is an instance of SchemaError with an explicit message.
   console.error(error.message);
+}
+```
+
+## Handling validation errors
+
+Currently all errors thrown by the validation are instances of `SchemaError` with a `message` attribute in English. This may not be convenient for translation, however you can for now rely on the `reason` attribute of a `SchemaError` to detect the exact error and do whatever you want (like translating).
+
+**( ! ) Consider this as an experimental feature, as it is planned for a next version to return explicit error objects like `FieldMinLengthError` instead of the generic `SchemaError`.**
+
+The following example shows how to return a translated error, however you would adapt this to fit your current i18n library.
+
+```js
+// Define translations of error messages.
+const errors = {
+  en: { 'field-min-length': 'The field {label} must have at least {min} characters.' },
+  fr: { 'field-min-length': 'Le champ {label} doit comporter au moins {min} caractères.' }
+};
+
+function getSchemaErrorMessage(error, locale) {
+  // Get localized message if available.
+  const message = typeof errors[locale][error.reason] !== 'undefined'
+    ? errors[locale][error.reason]
+    : error.message;
+  
+  // Replace context variables in message.
+  Object.entries(error.context).forEach(([k, v]) => {
+    message.replace(`{${k}}`, v);
+  });
+  return message;
 }
 ```
 
@@ -194,7 +245,7 @@ import UserSchema from './UserSchema';
 
 const schema = new Schema({
   // The field must be a boolean.
-  checked: {
+  checkable: {
     type: Boolean
   },
   // The field must be a number.
@@ -204,6 +255,10 @@ const schema = new Schema({
   // The field must be a string.
   string: {
     type: String
+  },
+  // The field must matches UserSchema.
+  user: {
+    type: UserSchema
   },
   // The field must be an array of any values.
   array: {
@@ -221,8 +276,10 @@ const schema = new Schema({
   stringArray: {
     type: [String]
   },
-  // The field must match user's schema.
-  user: UserSchema
+  // The field must be an array of objects matching UserSchema.
+  users: {
+    type: [UserSchema]
+  },
 });
 ```
 
@@ -246,6 +303,8 @@ const schema = new Schema({
     decimal: false
   },
 });
+
+export default schema;
 ```
 
 ## Checking length
@@ -288,6 +347,8 @@ const schema = new Schema({
     maxLength: 10
   }
 });
+
+export default schema;
 ```
 
 ## Checking maximum and minimum value
@@ -317,6 +378,8 @@ const schema = new Schema({
     min: 0
   }
 });
+
+export default schema;
 ```
 
 ## Checking nullable value
@@ -339,6 +402,8 @@ const schema = new Schema({
     nullable: true
   },
 });
+
+export default schema;
 ```
 
 ## Checking words count
@@ -362,6 +427,8 @@ const schema = new Schema({
     minWords: 10
   },
 });
+
+export default schema;
 ```
 
 ## Checking required field
@@ -384,6 +451,8 @@ const schema = new Schema({
     required: true
   },
 });
+
+export default schema;
 ```
 
 ## Checking allowed values
@@ -411,6 +480,8 @@ const schema = new Schema({
     allowed: ['red', 'yellow', 'orange']
  },
 });
+
+export default schema;
 ```
 
 ## Checking denied values
@@ -428,6 +499,8 @@ const schema = new Schema({
     denied: ['yes', 'no']
   },
 });
+
+export default schema;
 ```
 
 ## Checking with regular expression
@@ -445,6 +518,8 @@ const schema = new Schema({
     regEx:/^\d{1,2}:\d{1,2}$/
   },
 });
+
+export default schema;
 ```
 
 ## Preparing value with custom function
@@ -467,6 +542,8 @@ const schema = new Schema({
         prepare: numbers => numbers.sort()
     },
 });
+
+export default schema;
 ```
 
 ## Checking with custom function
@@ -484,6 +561,8 @@ const schema = new Schema({
     check: value => value % 2 === 0
   }
 });
+
+export default schema;
 ```
 
 ## Cleaning value with custom function
@@ -501,6 +580,8 @@ const schema = new Schema({
     clean: list => list.map(item => item.trim().toLowerCase())
   },
 });
+
+export default schema;
 ```
 
 ## Parsing value with custom function
@@ -519,6 +600,8 @@ const schema = new Schema({
     parse: value => moment(value, 'DD-MM-YYYY').format()
   },
 });
+
+export default schema;
 ```
 
 ## Setting default value
@@ -543,6 +626,8 @@ const schema = new Schema({
     defaultValue: 0
   }
 });
+
+export default schema;
 ```
 
 ## Setting field's label
@@ -561,6 +646,8 @@ const schema = new Schema({
     label: 'Date of Birth'
   },
 });
+
+export default schema;
 ```
 
 ## Dynamic field properties
