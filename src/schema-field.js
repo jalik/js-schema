@@ -917,7 +917,7 @@ class SchemaField {
       const maxLength = SchemaField.computeValue(props.maxLength, context);
 
       if (length > maxLength) {
-        SchemaField.throwFieldMinLengthError(label, maxLength);
+        SchemaField.throwFieldMaxLengthError(label, maxLength);
       }
     }
 

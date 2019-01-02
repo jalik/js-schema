@@ -1,5 +1,8 @@
 # Changelog
 
+## CURRENT
+- Fixes error thrown for `maxLength` constraint 
+
 ## v1.2.0
 - Adds method `SchemaField.getMaxLength()`
 - Adds method `SchemaField.getMinLength()`
