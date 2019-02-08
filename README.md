@@ -10,7 +10,7 @@ For example, a person has a name, age, gender and so on...
 some information are required while others are optional.
 Schemas are a powerful way to describe structures of data and define constraints to validate objects.
 
-**This library has been unit tested.**
+**This library is unit tested.**
 
 ## Creating a schema
 
