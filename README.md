@@ -1,4 +1,10 @@
 # @jalik/schema
+![GitHub package.json version](https://img.shields.io/github/package-json/v/jalik/js-schema.svg)
+[![Build Status](https://travis-ci.com/jalik/js-schema.svg?branch=master)](https://travis-ci.com/jalik/js-schema)
+![GitHub](https://img.shields.io/github/license/jalik/js-schema.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/jalik/js-schema.svg)
+[![GitHub issues](https://img.shields.io/github/issues/jalik/js-schema.svg)](https://github.com/jalik/js-schema/issues)
+![npm](https://img.shields.io/npm/dt/@jalik/schema.svg)
 
 This lib allows you to easily validate complex (nested) objects using schemas.
 You can even create forms or UI components by using a schema, or schema fields.
@@ -9,8 +15,6 @@ A schema is a definition of all characteristics of an object.
 For example, a person has a name, age, gender and so on...
 some information are required while others are optional.
 Schemas are a powerful way to describe structures of data and define constraints to validate objects.
-
-**This library is unit tested.**
 
 ## Creating a schema
 
