@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import moment from 'moment';
 import Schema from '../src/schema';
 
 describe('Schema', () => {
@@ -118,7 +117,8 @@ describe('Schema', () => {
         date: {
           type: Date,
           parse(value) {
-            return moment(value, 'YYYY-MM-DD').toDate();
+            const [year, month, day] = value.split('-');
+            return new Date(year, parseInt(month, 10) - 1, day);
           },
         },
       });

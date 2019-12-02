@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import deepExtend from '@jalik/deep-extend';
 // eslint-disable-next-line import/no-cycle
 import Schema from './schema';
 import SchemaError from './schema-error';
@@ -59,7 +58,7 @@ export const fieldProperties = [
 class SchemaField {
   constructor(name, properties) {
     // Default properties
-    const props = deepExtend({
+    const props = {
       allowed: undefined,
       check: undefined,
       clean: undefined,
@@ -80,7 +79,8 @@ class SchemaField {
       regEx: undefined,
       required: true,
       type: undefined,
-    }, properties);
+      ...properties,
+    };
 
     // Field name
     this.name = name;
@@ -680,9 +680,10 @@ class SchemaField {
    */
   validate(value, options) {
     // Default options
-    const opt = deepExtend({
+    const opt = {
       context: { [this.name]: value },
-    }, options);
+      ...options,
+    };
 
     const { context } = opt;
     const props = this.properties;

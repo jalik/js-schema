@@ -58,9 +58,10 @@ class Schema {
    */
   clean(obj, options) {
     // Default options
-    const opt = deepExtend({
+    const opt = {
       removeUnknown: true,
-    }, options);
+      ...options,
+    };
 
     const fields = this.getFields();
     const keys = Object.keys(obj);
@@ -309,13 +310,14 @@ class Schema {
    */
   validate(obj, options) {
     // Default options
-    const opt = deepExtend({
+    const opt = {
       clean: true,
       ignoreMissing: false,
       ignoreUnknown: false,
       parse: true,
       removeUnknown: false,
-    }, options);
+      ...options,
+    };
 
     const fields = this.getFields();
 

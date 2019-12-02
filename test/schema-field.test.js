@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-import moment from 'moment';
 import Schema from '../src/schema';
 import SchemaField from '../src/schema-field';
 
@@ -236,7 +235,8 @@ describe('parse(Object)', () => {
     const field = new SchemaField('date', {
       type: Date,
       parse(value) {
-        return moment(value, 'YYYY-MM-DD').toDate();
+        const [year, month, day] = value.split('-');
+        return new Date(year, parseInt(month, 10) - 1, day);
       },
     });
     expect(field.parse('2018-04-05')).toEqual(new Date(2018, 3, 5));
