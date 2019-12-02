@@ -334,11 +334,11 @@ class Schema {
 
     // Check unknown fields
     if (!opt.ignoreUnknown) {
-      const keys = Object.keys(obj);
-      const keyLength = keys.length;
+      const objKeys = Object.keys(obj);
+      const objKeysLength = objKeys.length;
 
-      for (let i = 0; i < keyLength; i += 1) {
-        const key = keys[i];
+      for (let i = 0; i < objKeysLength; i += 1) {
+        const key = objKeys[i];
 
         if (!fields[key]) {
           throw new SchemaError('field-unknown', `The field "${key}" is unknown`, { key });
