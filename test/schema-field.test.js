@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2019 Karl STEIN
+ * Copyright (c) 2020 Karl STEIN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ describe('getAllowedValues()', () => {
 
 describe('getCheckFunction()', () => {
   it('should return check function', () => {
-    const checkFunction = value => value > 10 && value < 20;
+    const checkFunction = (value) => value > 10 && value < 20;
     const field = new SchemaField('quantity', {
       type: Number,
       check: checkFunction,
@@ -54,7 +54,7 @@ describe('getCheckFunction()', () => {
 
 describe('getCleanFunction()', () => {
   it('should return clean function', () => {
-    const clean = value => value && value.trim();
+    const clean = (value) => value && value.trim();
     const field = new SchemaField('text', {
       type: String,
       clean,
@@ -174,7 +174,7 @@ describe('getName()', () => {
 
 describe('getPrepareFunction()', () => {
   it('should return prepare function', () => {
-    const prepareFunction = value => String(value);
+    const prepareFunction = (value) => String(value);
     const field = new SchemaField('text', {
       type: String,
       prepare: prepareFunction,
