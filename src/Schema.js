@@ -137,25 +137,26 @@ class Schema {
   }
 
   /**
-   * Parses object fields
-   * @param obj
-   * @return {*}
+   * Returns the cloned object with all fields parsed.
+   * @param {Object} object
+   * @return {Object}
    */
-  parse(obj) {
+  parse(object) {
     const fields = this.getFields();
     const keys = Object.keys(fields);
     const keysLength = keys.length;
+    const clonedObject = deepExtend({}, object);
 
     for (let i = 0; i < keysLength; i += 1) {
       const key = keys[i];
       const field = fields[key];
 
-      if (key in obj) {
+      if (key in clonedObject) {
         // eslint-disable-next-line no-param-reassign
-        obj[key] = field.parse(obj[key]);
+        clonedObject[key] = field.parse(clonedObject[key]);
       }
     }
-    return obj;
+    return clonedObject;
   }
 
   /**
