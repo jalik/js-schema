@@ -23,6 +23,16 @@
  */
 
 /**
+ * Returns the value of the object.
+ * @param {*} value
+ * @param {*} args
+ * @return {*}
+ */
+export function computeValue(value, ...args) {
+  return typeof value === 'function' ? value(...args) : value;
+}
+
+/**
  * Checks if value is in list
  * @param list
  * @param value

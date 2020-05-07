@@ -39,7 +39,10 @@ import FieldRequiredError from './errors/FieldRequiredError';
 import FieldTypeError from './errors/FieldTypeError';
 import FieldValueTypesError from './errors/FieldValueTypesError';
 import Schema from './Schema';
-import { contains } from './utils';
+import {
+  computeValue,
+  contains,
+} from './utils';
 
 /**
  * Schema field properties
@@ -268,20 +271,6 @@ class SchemaField {
   }
 
   /**
-   * Returns the value of the object.
-   * todo move to utils
-   * @param {*} value
-   * @param {Object} context
-   * @return {*}
-   */
-  static computeValue(value, context) {
-    if (typeof value === 'function') {
-      return value(context);
-    }
-    return value;
-  }
-
-  /**
    * Returns allowed values.
    * @return {[]|Function}
    */
@@ -504,9 +493,9 @@ class SchemaField {
 
     const { context } = opt;
     const props = this.properties;
-    const label = SchemaField.computeValue(props.label, context);
-    const isNullable = SchemaField.computeValue(props.nullable, context);
-    const isRequired = SchemaField.computeValue(props.required, context);
+    const label = computeValue(props.label, context);
+    const isNullable = computeValue(props.nullable, context);
+    const isRequired = computeValue(props.required, context);
     const isArray = props.type === Array || props.type instanceof Array;
     let newVal = value;
 
@@ -524,7 +513,7 @@ class SchemaField {
     if (isRequired && (typeof newVal === 'undefined' || newVal === null)) {
       // Compute default value
       if (typeof props.defaultValue !== 'undefined') {
-        newVal = SchemaField.computeValue(props.defaultValue, context);
+        newVal = computeValue(props.defaultValue, context);
       }
       // Use empty array for required non-null array field
       if (isArray && (newVal === null || typeof newVal === 'undefined')) {
@@ -575,7 +564,7 @@ class SchemaField {
           throw new FieldTypeError(label, 'number');
         }
         if (typeof props.decimal !== 'undefined') {
-          const isDecimal = SchemaField.computeValue(props.decimal, context);
+          const isDecimal = computeValue(props.decimal, context);
 
           // Check decimal
           if (typeof isDecimal !== 'undefined') {
@@ -682,7 +671,7 @@ class SchemaField {
 
     // Check allowed values
     if (typeof props.allowed !== 'undefined') {
-      const allowed = SchemaField.computeValue(props.allowed, context);
+      const allowed = computeValue(props.allowed, context);
 
       if (newVal instanceof Array) {
         for (let i = 0; i < newVal.length; i += 1) {
@@ -695,7 +684,7 @@ class SchemaField {
       }
     } else if (typeof props.denied !== 'undefined') {
       // Check denied values
-      const denied = SchemaField.computeValue(props.denied, context);
+      const denied = computeValue(props.denied, context);
 
       if (newVal instanceof Array) {
         for (let i = 0; i < newVal.length; i += 1) {
@@ -710,7 +699,7 @@ class SchemaField {
 
     // Check length if value has the length attribute
     if (typeof props.length !== 'undefined' && typeof newVal.length !== 'undefined') {
-      const length = SchemaField.computeValue(props.length, context);
+      const length = computeValue(props.length, context);
 
       // Ranged length
       if (length instanceof Array) {
@@ -732,7 +721,7 @@ class SchemaField {
     // Check maximal length
     if (typeof props.maxLength !== 'undefined') {
       const { length } = newVal;
-      const maxLength = SchemaField.computeValue(props.maxLength, context);
+      const maxLength = computeValue(props.maxLength, context);
 
       if (length > maxLength) {
         throw new FieldMaxLengthError(label, maxLength);
@@ -742,7 +731,7 @@ class SchemaField {
     // Check minimal length
     if (typeof props.minLength !== 'undefined') {
       const { length } = newVal;
-      const minLength = SchemaField.computeValue(props.minLength, context);
+      const minLength = computeValue(props.minLength, context);
 
       if (length < minLength) {
         throw new FieldMinLengthError(label, minLength);
@@ -751,7 +740,7 @@ class SchemaField {
 
     // Check maximal words
     if (typeof props.maxWords !== 'undefined' && typeof newVal === 'string') {
-      const maxWords = SchemaField.computeValue(props.maxWords, context);
+      const maxWords = computeValue(props.maxWords, context);
 
       if (newVal.split(' ').length > maxWords) {
         throw new FieldMaxWordsError(label, maxWords);
@@ -760,7 +749,7 @@ class SchemaField {
 
     // Check minimal words
     if (typeof props.minWords !== 'undefined' && typeof newVal === 'string') {
-      const minWords = SchemaField.computeValue(props.minWords, context);
+      const minWords = computeValue(props.minWords, context);
 
       if (newVal.split(' ').length < minWords) {
         throw new FieldMinWordsError(label, minWords);
@@ -769,7 +758,7 @@ class SchemaField {
 
     // Check maximal value
     if (typeof props.max !== 'undefined') {
-      const max = SchemaField.computeValue(props.max, context);
+      const max = computeValue(props.max, context);
 
       if (newVal > max) {
         throw new FieldMaxError(label, max);
@@ -778,7 +767,7 @@ class SchemaField {
 
     // Check minimal value
     if (typeof props.min !== 'undefined') {
-      const min = SchemaField.computeValue(props.min, context);
+      const min = computeValue(props.min, context);
 
       if (newVal < min) {
         throw new FieldMinError(label, min);
@@ -787,7 +776,7 @@ class SchemaField {
 
     // Test regular expression
     if (typeof props.regEx !== 'undefined') {
-      const regEx = SchemaField.computeValue(props.regEx, context);
+      const regEx = computeValue(props.regEx, context);
 
       if (!regEx.test(newVal)) {
         throw new FieldRegExError(label, regEx);
