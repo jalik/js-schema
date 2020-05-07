@@ -181,13 +181,15 @@ class Schema {
   }
 
   /**
-   * Returns the object without unknown fields
-   * @param obj
-   * @return {*}
+   * Returns a copy of the object without unknown fields.
+   * todo move logic to clean()
+   * @param {Object} object
+   * @return {Object}
    */
-  removeUnknownFields(obj) {
+  removeUnknownFields(object) {
     const fields = this.getFields();
-    const keys = Object.keys(obj);
+    const clonedObject = deepExtend({}, object);
+    const keys = Object.keys(clonedObject);
     const keysLength = keys.length;
 
     for (let i = 0; i < keysLength; i += 1) {
@@ -196,13 +198,13 @@ class Schema {
 
       if (!field) {
         // eslint-disable-next-line no-param-reassign
-        delete obj[key];
+        delete clonedObject[key];
       } else if (field.getType() instanceof Schema) {
         // eslint-disable-next-line no-param-reassign
-        obj[key] = field.getType().removeUnknownFields(obj[key]);
+        clonedObject[key] = field.getType().removeUnknownFields(clonedObject[key]);
       }
     }
-    return obj;
+    return clonedObject;
   }
 
   /**
