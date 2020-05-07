@@ -291,13 +291,14 @@ class Schema {
   }
 
   /**
-   * Validates the object
-   * @param obj
-   * @param options
-   * @throws Error
-   * @return {*}
+   * Validates an object.
+   * todo do not parse in validate
+   * @param {Object} object
+   * @param {Object} options
+   * @throws {SchemaError|FieldUnknownError}
+   * @return {Object}
    */
-  validate(obj, options) {
+  validate(object, options) {
     // Default options
     const opt = {
       clean: true,
@@ -308,22 +309,23 @@ class Schema {
       ...options,
     };
 
+    let clonedObject = deepExtend({}, object);
     const fields = this.getFields();
 
     // Check if object is null
-    if (typeof obj !== 'object' || obj === null) {
+    if (typeof clonedObject !== 'object' || clonedObject === null) {
       throw new SchemaError('object-invalid', 'cannot validate null object');
     }
 
     // Remove unknown fields
     if (opt.removeUnknown) {
       // eslint-disable-next-line no-param-reassign
-      obj = this.removeUnknownFields(obj);
+      clonedObject = this.removeUnknownFields(clonedObject);
     }
 
     // Check unknown fields
     if (!opt.ignoreUnknown) {
-      const objKeys = Object.keys(obj);
+      const objKeys = Object.keys(clonedObject);
       const objKeysLength = objKeys.length;
 
       for (let i = 0; i < objKeysLength; i += 1) {
@@ -338,11 +340,11 @@ class Schema {
     // Parse object fields
     if (opt.parse) {
       // eslint-disable-next-line no-param-reassign
-      obj = this.parse(obj);
+      clonedObject = this.parse(clonedObject);
     }
 
     // Add object as context of validation
-    opt.context = obj;
+    opt.context = clonedObject;
 
     const keys = Object.keys(fields);
     const keyLength = keys.length;
@@ -350,16 +352,16 @@ class Schema {
     // Validate fields
     for (let i = 0; i < keyLength; i += 1) {
       const key = keys[i];
-      const value = obj[key];
+      const value = clonedObject[key];
 
       // Ignore missing fields
       if (typeof value !== 'undefined' || !opt.ignoreMissing) {
         // Validate field and return processed value
         // eslint-disable-next-line no-param-reassign
-        obj[key] = fields[key].validate(value, opt);
+        clonedObject[key] = fields[key].validate(value, opt);
       }
     }
-    return obj;
+    return clonedObject;
   }
 }
 
