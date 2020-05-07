@@ -22,6 +22,18 @@
  * SOFTWARE.
  */
 
+import FieldAllowedError from '../src/errors/FieldAllowedError';
+import FieldDeniedError from '../src/errors/FieldDeniedError';
+import FieldError from '../src/errors/FieldError';
+import FieldLengthError from '../src/errors/FieldLengthError';
+import FieldMaxError from '../src/errors/FieldMaxError';
+import FieldMaxLengthError from '../src/errors/FieldMaxLengthError';
+import FieldMinError from '../src/errors/FieldMinError';
+import FieldMinLengthError from '../src/errors/FieldMinLengthError';
+import FieldNullableError from '../src/errors/FieldNullableError';
+import FieldRequiredError from '../src/errors/FieldRequiredError';
+import FieldTypeError from '../src/errors/FieldTypeError';
+import FieldValueTypesError from '../src/errors/FieldValueTypesError';
 import Schema from '../src/Schema';
 import SchemaField from '../src/SchemaField';
 
@@ -255,7 +267,7 @@ describe('SchemaField({ maxLength })', () => {
           type: String,
           maxLength: 3,
         }).validate('1234');
-      }).toThrow(Error);
+      }).toThrow(FieldMaxLengthError);
     });
 
     it('should not throw an error if length is equal to max length', () => {
@@ -264,7 +276,7 @@ describe('SchemaField({ maxLength })', () => {
           type: String,
           maxLength: 3,
         }).validate('123');
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
 
     it('should not throw an error if length is below max length', () => {
@@ -273,7 +285,7 @@ describe('SchemaField({ maxLength })', () => {
           type: String,
           maxLength: 3,
         }).validate('12');
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
   });
 
@@ -284,7 +296,7 @@ describe('SchemaField({ maxLength })', () => {
           type: Array,
           maxLength: 3,
         }).validate([1, 2, 3, 4]);
-      }).toThrow(Error);
+      }).toThrow(FieldMaxLengthError);
     });
 
     it('should not throw an error if length is equal to max length', () => {
@@ -293,7 +305,7 @@ describe('SchemaField({ maxLength })', () => {
           type: Array,
           maxLength: 3,
         }).validate([1, 2, 3]);
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
 
     it('should not throw an error if length is below max length', () => {
@@ -302,7 +314,7 @@ describe('SchemaField({ maxLength })', () => {
           type: Array,
           maxLength: 3,
         }).validate([1, 2]);
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
   });
 });
@@ -317,7 +329,7 @@ describe('SchemaField({ minLength })', () => {
           type: String,
           minLength: 3,
         }).validate('12');
-      }).toThrow(Error);
+      }).toThrow(FieldMinLengthError);
     });
 
     it('should not throw an error if length is equal to min length', () => {
@@ -326,7 +338,7 @@ describe('SchemaField({ minLength })', () => {
           type: String,
           minLength: 3,
         }).validate('123');
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
 
     it('should not throw an error if length is above min length', () => {
@@ -335,7 +347,7 @@ describe('SchemaField({ minLength })', () => {
           type: String,
           minLength: 3,
         }).validate('1234');
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
   });
 
@@ -346,7 +358,7 @@ describe('SchemaField({ minLength })', () => {
           type: Array,
           minLength: 3,
         }).validate([1, 2]);
-      }).toThrow(Error);
+      }).toThrow(FieldMinLengthError);
     });
 
     it('should not throw an error if length is equal to min length', () => {
@@ -355,7 +367,7 @@ describe('SchemaField({ minLength })', () => {
           type: Array,
           minLength: 3,
         }).validate([1, 2, 3]);
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
 
     it('should not throw an error if length is above min length', () => {
@@ -364,7 +376,7 @@ describe('SchemaField({ minLength })', () => {
           type: Array,
           minLength: 3,
         }).validate([1, 2, 3, 4]);
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
   });
 });
@@ -385,7 +397,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an Error', () => {
           expect(() => {
             field.validate(['on', 'off']);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -393,7 +405,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(['no', 'yes']);
-          }).toThrow(Error);
+          }).toThrow(FieldAllowedError);
         });
       });
     });
@@ -412,7 +424,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an Error', () => {
           expect(() => {
             field.validate(['on', 'off']);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -420,7 +432,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(['no', 'yes']);
-          }).toThrow(Error);
+          }).toThrow(FieldAllowedError);
         });
       });
     });
@@ -446,7 +458,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an Error', () => {
           expect(() => {
             field.validate([2, 4, 6, 8, 10]);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -454,7 +466,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate([1, 3, 6, 7]);
-          }).toThrow(Error);
+          }).toThrow(FieldError);
         });
       });
     });
@@ -476,7 +488,7 @@ describe('constructor(name, props)', () => {
             field.validate(4);
             field.validate(6);
             field.validate(8);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -484,7 +496,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(1);
-          }).toThrow(Error);
+          }).toThrow(FieldError);
         });
       });
     });
@@ -661,7 +673,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an Error', () => {
           expect(() => {
             field.validate(['maybe', 'sometimes', 'often']);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -669,7 +681,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(['yes', 'maybe']);
-          }).toThrow(Error);
+          }).toThrow(FieldDeniedError);
         });
       });
     });
@@ -688,7 +700,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an Error', () => {
           expect(() => {
             field.validate(['maybe', 'sometimes', 'often']);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -696,7 +708,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(['yes', 'maybe']);
-          }).toThrow(Error);
+          }).toThrow(FieldDeniedError);
         });
       });
     });
@@ -744,7 +756,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             FixedLengthSchema.validate({ array: [1] });
-          }).toThrow();
+          }).toThrow(FieldLengthError);
         });
       });
 
@@ -760,7 +772,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             FixedLengthSchema.validate({ object: { length: 8 } });
-          }).toThrow();
+          }).toThrow(FieldLengthError);
         });
       });
 
@@ -776,7 +788,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             FixedLengthSchema.validate({ string: 'xx' });
-          }).toThrow();
+          }).toThrow(FieldLengthError);
         });
       });
 
@@ -794,7 +806,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             LimitedLengthSchema.validate({ array: [1] });
-          }).toThrow();
+          }).toThrow(FieldMinLengthError);
         });
       });
 
@@ -810,7 +822,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             LimitedLengthSchema.validate({ object: { length: 0 } });
-          }).toThrow();
+          }).toThrow(FieldMinLengthError);
         });
       });
       describe('Object field with length > min length', () => {
@@ -825,7 +837,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             LimitedLengthSchema.validate({ string: 'shor' });
-          }).toThrow();
+          }).toThrow(FieldMinLengthError);
         });
       });
 
@@ -843,7 +855,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             LimitedLengthSchema.validate({ array: [1, 2, 3, 4, 5, 6, 7, 8] });
-          }).toThrow();
+          }).toThrow(FieldMaxLengthError);
         });
       });
 
@@ -859,7 +871,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             LimitedLengthSchema.validate({ object: { length: 99 } });
-          }).toThrow();
+          }).toThrow(FieldMaxLengthError);
         });
       });
 
@@ -875,7 +887,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             LimitedLengthSchema.validate({ string: 'loooooooooong' });
-          }).toThrow();
+          }).toThrow(FieldMaxLengthError);
         });
       });
 
@@ -912,7 +924,7 @@ describe('constructor(name, props)', () => {
       it('should throw an Error', () => {
         expect(() => {
           MaxSchema.validate({ array: [99] });
-        }).toThrow();
+        }).toThrow(FieldMaxError);
       });
     });
 
@@ -928,7 +940,7 @@ describe('constructor(name, props)', () => {
       it('should throw an Error', () => {
         expect(() => {
           MaxSchema.validate({ date: new Date(Date.now() + 10000) });
-        }).toThrow();
+        }).toThrow(FieldMaxError);
       });
     });
 
@@ -944,7 +956,7 @@ describe('constructor(name, props)', () => {
       it('should throw an Error', () => {
         expect(() => {
           MaxSchema.validate({ number: 99 });
-        }).toThrow();
+        }).toThrow(FieldMaxError);
       });
     });
 
@@ -980,7 +992,7 @@ describe('constructor(name, props)', () => {
       it('should throw an Error', () => {
         expect(() => {
           MinSchema.validate({ array: [-5] });
-        }).toThrow();
+        }).toThrow(FieldMinError);
       });
     });
 
@@ -996,7 +1008,7 @@ describe('constructor(name, props)', () => {
       it('should throw an Error', () => {
         expect(() => {
           MinSchema.validate({ date: new Date(Date.now() - 10000) });
-        }).toThrow();
+        }).toThrow(FieldMinError);
       });
     });
 
@@ -1012,7 +1024,7 @@ describe('constructor(name, props)', () => {
       it('should throw an Error', () => {
         expect(() => {
           MinSchema.validate({ number: 0 });
-        }).toThrow();
+        }).toThrow(FieldMinError);
       });
     });
 
@@ -1043,11 +1055,11 @@ describe('constructor(name, props)', () => {
           new Schema({
             text: {
               type: String,
+              required: true,
               nullable: false,
-              required: false,
             },
           }).validate({ text: null });
-        }).toThrow();
+        }).toThrow(FieldNullableError);
       });
     });
 
@@ -1108,7 +1120,7 @@ describe('constructor(name, props)', () => {
       it('should throw an error', () => {
         expect(() => {
           PostSchema.validate({ status: 'published' });
-        }).toThrow();
+        }).toThrow(FieldRequiredError);
       });
     });
 
@@ -1134,21 +1146,21 @@ describe('constructor(name, props)', () => {
             address: {},
             name: 'karl',
           });
-        }).toThrow();
+        }).toThrow(FieldRequiredError);
       });
     });
 
     describe('Required field with null value', () => {
-      it('should throw an error', () => {
+      it('should not throw an error', () => {
         expect(() => {
           new Schema({
             text: {
               type: String,
               required: true,
-              nullable: false,
+              nullable: true,
             },
           }).validate({ text: null });
-        }).toThrow();
+        }).not.toThrow();
       });
     });
 
@@ -1159,10 +1171,10 @@ describe('constructor(name, props)', () => {
             text: {
               type: String,
               required: true,
-              nullable: false,
+              nullable: true,
             },
           }).validate({ text: '' });
-        }).toThrow();
+        }).not.toThrow();
       });
     });
 
@@ -1220,7 +1232,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate([true, false, false]);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1228,7 +1240,7 @@ describe('constructor(name, props)', () => {
         it('should throw an error', () => {
           expect(() => {
             field.validate([true, 100, 'false']);
-          }).toThrow(Error);
+          }).toThrow(FieldValueTypesError);
         });
       });
     });
@@ -1243,7 +1255,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate([0, 1, 2]);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1251,7 +1263,7 @@ describe('constructor(name, props)', () => {
         it('should throw an error', () => {
           expect(() => {
             field.validate([true, 100, 'false']);
-          }).toThrow(Error);
+          }).toThrow(FieldValueTypesError);
         });
       });
     });
@@ -1266,7 +1278,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate(['a', 'b', 'c']);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1274,7 +1286,7 @@ describe('constructor(name, props)', () => {
         it('should throw an error', () => {
           expect(() => {
             field.validate([true, 100, 'false']);
-          }).toThrow(Error);
+          }).toThrow(FieldValueTypesError);
         });
       });
     });
@@ -1289,7 +1301,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate(true);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1297,7 +1309,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(13.37);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1305,7 +1317,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(100);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1313,7 +1325,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate('hello');
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
     });
@@ -1329,7 +1341,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate(13.37);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1337,7 +1349,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate(100);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1345,7 +1357,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(true);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1353,7 +1365,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate('20');
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
     });
@@ -1369,7 +1381,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate(100);
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1377,7 +1389,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(13.37);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1385,7 +1397,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(true);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1393,7 +1405,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate('20');
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
     });
@@ -1408,7 +1420,7 @@ describe('constructor(name, props)', () => {
         it('should not throw an error', () => {
           expect(() => {
             field.validate('hello');
-          }).not.toThrow(Error);
+          }).not.toThrow();
         });
       });
 
@@ -1416,7 +1428,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(true);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1424,7 +1436,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(13.37);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
 
@@ -1432,7 +1444,7 @@ describe('constructor(name, props)', () => {
         it('should throw an Error', () => {
           expect(() => {
             field.validate(20);
-          }).toThrow(Error);
+          }).toThrow(FieldTypeError);
         });
       });
     });

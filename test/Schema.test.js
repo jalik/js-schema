@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+import FieldRequiredError from '../src/errors/FieldRequiredError';
+import FieldUnknownError from '../src/errors/FieldUnknownError';
 import Schema from '../src/Schema';
 
 describe('Schema', () => {
@@ -81,7 +83,7 @@ describe('Schema', () => {
     it('should return field properties', () => {
       const fields = { text: { type: String } };
       const schema = new Schema(fields);
-      expect(() => (schema.getField('text').type)).not.toThrow(Error);
+      expect(() => (schema.getField('text').type)).not.toThrow();
     });
   });
 
@@ -164,7 +166,7 @@ describe('Schema', () => {
       expect(() => {
         ParentSchema.resolveField('child[phones][number]').getType();
         ParentSchema.resolveField('child[phones][0][number]').getType();
-      }).not.toThrow(Error);
+      }).not.toThrow();
     });
   });
 
@@ -201,7 +203,7 @@ describe('Schema', () => {
           TestSchema.validate({ string: 'abc' }, {
             ignoreMissing: true,
           });
-        }).not.toThrow(Error);
+        }).not.toThrow();
       });
       it('should not use default value for undefined fields', () => {
         const obj = { number: 1 };
@@ -218,7 +220,7 @@ describe('Schema', () => {
           TestSchema.validate({ string: 'abc' }, {
             ignoreMissing: false,
           });
-        }).toThrow(Error);
+        }).toThrow(FieldRequiredError);
       });
       it('should use default value for undefined fields', () => {
         const obj = { number: 1, string: 'a' };
@@ -242,7 +244,7 @@ describe('Schema', () => {
           StringSchema.validate({ string: 'abc', xxx: null }, {
             ignoreUnknown: true,
           });
-        }).not.toThrow(Error);
+        }).not.toThrow();
       });
     });
 
@@ -252,7 +254,7 @@ describe('Schema', () => {
           StringSchema.validate({ string: 'abc', xxx: null }, {
             ignoreUnknown: false,
           });
-        }).toThrow(Error);
+        }).toThrow(FieldUnknownError);
       });
     });
 

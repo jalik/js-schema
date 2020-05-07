@@ -22,8 +22,23 @@
  * SOFTWARE.
  */
 
+import FieldAllowedError from './errors/FieldAllowedError';
+import FieldDeniedError from './errors/FieldDeniedError';
+import FieldError from './errors/FieldError';
+import FieldInstanceError from './errors/FieldInstanceError';
+import FieldLengthError from './errors/FieldLengthError';
+import FieldMaxError from './errors/FieldMaxError';
+import FieldMaxLengthError from './errors/FieldMaxLengthError';
+import FieldMaxWordsError from './errors/FieldMaxWordsError';
+import FieldMinError from './errors/FieldMinError';
+import FieldMinLengthError from './errors/FieldMinLengthError';
+import FieldMinWordsError from './errors/FieldMinWordsError';
+import FieldNullableError from './errors/FieldNullableError';
+import FieldRegExError from './errors/FieldRegExError';
+import FieldRequiredError from './errors/FieldRequiredError';
+import FieldTypeError from './errors/FieldTypeError';
+import FieldValueTypesError from './errors/FieldValueTypesError';
 import Schema from './Schema';
-import SchemaError from './SchemaError';
 import { contains } from './utils';
 
 /**
@@ -263,6 +278,7 @@ class SchemaField {
 
   /**
    * Returns the value of the object
+   * todo move to utils
    * @param value
    * @param context
    * @return {*}
@@ -482,196 +498,6 @@ class SchemaField {
   }
 
   /**
-   *
-   * @param field
-   */
-  static throwFieldBadValueError(field) {
-    throw new SchemaError(
-      'field-bad-value',
-      `The field "${field}" contains a bad value.`,
-      { field },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   */
-  static throwFieldDeniedValueError(field) {
-    throw new SchemaError(
-      'field-denied-value',
-      `The field "${field}" contains a denied value.`,
-      { field },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   */
-  static throwFieldInstanceError(field) {
-    throw new SchemaError(
-      'field-instance',
-      `The field "${field}" is not a valid instance.`,
-      { field },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param length
-   */
-  static throwFieldLengthError(field, length) {
-    throw new SchemaError(
-      'field-length',
-      `Length of field "${field}" must be exactly ${length}.`,
-      { field, length },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param max
-   */
-  static throwFieldMaxLengthError(field, max) {
-    throw new SchemaError(
-      'field-max-length',
-      `Length of field "${field}" must be at more ${max}.`,
-      { field, max },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param max
-   */
-  static throwFieldMaxValueError(field, max) {
-    throw new SchemaError(
-      'field-max-value',
-      `The field "${field}" must be lesser than or equals to ${max}.`,
-      { field, max },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param min
-   */
-  static throwFieldMaxWordsError(field, min) {
-    throw new SchemaError(
-      'field-max-words',
-      `The field "${field}" must contain ${min} words max.`,
-      { field, min },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param min
-   */
-  static throwFieldMinLengthError(field, min) {
-    throw new SchemaError(
-      'field-min-length',
-      `Length of field "${field}" must be at least ${min}.`,
-      { field, min },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param min
-   */
-  static throwFieldMinValueError(field, min) {
-    throw new SchemaError(
-      'field-min-value',
-      `The field "${field}" must be greater than or equals to ${min}.`,
-      { field, min },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param min
-   */
-  static throwFieldMinWordsError(field, min) {
-    throw new SchemaError(
-      'field-min-words',
-      `The field "${field}" must contain at least ${min} words.`,
-      { field, min },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   */
-  static throwFieldMissingError(field) {
-    throw new SchemaError(
-      'field-missing',
-      `The field "${field}" is missing.`,
-      { field },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   */
-  static throwFieldNullError(field) {
-    throw new SchemaError(
-      'field-null',
-      `The field "${field}" cannot be null.`,
-      { field },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param regEx
-   */
-  static throwFieldRegExError(field, regEx) {
-    throw new SchemaError(
-      'field-regex',
-      `The field "${field}" does not match the pattern ${regEx}.`,
-      { field, regEx },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param type
-   */
-  static throwFieldTypeError(field, type) {
-    throw new SchemaError(
-      'field-type',
-      `The field "${field}" is not of type ${type}.`,
-      { field },
-    );
-  }
-
-  /**
-   *
-   * @param field
-   * @param type
-   */
-  static throwFieldValueTypesError(field, type) {
-    throw new SchemaError(
-      'field-values-type',
-      `The field "${field}" contains values of incorrect type.`,
-      { field, type },
-    );
-  }
-
-  /**
    * Validates the field
    * @param value
    * @param options
@@ -716,12 +542,12 @@ class SchemaField {
 
     // Check null value
     if (!isNullable && newVal === null) {
-      SchemaField.throwFieldNullError(label);
+      throw new FieldNullableError(label);
     }
 
     // Check if value is missing
     if (isRequired && typeof newVal === 'undefined') {
-      SchemaField.throwFieldMissingError(label);
+      throw new FieldRequiredError(label);
     }
 
     // Ignore empty value
@@ -733,7 +559,7 @@ class SchemaField {
     switch (props.type) {
       case Array:
         if (!(newVal instanceof Array)) {
-          SchemaField.throwFieldTypeError(label, 'array');
+          throw new FieldTypeError(label, 'array');
         } else if (newVal.length === 0 && !isRequired) {
           // Ignore empty array if field is not required
           return newVal;
@@ -742,19 +568,19 @@ class SchemaField {
 
       case Boolean:
         if (typeof newVal !== 'boolean') {
-          SchemaField.throwFieldTypeError(label, 'boolean');
+          throw new FieldTypeError(label, 'boolean');
         }
         break;
 
       case Function:
         if (typeof newVal !== 'function') {
-          SchemaField.throwFieldTypeError(label, 'function');
+          throw new FieldTypeError(label, 'function');
         }
         break;
 
       case Number:
         if (typeof newVal !== 'number' || Number.isNaN(newVal)) {
-          SchemaField.throwFieldTypeError(label, 'number');
+          throw new FieldTypeError(label, 'number');
         }
         if (typeof props.decimal !== 'undefined') {
           const isDecimal = SchemaField.computeValue(props.decimal, context);
@@ -762,10 +588,10 @@ class SchemaField {
           // Check decimal
           if (typeof isDecimal !== 'undefined') {
             if (isDecimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(newVal))) {
-              SchemaField.throwFieldTypeError(label, 'float');
+              throw new FieldTypeError(label, 'float');
             }
             if (isDecimal === false && !/^[0-9]+$/.test(String(newVal))) {
-              SchemaField.throwFieldTypeError(label, 'integer');
+              throw new FieldTypeError(label, 'integer');
             }
           }
         }
@@ -773,13 +599,13 @@ class SchemaField {
 
       case Object:
         if (typeof newVal !== 'object') {
-          SchemaField.throwFieldTypeError(label, 'object');
+          throw new FieldTypeError(label, 'object');
         }
         break;
 
       case String:
         if (typeof newVal !== 'string') {
-          SchemaField.throwFieldTypeError(label, 'string');
+          throw new FieldTypeError(label, 'string');
         }
         break;
 
@@ -789,7 +615,7 @@ class SchemaField {
         } else if (props.type instanceof Array) {
           // Check that value is an array
           if (!(newVal instanceof Array)) {
-            SchemaField.throwFieldTypeError(label, 'array');
+            throw new FieldTypeError(label, 'array');
           } else if (newVal.length === 0 && !isRequired) {
             // Ignore empty array if field is not required
             return newVal;
@@ -807,7 +633,7 @@ class SchemaField {
               case Boolean:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'boolean') {
-                    SchemaField.throwFieldValueTypesError(label, 'boolean');
+                    throw new FieldValueTypesError(label, 'boolean');
                   }
                 }
                 break;
@@ -815,7 +641,7 @@ class SchemaField {
               case Function:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'function') {
-                    SchemaField.throwFieldValueTypesError(label, 'function');
+                    throw new FieldValueTypesError(label, 'function');
                   }
                 }
                 break;
@@ -823,7 +649,7 @@ class SchemaField {
               case Number:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'number') {
-                    SchemaField.throwFieldValueTypesError(label, 'number');
+                    throw new FieldValueTypesError(label, 'number');
                   }
                 }
                 break;
@@ -831,7 +657,7 @@ class SchemaField {
               case Object:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'object') {
-                    SchemaField.throwFieldValueTypesError(label, 'object');
+                    throw new FieldValueTypesError(label, 'object');
                   }
                 }
                 break;
@@ -839,7 +665,7 @@ class SchemaField {
               case String:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'string') {
-                    SchemaField.throwFieldValueTypesError(label, 'string');
+                    throw new FieldValueTypesError(label, 'string');
                   }
                 }
                 break;
@@ -847,7 +673,7 @@ class SchemaField {
               default:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (!(newVal[i] instanceof arrayType)) {
-                    SchemaField.throwFieldValueTypesError(label, arrayType);
+                    throw new FieldValueTypesError(label, arrayType);
                   }
                 }
             }
@@ -855,7 +681,7 @@ class SchemaField {
         } else if (typeof props.type === 'function') {
           // Check if value is an instance of the function
           if (!(newVal instanceof props.type)) {
-            SchemaField.throwFieldInstanceError(label);
+            throw new FieldInstanceError(label);
           }
         } else {
           // todo throw error invalid type
@@ -869,11 +695,11 @@ class SchemaField {
       if (newVal instanceof Array) {
         for (let i = 0; i < newVal.length; i += 1) {
           if (!contains(allowed, newVal[i])) {
-            SchemaField.throwFieldBadValueError(label);
+            throw new FieldAllowedError(label, allowed);
           }
         }
       } else if (!contains(allowed, newVal)) {
-        SchemaField.throwFieldBadValueError(label);
+        throw new FieldAllowedError(label, allowed);
       }
     } else if (typeof props.denied !== 'undefined') {
       // Check denied values
@@ -882,11 +708,11 @@ class SchemaField {
       if (newVal instanceof Array) {
         for (let i = 0; i < newVal.length; i += 1) {
           if (contains(denied, newVal[i])) {
-            SchemaField.throwFieldDeniedValueError(label);
+            throw new FieldDeniedError(label, denied);
           }
         }
       } else if (contains(denied, newVal)) {
-        SchemaField.throwFieldDeniedValueError(label);
+        throw new FieldDeniedError(label, denied);
       }
     }
 
@@ -896,18 +722,18 @@ class SchemaField {
 
       // Ranged length
       if (length instanceof Array) {
-        const min = length[0];
-        const max = length[1];
+        const minLength = length[0];
+        const maxLength = length[1];
 
-        if (typeof min === 'number' && newVal.length < min) {
-          SchemaField.throwFieldMinLengthError(label, min);
+        if (typeof minLength === 'number' && newVal.length < minLength) {
+          throw new FieldMinLengthError(label, minLength);
         }
-        if (typeof max === 'number' && newVal.length > max) {
-          SchemaField.throwFieldMaxLengthError(label, max);
+        if (typeof maxLength === 'number' && newVal.length > maxLength) {
+          throw new FieldMaxLengthError(label, maxLength);
         }
       } else if (newVal.length !== length) {
         // Fixed length
-        SchemaField.throwFieldLengthError(label, length);
+        throw new FieldLengthError(label, length);
       }
     }
 
@@ -917,7 +743,7 @@ class SchemaField {
       const maxLength = SchemaField.computeValue(props.maxLength, context);
 
       if (length > maxLength) {
-        SchemaField.throwFieldMaxLengthError(label, maxLength);
+        throw new FieldMaxLengthError(label, maxLength);
       }
     }
 
@@ -927,25 +753,25 @@ class SchemaField {
       const minLength = SchemaField.computeValue(props.minLength, context);
 
       if (length < minLength) {
-        SchemaField.throwFieldMinLengthError(label, minLength);
+        throw new FieldMinLengthError(label, minLength);
       }
     }
 
     // Check maximal words
     if (typeof props.maxWords !== 'undefined' && typeof newVal === 'string') {
-      const max = SchemaField.computeValue(props.maxWords, context);
+      const maxWords = SchemaField.computeValue(props.maxWords, context);
 
-      if (newVal.split(' ').length > max) {
-        SchemaField.throwFieldMaxWordsError(label, max);
+      if (newVal.split(' ').length > maxWords) {
+        throw new FieldMaxWordsError(label, maxWords);
       }
     }
 
     // Check minimal words
     if (typeof props.minWords !== 'undefined' && typeof newVal === 'string') {
-      const min = SchemaField.computeValue(props.minWords, context);
+      const minWords = SchemaField.computeValue(props.minWords, context);
 
-      if (newVal.split(' ').length < min) {
-        SchemaField.throwFieldMinWordsError(label, min);
+      if (newVal.split(' ').length < minWords) {
+        throw new FieldMinWordsError(label, minWords);
       }
     }
 
@@ -954,7 +780,7 @@ class SchemaField {
       const max = SchemaField.computeValue(props.max, context);
 
       if (newVal > max) {
-        SchemaField.throwFieldMaxValueError(label, max);
+        throw new FieldMaxError(label, max);
       }
     }
 
@@ -963,7 +789,7 @@ class SchemaField {
       const min = SchemaField.computeValue(props.min, context);
 
       if (newVal < min) {
-        SchemaField.throwFieldMinValueError(label, min);
+        throw new FieldMinError(label, min);
       }
     }
 
@@ -972,14 +798,14 @@ class SchemaField {
       const regEx = SchemaField.computeValue(props.regEx, context);
 
       if (!regEx.test(newVal)) {
-        SchemaField.throwFieldRegExError(label, regEx);
+        throw new FieldRegExError(label, regEx);
       }
     }
 
     // Execute custom checks
     if (typeof props.check === 'function') {
       if (props.check.call(this, newVal, context) === false) {
-        SchemaField.throwFieldBadValueError(label);
+        throw new FieldError(label);
       }
     }
 

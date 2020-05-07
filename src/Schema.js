@@ -23,7 +23,8 @@
  */
 
 import deepExtend from '@jalik/deep-extend';
-import SchemaError from './SchemaError';
+import FieldUnknownError from './errors/FieldUnknownError';
+import SchemaError from './errors/SchemaError';
 import SchemaField from './SchemaField';
 
 class Schema {
@@ -340,7 +341,7 @@ class Schema {
         const key = objKeys[i];
 
         if (!fields[key]) {
-          throw new SchemaError('field-unknown', `The field "${key}" is unknown`, { key });
+          throw new FieldUnknownError(key);
         }
       }
     }

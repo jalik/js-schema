@@ -22,10 +22,13 @@
  * SOFTWARE.
  */
 
-import SchemaError from '../src/SchemaError';
+import FieldError from './FieldError';
 
-describe('SchemaError', () => {
-  it('should be importable from package', () => {
-    expect(typeof SchemaError).toEqual('function');
-  });
-});
+class FieldMinError extends FieldError {
+  constructor(field, min) {
+    super(field, 'field-min-value', { min }); // todo rename to field-min
+    this.message = `The field "${field}" must be greater than or equals to ${min}.`;
+  }
+}
+
+export default FieldMinError;

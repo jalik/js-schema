@@ -22,14 +22,13 @@
  * SOFTWARE.
  */
 
-class SchemaError extends Error {
-  constructor(reason, message, context) {
-    super();
-    this.context = context;
-    this.message = message;
-    this.name = 'SchemaError';
-    this.reason = reason;
+import FieldError from './FieldError';
+
+class FieldMaxWordsError extends FieldError {
+  constructor(field, maxWords) {
+    super(field, 'field-max-words', { maxWords });
+    this.message = `The field "${field}" must contain ${maxWords} words max.`;
   }
 }
 
-export default SchemaError;
+export default FieldMaxWordsError;
