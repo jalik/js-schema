@@ -224,17 +224,17 @@ describe('Schema', () => {
       });
       it('should use default value for undefined fields', () => {
         const obj = { number: 1, string: 'a' };
-        TestSchema.validate(obj, {
+        const result = TestSchema.validate(obj, {
           ignoreMissing: false,
         });
-        expect(obj).toEqual({ array: [], number: 1, string: 'a' });
+        expect(result).toEqual({ array: [], number: 1, string: 'a' });
       });
       it('should use default value for null fields', () => {
         const obj = { array: null, number: 1, string: 'a' };
-        TestSchema.validate(obj, {
+        const result = TestSchema.validate(obj, {
           ignoreMissing: false,
         });
-        expect(obj).toEqual({ array: [], number: 1, string: 'a' });
+        expect(result).toEqual({ array: [], number: 1, string: 'a' });
       });
     });
 
@@ -261,24 +261,24 @@ describe('Schema', () => {
     describe('removeUnknown: true', () => {
       it('should remove unknown fields', () => {
         const obj = { string: 'abc', xxx: null };
-        StringSchema.validate(obj, {
+        const result = StringSchema.validate(obj, {
           clean: true,
           ignoreUnknown: true,
           removeUnknown: true,
         });
-        expect(typeof obj.xxx === 'undefined').toEqual(true);
+        expect(result.xxx).toBeUndefined();
       });
     });
 
     describe('removeUnknown: false', () => {
       it('should not remove unknown fields', () => {
         const obj = { string: 'abc', xxx: null };
-        StringSchema.validate(obj, {
+        const result = StringSchema.validate(obj, {
           clean: true,
           ignoreUnknown: true,
           removeUnknown: false,
         });
-        expect(typeof obj.xxx !== 'undefined').toEqual(true);
+        expect(result.xxx).not.toBeUndefined();
       });
     });
   });
