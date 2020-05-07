@@ -22,24 +22,22 @@
  * SOFTWARE.
  */
 
-export default {
-  /**
-   * Checks if value is in list
-   * @param list
-   * @param value
-   * @return {boolean}
-   */
-  contains(list, value) {
-    let result = false;
+/**
+ * Checks if value is in list
+ * @param list
+ * @param value
+ * @return {boolean}
+ */
+export function contains(list, value) {
+  let result = false;
 
-    if (list instanceof Array) {
-      for (let i = 0; i < list.length; i += 1) {
-        if (list[i] === value) {
-          result = true;
-          break;
-        }
+  if (list instanceof Array) {
+    for (let i = 0; i < list.length; i += 1) {
+      if (list[i] === value) {
+        result = true;
+        break;
       }
     }
-    return result;
-  },
-};
+  }
+  return result;
+}

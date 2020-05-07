@@ -25,7 +25,7 @@
 // eslint-disable-next-line import/no-cycle
 import Schema from './schema';
 import SchemaError from './schema-error';
-import utils from './utils';
+import { contains } from './utils';
 
 /**
  * Schema field properties
@@ -95,7 +95,7 @@ class SchemaField {
     for (let i = 0; i < propsLength; i += 1) {
       const prop = propsKeys[i];
 
-      if (!utils.contains(fieldProperties, prop)) {
+      if (!contains(fieldProperties, prop)) {
         // eslint-disable-next-line no-console
         console.warn(`Unknown schema field property "${name}.${prop}"`);
       }
@@ -112,7 +112,7 @@ class SchemaField {
         if (typeof arrayType !== 'function' && typeof arrayType !== 'object') {
           throw new TypeError(`${name}.type[] must contain a class or a function`);
         }
-      } else if (!utils.contains(['function', 'object'], typeof props.type)) {
+      } else if (!contains(['function', 'object'], typeof props.type)) {
         throw new TypeError(`${name}.type = "${props.type}" is not a valid type`);
       }
     }
@@ -133,7 +133,7 @@ class SchemaField {
     }
 
     // Check number decimal
-    if (typeof props.decimal !== 'undefined' && !utils.contains(['function', 'boolean'], typeof props.decimal)) {
+    if (typeof props.decimal !== 'undefined' && !contains(['function', 'boolean'], typeof props.decimal)) {
       throw new TypeError(`${name}.decimal must be a boolean or function`);
     }
 
@@ -143,7 +143,7 @@ class SchemaField {
     }
 
     // Set default label if missing
-    if (typeof props.label !== 'undefined' && !utils.contains(['function', 'string'], typeof props.label)) {
+    if (typeof props.label !== 'undefined' && !contains(['function', 'string'], typeof props.label)) {
       throw new TypeError(`${name}.label must be a string or function`);
     }
 
@@ -153,43 +153,43 @@ class SchemaField {
         if (props.length.length > 2) {
           throw new RangeError(`${name}.length must only have 2 values [min, max]`);
         }
-      } else if (!utils.contains(['function', 'number'], typeof props.length)) {
+      } else if (!contains(['function', 'number'], typeof props.length)) {
         throw new TypeError(`${name}.length must be a function, a number or an array[min, max]`);
       }
     }
 
     // Check max value
-    if (typeof props.max !== 'undefined' && !utils.contains(['function', 'number', 'string'], typeof props.max) && !(props.max instanceof Date)) {
+    if (typeof props.max !== 'undefined' && !contains(['function', 'number', 'string'], typeof props.max) && !(props.max instanceof Date)) {
       throw new TypeError(`${name}.max must be a date, number, string or function`);
     }
 
     // Check max length
-    if (typeof props.maxLength !== 'undefined' && !utils.contains(['function', 'number'], typeof props.maxLength)) {
+    if (typeof props.maxLength !== 'undefined' && !contains(['function', 'number'], typeof props.maxLength)) {
       throw new TypeError(`${name}.maxLength must be a number or function`);
     }
 
     // Check max words
-    if (typeof props.maxWords !== 'undefined' && !utils.contains(['function', 'number'], typeof props.maxWords)) {
+    if (typeof props.maxWords !== 'undefined' && !contains(['function', 'number'], typeof props.maxWords)) {
       throw new TypeError(`${name}.maxWords must be a number or function`);
     }
 
     // Check min value
-    if (typeof props.min !== 'undefined' && !utils.contains(['function', 'number', 'string'], typeof props.min) && !(props.min instanceof Date)) {
+    if (typeof props.min !== 'undefined' && !contains(['function', 'number', 'string'], typeof props.min) && !(props.min instanceof Date)) {
       throw new TypeError(`${name}.min must be a date, number, string or function`);
     }
 
     // Check min length
-    if (typeof props.minLength !== 'undefined' && !utils.contains(['function', 'number'], typeof props.minLength)) {
+    if (typeof props.minLength !== 'undefined' && !contains(['function', 'number'], typeof props.minLength)) {
       throw new TypeError(`${name}.minLength must be a number or function`);
     }
 
     // Check min words
-    if (typeof props.minWords !== 'undefined' && !utils.contains(['function', 'number'], typeof props.minWords)) {
+    if (typeof props.minWords !== 'undefined' && !contains(['function', 'number'], typeof props.minWords)) {
       throw new TypeError(`${name}.minWords must be a number or function`);
     }
 
     // Check if field is nullable
-    if (typeof props.nullable !== 'undefined' && !utils.contains(['function', 'boolean'], typeof props.nullable)) {
+    if (typeof props.nullable !== 'undefined' && !contains(['function', 'boolean'], typeof props.nullable)) {
       throw new TypeError(`${name}.nullable must be a boolean or function`);
     }
 
@@ -204,12 +204,12 @@ class SchemaField {
     }
 
     // Check regular expression
-    if (typeof props.regEx !== 'undefined' && !utils.contains(['function'], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
+    if (typeof props.regEx !== 'undefined' && !contains(['function'], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
       throw new TypeError(`${name}.regEx must be a regular expression or function`);
     }
 
     // Check required
-    if (typeof props.required !== 'undefined' && !utils.contains(['function', 'boolean'], typeof props.required)) {
+    if (typeof props.required !== 'undefined' && !contains(['function', 'boolean'], typeof props.required)) {
       throw new TypeError(`${name}.required must be a boolean or function`);
     }
   }
@@ -869,11 +869,11 @@ class SchemaField {
 
       if (newVal instanceof Array) {
         for (let i = 0; i < newVal.length; i += 1) {
-          if (!utils.contains(allowed, newVal[i])) {
+          if (!contains(allowed, newVal[i])) {
             SchemaField.throwFieldBadValueError(label);
           }
         }
-      } else if (!utils.contains(allowed, newVal)) {
+      } else if (!contains(allowed, newVal)) {
         SchemaField.throwFieldBadValueError(label);
       }
     } else if (typeof props.denied !== 'undefined') {
@@ -882,11 +882,11 @@ class SchemaField {
 
       if (newVal instanceof Array) {
         for (let i = 0; i < newVal.length; i += 1) {
-          if (utils.contains(denied, newVal[i])) {
+          if (contains(denied, newVal[i])) {
             SchemaField.throwFieldDeniedValueError(label);
           }
         }
-      } else if (utils.contains(denied, newVal)) {
+      } else if (contains(denied, newVal)) {
         SchemaField.throwFieldDeniedValueError(label);
       }
     }
