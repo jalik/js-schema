@@ -22,29 +22,32 @@
  * SOFTWARE.
  */
 
-export default {
-  /**
-   * Basic alphabetic
-   */
-  Alpha: /^[a-zA-Z]+$/,
-  /**
-   * Basic alphanumeric
-   */
-  Alphanumeric: /^[a-zA-Z0-9]+$/,
-  /**
-   * Email
-   */
-  Email: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
-  /**
-   * Extended alphanumeric [_-]
-   */
-  ExtAlphanumeric: /^[a-zA-Z0-9_-]+$/,
-  /**
-   * Fully Qualified Domain Name
-   */
-  FQDN: /(?:[a-zA-Z0-9])(?:[a-zA-Z0-9-.]){1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+|\[(?:(?:(?:[a-fA-F0-9]){1,4})(?::(?:[a-fA-F0-9]){1,4}){7}|::1|::)\]|(?:(?:[0-9]{1,3})(?:\.[0-9]{1,3}){3})/,
-  /**
-   * IPv4 network address
-   */
-  IPv4: /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
-};
+/**
+ * Basic alphabetic
+ */
+export const AlphaRegex = /^[a-zA-Z]+$/;
+
+/**
+ * Basic alphanumeric
+ */
+export const AlphaNumericRegex = /^[a-zA-Z0-9]+$/;
+
+/**
+ * Email
+ */
+export const EmailRegex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+
+/**
+ * Extended alphanumeric [_-]
+ */
+export const ExtendedAlphaNumericRegex = /^[a-zA-Z0-9_-]+$/;
+
+/**
+ * Fully Qualified Domain Name
+ */
+export const FQDNRegex = /(?:[a-zA-Z0-9])(?:[a-zA-Z0-9-.]){1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+|\[(?:(?:(?:[a-fA-F0-9]){1,4})(?::(?:[a-fA-F0-9]){1,4}){7}|::1|::)\]|(?:(?:[0-9]{1,3})(?:\.[0-9]{1,3}){3})/;
+
+/**
+ * IPv4 network address
+ */
+export const IPv4Regex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;

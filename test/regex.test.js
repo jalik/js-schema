@@ -22,7 +22,11 @@
  * SOFTWARE.
  */
 
-import RegEx from '../src/regex';
+import {
+  AlphaRegex,
+  EmailRegex,
+  FQDNRegex,
+} from '../src/regex';
 
 /**
  * REGULAR EXPRESSIONS
@@ -33,13 +37,13 @@ describe('RegEx', () => {
 
   describe('Valid alpha', () => {
     it('should return true', () => {
-      expect(RegEx.Alpha.test(validAlpha)).toEqual(true);
+      expect(AlphaRegex.test(validAlpha)).toEqual(true);
     });
   });
 
   describe('Invalid alpha', () => {
     it('should return false', () => {
-      expect(RegEx.Alpha.test(invalidAlpha)).toEqual(false);
+      expect(AlphaRegex.test(invalidAlpha)).toEqual(false);
     });
   });
 
@@ -48,13 +52,13 @@ describe('RegEx', () => {
 
   describe('Valid Email', () => {
     it('should return true', () => {
-      expect(RegEx.Email.test(validEmail)).toEqual(true);
+      expect(EmailRegex.test(validEmail)).toEqual(true);
     });
   });
 
   describe('Invalid Email', () => {
     it('should return false', () => {
-      expect(RegEx.Email.test(invalidEmail)).toEqual(false);
+      expect(EmailRegex.test(invalidEmail)).toEqual(false);
     });
   });
 
@@ -63,13 +67,13 @@ describe('RegEx', () => {
 
   describe('Valid FQDN', () => {
     it('should return true', () => {
-      expect(RegEx.FQDN.test(validFQDN)).toEqual(true);
+      expect(FQDNRegex.test(validFQDN)).toEqual(true);
     });
   });
 
   describe('Invalid FQDN', () => {
     it('should return false', () => {
-      expect(RegEx.FQDN.test(invalidFQDN)).toEqual(false);
+      expect(FQDNRegex.test(invalidFQDN)).toEqual(false);
     });
   });
 });
