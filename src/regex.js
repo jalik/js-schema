@@ -23,31 +23,37 @@
  */
 
 /**
- * Basic alphabetic
+ * Basic alphabetic pattern.
+ * @type {RegExp}
  */
 export const AlphaRegex = /^[a-zA-Z]+$/;
 
 /**
- * Basic alphanumeric
+ * Basic alphanumeric pattern.
+ * @type {RegExp}
  */
 export const AlphaNumericRegex = /^[a-zA-Z0-9]+$/;
 
 /**
- * Email
+ * Email pattern.
+ * @type {RegExp}
  */
 export const EmailRegex = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
 
 /**
- * Extended alphanumeric [_-]
+ * Extended alphanumeric [_-] pattern.
+ * @type {RegExp}
  */
 export const ExtendedAlphaNumericRegex = /^[a-zA-Z0-9_-]+$/;
 
 /**
- * Fully Qualified Domain Name
+ * Fully Qualified Domain Name pattern.
+ * @type {RegExp}
  */
 export const FQDNRegex = /(?:[a-zA-Z0-9])(?:[a-zA-Z0-9-.]){1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+|\[(?:(?:(?:[a-fA-F0-9]){1,4})(?::(?:[a-fA-F0-9]){1,4}){7}|::1|::)\]|(?:(?:[0-9]{1,3})(?:\.[0-9]{1,3}){3})/;
 
 /**
- * IPv4 network address
+ * IPv4 network address pattern.
+ * @type {RegExp}
  */
 export const IPv4Regex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;

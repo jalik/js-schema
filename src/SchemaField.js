@@ -229,8 +229,8 @@ class SchemaField {
   }
 
   /**
-   * Cleans the value
-   * @param value
+   * Cleans a value.
+   * @param {*} value
    * @return {*}
    */
   clean(value) {
@@ -277,10 +277,10 @@ class SchemaField {
   }
 
   /**
-   * Returns the value of the object
+   * Returns the value of the object.
    * todo move to utils
-   * @param value
-   * @param context
+   * @param {*} value
+   * @param {Object} context
    * @return {*}
    */
   static computeValue(value, context) {
@@ -291,15 +291,15 @@ class SchemaField {
   }
 
   /**
-   * Returns field's allowed values
-   * @return {*}
+   * Returns allowed values.
+   * @return {[]|Function}
    */
   getAllowedValues() {
     return this.properties.allowed;
   }
 
   /**
-   * Returns field's check function
+   * Returns check function.
    * @return {Function|*}
    */
   getCheckFunction() {
@@ -307,7 +307,7 @@ class SchemaField {
   }
 
   /**
-   * Returns field's clean function
+   * Returns clean function.
    * @return {Function|*}
    */
   getCleanFunction() {
@@ -315,7 +315,7 @@ class SchemaField {
   }
 
   /**
-   * Returns field's default value
+   * Returns default value.
    * @return {*}
    */
   getDefaultValue() {
@@ -323,79 +323,79 @@ class SchemaField {
   }
 
   /**
-   * Returns field's denied values
-   * @return {*}
+   * Returns denied values.
+   * @return {[]|Function}
    */
   getDeniedValues() {
     return this.properties.denied;
   }
 
   /**
-   * Returns field's label
-   * @return {*}
+   * Returns label.
+   * @return {string}
    */
   getLabel() {
     return this.properties.label;
   }
 
   /**
-   * Returns field's length
-   * @return {*}
+   * Returns length.
+   * @return {number}
    */
   getLength() {
     return this.properties.length;
   }
 
   /**
-   * Returns field's maximal length
-   * @return {null|number}
+   * Returns maximal length.
+   * @return {number}
    */
   getMaxLength() {
     return this.properties.maxLength;
   }
 
   /**
-   * Returns field's maximal value
-   * @return {*}
+   * Returns maximal value.
+   * @return {number}
    */
   getMaxValue() {
     return this.properties.max;
   }
 
   /**
-   * Returns field's maximal words
-   * @return {*}
+   * Returns maximal words.
+   * @return {number}
    */
   getMaxWords() {
     return this.properties.maxWords;
   }
 
   /**
-   * Returns field's minimal length
-   * @return {null|number}
+   * Returns minimal length.
+   * @return {number}
    */
   getMinLength() {
     return this.properties.minLength;
   }
 
   /**
-   * Returns field's minimal value
-   * @return {*}
+   * Returns minimal value.
+   * @return {number}
    */
   getMinValue() {
     return this.properties.min;
   }
 
   /**
-   * Returns field's minimal words
-   * @return {*}
+   * Returns minimal words.
+   * @return {number}
    */
   getMinWords() {
     return this.properties.minWords;
   }
 
   /**
-   * Returns field name
+   * Returns field name.
    * @return {string}
    */
   getName() {
@@ -403,7 +403,7 @@ class SchemaField {
   }
 
   /**
-   * Returns field's parsing function
+   * Returns field's parsing function.
    * @return {Function|*}
    */
   getParseFunction() {
@@ -411,7 +411,7 @@ class SchemaField {
   }
 
   /**
-   * Returns field's prepare function
+   * Returns field's prepare function.
    * @return {Function|*}
    */
   getPrepareFunction() {
@@ -419,7 +419,7 @@ class SchemaField {
   }
 
   /**
-   * Returns field's properties
+   * Returns field's properties.
    * @return {Object}
    */
   getProperties() {
@@ -427,31 +427,31 @@ class SchemaField {
   }
 
   /**
-   * Returns field's regular expression
-   * @return {*}
+   * Returns field's regular expression.
+   * @return {RegExp|*}
    */
   getRegEx() {
     return this.properties.regEx;
   }
 
   /**
-   * Returns field's type
-   * @return {*}
+   * Returns field's type.
+   * @return {boolean|number|string|Object|Schema}
    */
   getType() {
     return this.properties.type;
   }
 
   /**
-   * Checks if field supports decimals
-   * @return {*}
+   * Checks if field supports decimals.
+   * @return {boolean}
    */
   isDecimal() {
-    return this.properties.decimal;
+    return this.properties.decimal === true;
   }
 
   /**
-   * Checks if field is nullable
+   * Checks if field is nullable.
    * @return {boolean}
    */
   isNullable() {
@@ -467,8 +467,8 @@ class SchemaField {
   }
 
   /**
-   * Parses value
-   * @param value
+   * Parses a value.
+   * @param {*} value
    * @return {*}
    */
   parse(value) {
@@ -498,9 +498,10 @@ class SchemaField {
   }
 
   /**
-   * Validates the field
-   * @param value
-   * @param options
+   * Validates a value.
+   * todo return a Promise
+   * @param {*} value
+   * @param {Object} options
    * @return {*}
    */
   validate(value, options) {

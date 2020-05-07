@@ -42,9 +42,9 @@ class Schema {
   }
 
   /**
-   * Adds field to the schema
-   * @param name
-   * @param props
+   * Adds field to the schema.
+   * @param {string} name
+   * @param {Object} props
    */
   addField(name, props) {
     this.fields[name] = new SchemaField(name, props);
@@ -86,7 +86,7 @@ class Schema {
   }
 
   /**
-   * Clones the schema
+   * Returns a clone of the schema.
    * @return {Schema}
    */
   clone() {
@@ -103,8 +103,8 @@ class Schema {
   }
 
   /**
-   * Creates a new schema based on current schema
-   * @param fields
+   * Returns a new schema based on current schema.
+   * @param {Object} fields
    * @return {Schema}
    */
   extend(fields) {
@@ -121,8 +121,8 @@ class Schema {
   }
 
   /**
-   * Returns field
-   * @param name
+   * Returns a field.
+   * @param {string} name
    * @return {SchemaField}
    */
   getField(name) {
@@ -130,7 +130,7 @@ class Schema {
   }
 
   /**
-   * Returns fields
+   * Returns all fields.
    * @return {Object}
    */
   getFields() {
@@ -161,8 +161,8 @@ class Schema {
   }
 
   /**
-   * Creates a sub schema from selected fields
-   * @param fieldNames
+   * Returns a sub schema from selected fields.
+   * @param {string[]} fieldNames
    * @return {Schema}
    */
   pick(fieldNames) {
@@ -177,7 +177,7 @@ class Schema {
         fields[fieldName] = schemaFields[fieldName].getProperties();
       }
     }
-    return new Schema(fields);
+    return new Schema(deepExtend({}, fields));
   }
 
   /**
@@ -208,9 +208,9 @@ class Schema {
   }
 
   /**
-   * Builds an object from a string (ex: [colors][0][code])
-   * @param path (ex: address[country][code])
-   * @throws SyntaxError|TypeError
+   * Builds an object from a string (ex: [colors][0][code]).
+   * @param {string} path (ex: address[country][code])
+   * @throws {SyntaxError|TypeError}
    * @return {SchemaField|null}
    */
   resolveField(path) {
@@ -272,8 +272,8 @@ class Schema {
   }
 
   /**
-   * Updates existing fields
-   * @param fields
+   * Updates existing fields.
+   * @param {Object} fields
    * @return {Schema}
    */
   update(fields) {
@@ -293,6 +293,7 @@ class Schema {
   /**
    * Validates an object.
    * todo do not parse in validate
+   * todo return a Promise
    * @param {Object} object
    * @param {Object} options
    * @throws {SchemaError|FieldUnknownError}
