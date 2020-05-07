@@ -137,21 +137,6 @@ class Schema {
   }
 
   /**
-   * Checks if the object is valid
-   * @param obj
-   * @param options
-   * @return {boolean}
-   */
-  isValid(obj, options) {
-    try {
-      this.validate(obj, options);
-      return true;
-    } catch (err) {
-      return false;
-    }
-  }
-
-  /**
    * Parses object fields
    * @param obj
    * @return {*}
