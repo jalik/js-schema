@@ -236,19 +236,12 @@ class SchemaField {
   clean(value) {
     let newValue = value;
 
-    if (newValue !== null && typeof newValue !== 'undefined') {
-      switch (typeof newValue) {
-        case 'array':
-          for (let i = 0; i < newValue; i += 1) {
-            newValue[i] = this.clean(newValue[i]);
-          }
-          break;
-
+    if (newValue !== null) {
+      switch (typeof value) {
         case 'object': {
           const keys = Object.keys(newValue);
-          const keysLength = keys.length;
 
-          for (let i = 0; i < keysLength; i += 1) {
+          for (let i = 0; i < keys.length; i += 1) {
             const key = keys[i];
             newValue[key] = this.clean(newValue[key]);
           }
@@ -256,17 +249,15 @@ class SchemaField {
         }
 
         case 'string':
-          if (typeof newValue === 'string') {
-            // Execute custom clean function
-            if (typeof this.getCleanFunction() === 'function') {
-              newValue = this.getCleanFunction()(newValue);
-            } else {
-              newValue = newValue.trim();
-            }
+          if (typeof this.getCleanFunction() === 'function') {
+            newValue = this.getCleanFunction()(newValue);
+          } else {
+            newValue = newValue.trim();
+          }
 
-            if (newValue.length === 0) {
-              newValue = null;
-            }
+          // Return null instead of empty string.
+          if (newValue.length === 0) {
+            newValue = null;
           }
           break;
 
