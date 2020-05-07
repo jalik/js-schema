@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import Schema from '../src/schema';
-import SchemaField from '../src/schema-field';
+import Schema from '../src/Schema';
+import SchemaField from '../src/SchemaField';
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {

@@ -23,8 +23,8 @@
  */
 
 import deepExtend from '@jalik/deep-extend';
-import SchemaError from './schema-error';
-import SchemaField from './schema-field';
+import SchemaError from './SchemaError';
+import SchemaField from './SchemaField';
 
 class Schema {
   constructor(fields) {

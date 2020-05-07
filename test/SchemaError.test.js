@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-import SchemaError from '../src/schema-error';
+import SchemaError from '../src/SchemaError';
 
 describe('SchemaError', () => {
   it('should be importable from package', () => {

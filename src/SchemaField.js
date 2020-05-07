@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import Schema from './schema';
-import SchemaError from './schema-error';
+import Schema from './Schema';
+import SchemaError from './SchemaError';
 import { contains } from './utils';
 
 /**
