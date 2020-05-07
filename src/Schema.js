@@ -51,20 +51,21 @@ class Schema {
   }
 
   /**
-   * Cleans the object based on the schema
-   * @param obj
-   * @param options
-   * @return {*}
+   * Returns a cloned version of the object with all fields cleaned.
+   * @param {Object} object
+   * @param {Object} options
+   * @return {Object}
    */
-  clean(obj, options) {
+  clean(object, options) {
     // Default options
     const opt = {
       removeUnknown: true,
       ...options,
     };
 
+    const clonedObject = deepExtend({}, object);
     const fields = this.getFields();
-    const keys = Object.keys(obj);
+    const keys = Object.keys(clonedObject);
     const keysLength = keys.length;
 
     for (let i = 0; i < keysLength; i += 1) {
@@ -72,16 +73,16 @@ class Schema {
       const field = fields[key];
 
       if (field) {
-        const value = obj[key];
+        const value = clonedObject[key];
         // eslint-disable-next-line no-param-reassign
-        obj[key] = field.clean(value);
+        clonedObject[key] = field.clean(value);
       } else if (opt.removeUnknown) {
         // Remove unknown field
         // eslint-disable-next-line no-param-reassign
-        delete obj[key];
+        delete clonedObject[key];
       }
     }
-    return obj;
+    return clonedObject;
   }
 
   /**
