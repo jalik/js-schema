@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-// eslint-disable-next-line import/no-cycle
 import Schema from './schema';
 import SchemaError from './schema-error';
 import { contains } from './utils';

@@ -81,10 +81,7 @@ describe('Schema', () => {
     it('should return field properties', () => {
       const fields = { text: { type: String } };
       const schema = new Schema(fields);
-      expect(() => {
-        // eslint-disable-next-line
-        schema.getField('text').type === String;
-      }).not.toThrow(Error);
+      expect(() => (schema.getField('text').type)).not.toThrow(Error);
     });
   });
 
