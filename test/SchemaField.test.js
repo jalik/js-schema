@@ -98,18 +98,18 @@ describe('getDefaultValue()', () => {
   });
 });
 
-describe('getDeniedValues()', () => {
+describe('getDenied()', () => {
   describe('with denied: Array', () => {
     it('should return an array', () => {
       const field = new SchemaField('field', { denied: [1, 0] });
-      expect(field.getDeniedValues()).toStrictEqual([1, 0]);
+      expect(field.getDenied()).toStrictEqual([1, 0]);
     });
   });
 
   describe('with denied: undefined', () => {
     it('should return undefined', () => {
       const field = new SchemaField('field', {});
-      expect(field.getDeniedValues()).toBeUndefined();
+      expect(field.getDenied()).toBeUndefined();
     });
   });
 });

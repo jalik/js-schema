@@ -316,7 +316,7 @@ class SchemaField {
    * Returns field's denied values.
    * @return {[]|Function}
    */
-  getDeniedValues() {
+  getDenied() {
     return this.properties.denied;
   }
 
