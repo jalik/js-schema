@@ -337,19 +337,19 @@ class SchemaField {
   }
 
   /**
+   * Returns field's maximal value.
+   * @return {number}
+   */
+  getMax() {
+    return this.properties.max;
+  }
+
+  /**
    * Returns field's maximal length.
    * @return {number}
    */
   getMaxLength() {
     return this.properties.maxLength;
-  }
-
-  /**
-   * Returns field's maximal value.
-   * @return {number}
-   */
-  getMaxValue() {
-    return this.properties.max;
   }
 
   /**

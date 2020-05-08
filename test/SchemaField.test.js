@@ -162,18 +162,18 @@ describe('getMaxLength()', () => {
   });
 });
 
-describe('getMaxValue()', () => {
+describe('getMax()', () => {
   describe('with max: Number', () => {
     it('should return a number', () => {
       const field = new SchemaField('field', { max: 30 });
-      expect(field.getMaxValue()).toBe(30);
+      expect(field.getMax()).toBe(30);
     });
   });
 
   describe('with max: undefined', () => {
     it('should return undefined', () => {
       const field = new SchemaField('field', {});
-      expect(field.getMaxValue()).toBeUndefined();
+      expect(field.getMax()).toBeUndefined();
     });
   });
 });
