@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import deepExtend from '@jalik/deep-extend';
 import FieldAllowedError from './errors/FieldAllowedError';
 import FieldDeniedError from './errors/FieldDeniedError';
 import FieldError from './errors/FieldError';
@@ -368,11 +369,11 @@ class SchemaField {
   }
 
   /**
-   * Returns field's properties.
+   * Returns a copy of the field's properties.
    * @return {Object}
    */
   getProperties() {
-    return this.properties;
+    return deepExtend({}, this.properties);
   }
 
   /**
