@@ -73,6 +73,157 @@ export const fieldProperties = [
   'type',
 ];
 
+/**
+ * Throws an error if properties are not valid.
+ * @param {string} name
+ * @param {Object} props
+ */
+function checkFieldProperties(name, props) {
+  // Check unknown properties.
+  Object.entries(props).forEach((prop) => {
+    if (!contains(fieldProperties, prop[0])) {
+      // eslint-disable-next-line no-console
+      console.warn(`Unknown schema field property "${name}.${prop}"`);
+    }
+  });
+
+  const {
+    allowed,
+    check,
+    clean,
+    decimal,
+    denied,
+    length,
+    max,
+    maxLength,
+    maxWords,
+    min,
+    minLength,
+    minWords,
+    nullable,
+    parse,
+    prepare,
+    regEx,
+    required,
+    type,
+  } = props;
+
+  // Check field type
+  if (typeof type !== 'undefined' && type !== null) {
+    if (type instanceof Array) {
+      const arrayType = type[0];
+
+      // Check that array type is a function or class
+      if (typeof arrayType !== 'function' && typeof arrayType !== 'object') {
+        throw new TypeError(`${name}.type[] must contain a class or a function`);
+      }
+    } else if (!contains(['function', 'object'], typeof type)) {
+      throw new TypeError(`${name}.type = "${type}" is not a valid type`);
+    }
+  }
+
+  // Check conflicting options.
+  if (allowed && denied) {
+    throw new TypeError('allowed and denied cannot be defined together');
+  }
+
+  // Check allowed values
+  if (typeof allowed !== 'undefined' && !(allowed instanceof Array) && typeof allowed !== 'function') {
+    throw new TypeError(`${name}.allowed must be an array or function`);
+  }
+
+  // Check custom check function
+  if (typeof check !== 'undefined' && typeof check !== 'function') {
+    throw new TypeError(`${name}.check must be a function`);
+  }
+
+  // Check custom clean function
+  if (typeof clean !== 'undefined' && typeof clean !== 'function') {
+    throw new TypeError(`${name}.clean must be a function`);
+  }
+
+  // Check number decimal
+  if (typeof decimal !== 'undefined' && !contains(['function', 'boolean'], typeof decimal)) {
+    throw new TypeError(`${name}.decimal must be a boolean or function`);
+  }
+
+  // Check denied values
+  if (typeof denied !== 'undefined' && !(denied instanceof Array) && typeof denied !== 'function') {
+    throw new TypeError(`${name}.denied must be an array or function`);
+  }
+
+  // Set default label if missing
+  if (typeof label !== 'undefined' && !contains(['function', 'string'], typeof label)) {
+    throw new TypeError(`${name}.label must be a string or function`);
+  }
+
+  // Check length
+  if (typeof length !== 'undefined') {
+    if (length instanceof Array) {
+      if (length.length > 2) {
+        throw new RangeError(`${name}.length must only have 2 values [min, max]`);
+      }
+    } else if (!contains(['function', 'number'], typeof length)) {
+      throw new TypeError(`${name}.length must be a function, a number or an array[min, max]`);
+    }
+  }
+
+  // Check max value
+  if (typeof max !== 'undefined' && !contains(['function', 'number', 'string'], typeof max) && !(max instanceof Date)) {
+    throw new TypeError(`${name}.max must be a date, number, string or function`);
+  }
+
+  // Check max length
+  if (typeof maxLength !== 'undefined' && !contains(['function', 'number'], typeof maxLength)) {
+    throw new TypeError(`${name}.maxLength must be a number or function`);
+  }
+
+  // Check max words
+  if (typeof maxWords !== 'undefined' && !contains(['function', 'number'], typeof maxWords)) {
+    throw new TypeError(`${name}.maxWords must be a number or function`);
+  }
+
+  // Check min value
+  if (typeof min !== 'undefined' && !contains(['function', 'number', 'string'], typeof min) && !(min instanceof Date)) {
+    throw new TypeError(`${name}.min must be a date, number, string or function`);
+  }
+
+  // Check min length
+  if (typeof minLength !== 'undefined' && !contains(['function', 'number'], typeof minLength)) {
+    throw new TypeError(`${name}.minLength must be a number or function`);
+  }
+
+  // Check min words
+  if (typeof minWords !== 'undefined' && !contains(['function', 'number'], typeof minWords)) {
+    throw new TypeError(`${name}.minWords must be a number or function`);
+  }
+
+  // Check if field is nullable
+  if (typeof nullable !== 'undefined' && !contains(['function', 'boolean'], typeof nullable)) {
+    throw new TypeError(`${name}.nullable must be a boolean or function`);
+  }
+
+  // Check custom parse function
+  if (typeof parse !== 'undefined' && typeof parse !== 'function') {
+    throw new TypeError(`${name}.parse must be a function`);
+  }
+
+  // Check custom prepare function
+  if (typeof prepare !== 'undefined' && typeof prepare !== 'function') {
+    throw new TypeError(`${name}.prepare must be a function`);
+  }
+
+  // Check regular expression
+  if (typeof regEx !== 'undefined' && !contains(['function'], typeof regEx) && !(regEx instanceof RegExp)) {
+    throw new TypeError(`${name}.regEx must be a regular expression or function`);
+  }
+
+  // Check required
+  if (typeof required !== 'undefined' && !contains(['function', 'boolean'], typeof required)) {
+    throw new TypeError(`${name}.required must be a boolean or function`);
+  }
+}
+
 class SchemaField {
   constructor(name, properties) {
     // Default properties
@@ -100,141 +251,10 @@ class SchemaField {
       ...properties,
     };
 
-    // Field name
+    checkFieldProperties(name, props);
+
     this.name = name;
-
-    // Field properties
-    this.properties = {};
-
-    const propsKeys = Object.keys(props);
-    const propsLength = propsKeys.length;
-
-    // Check field properties
-    for (let i = 0; i < propsLength; i += 1) {
-      const prop = propsKeys[i];
-
-      if (!contains(fieldProperties, prop)) {
-        // eslint-disable-next-line no-console
-        console.warn(`Unknown schema field property "${name}.${prop}"`);
-      }
-      // Assign property
-      this.properties[prop] = props[prop];
-    }
-
-    // Check field type
-    if (typeof props.type !== 'undefined' && props.type !== null) {
-      if (props.type instanceof Array) {
-        const arrayType = props.type[0];
-
-        // Check that array type is a function or class
-        if (typeof arrayType !== 'function' && typeof arrayType !== 'object') {
-          throw new TypeError(`${name}.type[] must contain a class or a function`);
-        }
-      } else if (!contains(['function', 'object'], typeof props.type)) {
-        throw new TypeError(`${name}.type = "${props.type}" is not a valid type`);
-      }
-    }
-
-    // Check conflicting options.
-    if (props.allowed && props.denied) {
-      throw new TypeError('allowed and denied cannot be defined together');
-    }
-
-    // Check allowed values
-    if (typeof props.allowed !== 'undefined' && !(props.allowed instanceof Array) && typeof props.allowed !== 'function') {
-      throw new TypeError(`${name}.allowed must be an array or function`);
-    }
-
-    // Check custom check function
-    if (typeof props.check !== 'undefined' && typeof props.check !== 'function') {
-      throw new TypeError(`${name}.check must be a function`);
-    }
-
-    // Check custom clean function
-    if (typeof props.clean !== 'undefined' && typeof props.clean !== 'function') {
-      throw new TypeError(`${name}.clean must be a function`);
-    }
-
-    // Check number decimal
-    if (typeof props.decimal !== 'undefined' && !contains(['function', 'boolean'], typeof props.decimal)) {
-      throw new TypeError(`${name}.decimal must be a boolean or function`);
-    }
-
-    // Check denied values
-    if (typeof props.denied !== 'undefined' && !(props.denied instanceof Array) && typeof props.denied !== 'function') {
-      throw new TypeError(`${name}.denied must be an array or function`);
-    }
-
-    // Set default label if missing
-    if (typeof props.label !== 'undefined' && !contains(['function', 'string'], typeof props.label)) {
-      throw new TypeError(`${name}.label must be a string or function`);
-    }
-
-    // Check length
-    if (typeof props.length !== 'undefined') {
-      if (props.length instanceof Array) {
-        if (props.length.length > 2) {
-          throw new RangeError(`${name}.length must only have 2 values [min, max]`);
-        }
-      } else if (!contains(['function', 'number'], typeof props.length)) {
-        throw new TypeError(`${name}.length must be a function, a number or an array[min, max]`);
-      }
-    }
-
-    // Check max value
-    if (typeof props.max !== 'undefined' && !contains(['function', 'number', 'string'], typeof props.max) && !(props.max instanceof Date)) {
-      throw new TypeError(`${name}.max must be a date, number, string or function`);
-    }
-
-    // Check max length
-    if (typeof props.maxLength !== 'undefined' && !contains(['function', 'number'], typeof props.maxLength)) {
-      throw new TypeError(`${name}.maxLength must be a number or function`);
-    }
-
-    // Check max words
-    if (typeof props.maxWords !== 'undefined' && !contains(['function', 'number'], typeof props.maxWords)) {
-      throw new TypeError(`${name}.maxWords must be a number or function`);
-    }
-
-    // Check min value
-    if (typeof props.min !== 'undefined' && !contains(['function', 'number', 'string'], typeof props.min) && !(props.min instanceof Date)) {
-      throw new TypeError(`${name}.min must be a date, number, string or function`);
-    }
-
-    // Check min length
-    if (typeof props.minLength !== 'undefined' && !contains(['function', 'number'], typeof props.minLength)) {
-      throw new TypeError(`${name}.minLength must be a number or function`);
-    }
-
-    // Check min words
-    if (typeof props.minWords !== 'undefined' && !contains(['function', 'number'], typeof props.minWords)) {
-      throw new TypeError(`${name}.minWords must be a number or function`);
-    }
-
-    // Check if field is nullable
-    if (typeof props.nullable !== 'undefined' && !contains(['function', 'boolean'], typeof props.nullable)) {
-      throw new TypeError(`${name}.nullable must be a boolean or function`);
-    }
-
-    // Check custom parse function
-    if (typeof props.parse !== 'undefined' && typeof props.parse !== 'function') {
-      throw new TypeError(`${name}.parse must be a function`);
-    }
-
-    // Check custom prepare function
-    if (typeof props.prepare !== 'undefined' && typeof props.prepare !== 'function') {
-      throw new TypeError(`${name}.prepare must be a function`);
-    }
-
-    // Check regular expression
-    if (typeof props.regEx !== 'undefined' && !contains(['function'], typeof props.regEx) && !(props.regEx instanceof RegExp)) {
-      throw new TypeError(`${name}.regEx must be a regular expression or function`);
-    }
-
-    // Check required
-    if (typeof props.required !== 'undefined' && !contains(['function', 'boolean'], typeof props.required)) {
-      throw new TypeError(`${name}.required must be a boolean or function`);
-    }
+    this.properties = props;
   }
 
   /**
