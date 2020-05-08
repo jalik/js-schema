@@ -1,4 +1,5 @@
 # @jalik/schema
+
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/jalik/js-schema.svg)
 [![Build Status](https://travis-ci.com/jalik/js-schema.svg?branch=master)](https://travis-ci.com/jalik/js-schema)
 ![GitHub](https://img.shields.io/github/license/jalik/js-schema.svg)
@@ -15,6 +16,11 @@ A schema is a definition of all characteristics of an object.
 For example, a person has a name, age, gender and so on...
 some information are required while others are optional.
 Schemas are a powerful way to describe structures of data and define constraints to validate objects.
+
+It can be used for:
+- validate data
+- parse data
+- clean data
 
 ## Creating a schema
 
@@ -89,9 +95,9 @@ const ProductSchema = new Schema({
 
 export default ProductSchema;
 
-export const ProductASchema = ProductSchema.clone();
-export const ProductBSchema = ProductSchema.clone();
-export const ProductCSchema = ProductSchema.clone();
+export const ASchema = ProductSchema.clone();
+export const BSchema = ProductSchema.clone();
+export const CSchema = ProductSchema.clone();
 ```
 
 ## Updating a schema
@@ -211,7 +217,7 @@ catch (error) {
 
 ## Handling validation errors
 
-Currently all errors thrown by the validation are instances of `SchemaError` with a `message` attribute in English. This may not be convenient for translation, however you can for now rely on the `reason` attribute of a `SchemaError` to detect the exact error and do whatever you want (like translating).
+Currently, all errors thrown by the validation are instances of `SchemaError` with a `message` attribute in English. This may not be convenient for translation, however you can for now rely on the `reason` attribute of a `SchemaError` to detect the exact error and do whatever you want (like translating).
 
 **( ! ) Consider this as an experimental feature, as it is planned for a next version to return explicit error objects like `FieldMinLengthError` instead of the generic `SchemaError`.**
 
@@ -240,8 +246,10 @@ function getSchemaErrorMessage(error, locale) {
 
 ## Checking field's type
 
-The type of a field can be checked with the following option:
-- `type: 'array' or Boolean or Number or String or Schema`
+Use `type` to check the type of the field value. It can be a basic type (array, boolean, number, object, string), or an advanced type like an instance of `Schema` or an object constructor like `Date`.
+
+- Accepts `"array"`, `"boolean"`, `"number"`, `"string"`, `Date`, `instance of Schema`
+- Throws `FieldTypeError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -249,7 +257,7 @@ import UserSchema from './UserSchema';
 
 const schema = new Schema({
   // The field must be a boolean.
-  checkable: {
+  boolean: {
     type: 'boolean'
   },
   // The field must be a number.
@@ -289,8 +297,10 @@ const schema = new Schema({
 
 ## Checking floating/integer number
 
-The type of a number can be checked with the following option:
-- `decimal: Boolean or Function`
+Use `decimal` to check if a field value is a floating number.
+
+- Accepts `"boolean"`, `Function`
+- Throws `FieldDecimalError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -313,12 +323,11 @@ export default schema;
 
 ## Checking length
 
-The length of a field can be checked with the following options:
-- `length: Number or Function`
-- `minLength: Number or Function`
-- `maxLength: Number or Function`
+Use `maxLength` and `minLength` to check the length of a field value.
+It works on any object with a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will work too.
 
-This works on any object with a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will work too.
+- Accepts `"number"`, `Function`
+- Throws `FieldMaxLengthError`, `FieldMinLengthError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -357,9 +366,10 @@ export default schema;
 
 ## Checking maximum and minimum value
 
-The maximum/minimum value of an object can be checked with the following options:
-- `max: Number or Function`
-- `min: Number or Function`
+Use `max` and `min` to check if a field value is below or above a limit.
+
+- Accepts `"number"`, `Function`
+- Throws `FieldMaxError`, `FieldMinError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -388,8 +398,10 @@ export default schema;
 
 ## Checking nullable value
 
-The `null` value of a field can be checked with the following options:
-- `nullable: Boolean or Function`
+Use `nullable` to check if a field value is `null`.
+
+- Accepts `"boolean"`, `Function`
+- Throws `FieldNullableError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -412,9 +424,10 @@ export default schema;
 
 ## Checking words count
 
-The number of words in a `String` can be checked with the following options:
-- `maxWords: Number or Function`
-- `minWords: Number or Function`
+Use `maxWords` and `minWords` to limit words count in a string.
+
+- Accepts `"number"`, `Function`
+- Throws `FieldMaxWordsError`, `FieldMinWordsError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -437,8 +450,11 @@ export default schema;
 
 ## Checking required field
 
-The presence of a field can be checked with the following option:
-- `required: Boolean or Function`
+Use `required` to check if a field is `undefined`. Be advised that
+`required` will not throw an error if the field is `null`, use `nullable` if you want to check for `null` value.
+
+- Accepts `"boolean"`, `Function`
+- Throws `FieldRequiredError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -461,8 +477,10 @@ export default schema;
 
 ## Checking allowed values
 
-The value(s) of a field can be checked against a whitelist with the following option:
-- `allowed: Boolean or Function`
+Use `allowed` to check if a field value is allowed.
+
+- Accepts `"boolean"`, `Function`
+- Throws `FieldAllowedError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -490,8 +508,10 @@ export default schema;
 
 ## Checking denied values
 
-The value(s) of a field can be checked against a blacklist with the following option:
-- `denied: Boolean or Function`
+Use `denied` to check if a field value is denied.
+
+- Accepts `"boolean"`, `Function`
+- Throws `FieldDeniedError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -500,7 +520,7 @@ const schema = new Schema({
   // The array of strings must not contain 'yes' or 'no'.
   message: {
     type: ['string'],
-    denied: ['yes', 'no']
+    denied: ['fuck', 'sex', 'slut']
   },
 });
 
@@ -509,8 +529,10 @@ export default schema;
 
 ## Checking with regular expression
 
-The value of a `String` can be tested against a regular expression with the following option:
-- `regEx: RegExp or Function`
+Use `regEx` to check if a field value matches a regular expression.
+
+- Accepts `RegEx`, `Function`
+- Throws `FieldRegExError`
 
 ```js
 import Schema from '@jalik/schema';
@@ -637,7 +659,7 @@ export default schema;
 ## Setting field's label
 
 The label of a field can be set with the following option:
-- `label: String or Function`
+- `label: 'string'|Function`
 
 Note that the label could be used in errors, and if the label is not set, the field's name is used instead.
 
