@@ -210,18 +210,18 @@ describe('getMinLength()', () => {
   });
 });
 
-describe('getMinValue()', () => {
+describe('getMin()', () => {
   describe('with min: Number', () => {
     it('should return a number', () => {
       const field = new SchemaField('field', { min: 30 });
-      expect(field.getMinValue()).toBe(30);
+      expect(field.getMin()).toBe(30);
     });
   });
 
   describe('with min: undefined', () => {
     it('should return undefined', () => {
       const field = new SchemaField('field', {});
-      expect(field.getMinValue()).toBeUndefined();
+      expect(field.getMin()).toBeUndefined();
     });
   });
 });

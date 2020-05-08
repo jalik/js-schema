@@ -361,19 +361,19 @@ class SchemaField {
   }
 
   /**
+   * Returns field's minimal value.
+   * @return {number}
+   */
+  getMin() {
+    return this.properties.min;
+  }
+
+  /**
    * Returns field's minimal length.
    * @return {number}
    */
   getMinLength() {
     return this.properties.minLength;
-  }
-
-  /**
-   * Returns field's minimal value.
-   * @return {number}
-   */
-  getMinValue() {
-    return this.properties.min;
   }
 
   /**
