@@ -435,7 +435,7 @@ class SchemaField {
 
   /**
    * Parses a value.
-   * todo parse if field type is a schema
+   * todo parse value using type.parse(value) if field type instanceof Schema
    * todo return a Promise
    * @param {*} value
    * @return {*}
@@ -444,30 +444,25 @@ class SchemaField {
     let newValue = value;
 
     if (typeof value === 'string') {
-      const type = this.getType();
+      if (typeof this.properties.parse === 'function') {
+        newValue = this.properties.parse.call(this, value);
+      } else {
+        const type = this.getType();
 
-      // todo check if typeof type === 'function' else if type === 'string'
-      switch (type) {
-        case 'boolean':
-          newValue = /^true$/i.test(value);
-          break;
+        switch (type) {
+          case 'boolean':
+            newValue = /^true$/i.test(value);
+            break;
 
-        case 'integer':
-          newValue = parseInt(value, 10);
-          break;
+          case 'integer':
+            newValue = parseInt(value, 10);
+            break;
 
-        case 'number':
-          newValue = Number(value);
-          break;
+          case 'number':
+            newValue = Number(value);
+            break;
 
-        case 'string':
-          break;
-
-        default: {
-          if (typeof type === 'function' && !(type instanceof Schema)
-            && typeof this.properties.parse === 'function') {
-            newValue = this.properties.parse.call(this, value);
-          }
+          default:
         }
       }
     }
