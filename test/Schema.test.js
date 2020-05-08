@@ -100,8 +100,6 @@ describe('Schema', () => {
       expect(schema.parse({ boolean: 'true' })).toEqual({ boolean: true });
       expect(schema.parse({ boolean: 'FALSE' })).toEqual({ boolean: false });
       expect(schema.parse({ boolean: 'TRUE' })).toEqual({ boolean: true });
-      expect(schema.parse({ boolean: '0' })).toEqual({ boolean: false });
-      expect(schema.parse({ boolean: '1' })).toEqual({ boolean: true });
     });
 
     it('should parse number fields', () => {

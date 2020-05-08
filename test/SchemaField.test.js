@@ -183,14 +183,12 @@ describe('isRequired()', () => {
 });
 
 describe('parse(object)', () => {
-  it('should parse boolean fields', () => {
+  it('should parse boolean values', () => {
     const field = new SchemaField('boolean', { type: 'boolean' });
     expect(field.parse('false')).toEqual(false);
     expect(field.parse('true')).toEqual(true);
     expect(field.parse('FALSE')).toEqual(false);
     expect(field.parse('TRUE')).toEqual(true);
-    expect(field.parse('0')).toEqual(false);
-    expect(field.parse('1')).toEqual(true);
   });
 
   it('should parse number fields', () => {

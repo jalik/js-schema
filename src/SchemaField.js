@@ -448,7 +448,7 @@ class SchemaField {
       // todo check if typeof type === 'function' else if type === 'string'
       switch (type) {
         case 'boolean':
-          newValue = /^(?:1|true)$/i.test(value);
+          newValue = /^true$/i.test(value);
           break;
 
         case 'integer':
