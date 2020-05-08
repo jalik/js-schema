@@ -152,20 +152,35 @@ describe('Schema', () => {
     });
   });
 
-  describe('resolveField(String)', () => {
-    it('should return field properties', () => {
-      const PhoneSchema = new Schema({
-        number: { type: String },
-      });
-      const ChildSchema = new Schema({
-        phones: { type: [PhoneSchema] },
-      });
-      const ParentSchema = new Schema({
-        child: { type: ChildSchema },
-      });
+  describe('resolveField(name)', () => {
+    const PhoneSchema = new Schema({
+      number: { type: String },
+    });
+    const ChildSchema = new Schema({
+      phones: { type: [PhoneSchema] },
+    });
+    const ParentSchema = new Schema({
+      child: { type: ChildSchema },
+    });
+
+    it('should return field properties with dot syntax', () => {
+      expect(() => {
+        ParentSchema.resolveField('child.phones.number').getType();
+        ParentSchema.resolveField('child.phones[0].number').getType();
+      }).not.toThrow();
+    });
+
+    it('should return field properties with bracket syntax', () => {
       expect(() => {
         ParentSchema.resolveField('child[phones][number]').getType();
         ParentSchema.resolveField('child[phones][0][number]').getType();
+      }).not.toThrow();
+    });
+
+    it('should return field properties with mixed syntax (dot + bracket)', () => {
+      expect(() => {
+        ParentSchema.resolveField('child.phones[number]').getType();
+        ParentSchema.resolveField('child.phones[0][number]').getType();
       }).not.toThrow();
     });
   });

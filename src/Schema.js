@@ -210,65 +210,95 @@ class Schema {
   /**
    * Builds an object from a string (ex: [colors][0][code]).
    * @param {string} path (ex: address[country][code])
+   * @param {boolean} syntaxChecked
    * @throws {SyntaxError|TypeError}
    * @return {SchemaField|null}
    */
-  resolveField(path) {
-    let value;
+  resolveField(path, syntaxChecked = false) {
+    if (typeof path !== 'string') {
+      throw new Error('path must be a string');
+    }
+
+    const bracketIndex = path.indexOf('[');
+    const bracketEnd = path.indexOf(']');
+    const dotIndex = path.indexOf('.');
+
+    // Do not check syntax errors if already done.
+    if (!syntaxChecked) {
+      // Check for extra space.
+      if (path.indexOf(' ') !== -1) {
+        throw new SyntaxError(`path "${path}" is not valid`);
+      }
+      // Check if key is not defined (ex: []).
+      if (path.indexOf('[]') !== -1) {
+        throw new SyntaxError(`missing array index or object attribute in "${path}"`);
+      }
+      // Check for missing object attribute.
+      if (dotIndex + 1 === path.length) {
+        throw new SyntaxError(`missing object attribute in "${path}"`);
+      }
+
+      const closingBrackets = path.split(']').length;
+      const openingBrackets = path.split('[').length;
+
+      // Check for missing opening bracket.
+      if (openingBrackets < closingBrackets) {
+        throw new SyntaxError(`missing opening bracket "[" in "${path}"`);
+      }
+      // Check for missing closing bracket.
+      if (closingBrackets < openingBrackets) {
+        throw new SyntaxError(`missing closing bracket "]" in "${path}"`);
+      }
+    }
+
+    // Removes array indexes from path because we want to resolve field and not data.
+    const realPath = path.replace(/\[[0-9]+]/g, '');
+
     const fields = this.getFields();
-    const index = path.indexOf('[');
+    let name = realPath;
+    let subPath;
 
-    // Remove array indexes
-    const newPath = path.replace(/\[[0-9]+]/g, '');
+    // Resolve dot "." path.
+    if (dotIndex !== -1 && (bracketIndex === -1 || dotIndex < bracketIndex)) {
+      // ex: "object.field" => field: "object", subPath: "field"
+      name = realPath.substr(0, dotIndex);
+      subPath = realPath.substr(dotIndex + 1);
+    }
 
-    // Check missing brackets
-    if (index !== -1) {
-      const opening = newPath.match(/\[/g).length;
-      const closing = newPath.match(/]/g).length;
-
-      if (opening !== closing) {
-        throw new SyntaxError(`Missing opening '[' or closing ']' in '${newPath}'`);
+    // Resolve brackets "[..]" path.
+    if (bracketIndex !== -1 && (dotIndex === -1 || bracketIndex < dotIndex)) {
+      // ex: "[a].field" => field: "[a]", subPath: "field"
+      if (bracketIndex === 0) {
+        name = path.substring(bracketIndex + 1, bracketEnd);
+        // Resolve "field" instead of ".field" if array is followed by a dot.
+        subPath = realPath.substr(bracketEnd + (
+          realPath.substr(bracketEnd + 1, 1) === '.' ? 2 : 1
+        ));
+      } else {
+        // ex: "array[a].field" => field: "array", subPath: "[a].field"
+        name = path.substr(0, bracketIndex);
+        subPath = realPath.substr(bracketIndex);
       }
     }
 
-    let fieldName;
-    let subTree = '';
-
-    if (index < 0) {
-      fieldName = newPath;
-    } else if (index > 0) {
-      fieldName = newPath.substring(0, index);
-      subTree = newPath.substring(index);
-    } else if (index === 0) {
-      fieldName = newPath.substring(1, newPath.indexOf(']'));
-      const index2 = newPath.indexOf('[', 1);
-
-      if (index2 !== -1) {
-        subTree = newPath.substring(index2);
-      }
+    if (typeof fields[name] === 'undefined') {
+      throw new Error(`Field "${name}" does not exist`);
     }
 
-    if (typeof fields[fieldName] !== 'undefined') {
-      const field = fields[fieldName];
+    let field = fields[name];
 
-      // Check sub field
-      if (subTree && subTree.length) {
-        const schema = field.getType();
+    if (typeof subPath === 'string' && subPath.length > 0) {
+      const type = field.getType();
 
-        if (schema instanceof Schema) {
-          value = schema.resolveField(subTree);
-        } else if (schema instanceof Array) {
-          if (schema[0] instanceof Schema) {
-            value = schema[0].resolveField(subTree);
-          }
-        } else {
-          throw new TypeError(`Unknown field type for "${fieldName}".`);
-        }
-      } else if (newPath === fieldName || newPath === `[${fieldName}]`) {
-        value = field;
+      if (type instanceof Schema) {
+        field = type.resolveField(subPath);
+      } else if (type instanceof Array && type[0] instanceof Schema) {
+        field = type[0].resolveField(subPath);
+      } else {
+        throw new Error(`Field type not supported for "${name}".`);
       }
     }
-    return value;
+    return field;
   }
 
   /**
