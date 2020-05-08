@@ -53,28 +53,6 @@ describe('getAllowedValues()', () => {
   });
 });
 
-describe('getCheckFunction()', () => {
-  it('should return check function', () => {
-    const checkFunction = (value) => value > 10 && value < 20;
-    const field = new SchemaField('quantity', {
-      type: Number,
-      check: checkFunction,
-    });
-    expect(field.getCheckFunction()).toEqual(checkFunction);
-  });
-});
-
-describe('getCleanFunction()', () => {
-  it('should return clean function', () => {
-    const clean = (value) => value && value.trim();
-    const field = new SchemaField('text', {
-      type: String,
-      clean,
-    });
-    expect(field.getCleanFunction()).toEqual(clean);
-  });
-});
-
 describe('getDefaultValue()', () => {
   it('should return default value', () => {
     const field = new SchemaField('quantity', {
@@ -181,17 +159,6 @@ describe('getName()', () => {
       type: String,
     });
     expect(field.getName()).toEqual('text');
-  });
-});
-
-describe('getPrepareFunction()', () => {
-  it('should return prepare function', () => {
-    const prepareFunction = (value) => String(value);
-    const field = new SchemaField('text', {
-      type: String,
-      prepare: prepareFunction,
-    });
-    expect(field.getPrepareFunction()).toEqual(prepareFunction);
   });
 });
 

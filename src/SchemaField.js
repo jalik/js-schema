@@ -253,8 +253,8 @@ class SchemaField {
         }
 
         case 'string':
-          if (typeof this.getCleanFunction() === 'function') {
-            newValue = this.getCleanFunction()(newValue);
+          if (typeof this.properties.clean === 'function') {
+            newValue = this.properties.clean.call(this, newValue);
           } else {
             newValue = newValue.trim();
           }
@@ -277,24 +277,6 @@ class SchemaField {
    */
   getAllowedValues() {
     return this.properties.allowed;
-  }
-
-  /**
-   * Returns field's check function.
-   * todo remove method
-   * @return {Function|*}
-   */
-  getCheckFunction() {
-    return this.properties.check;
-  }
-
-  /**
-   * Returns clean function.
-   * todo remove method
-   * @return {Function|*}
-   */
-  getCleanFunction() {
-    return this.properties.clean;
   }
 
   /**
@@ -386,24 +368,6 @@ class SchemaField {
   }
 
   /**
-   * Returns field's parsing function.
-   * todo remove method
-   * @return {Function|*}
-   */
-  getParseFunction() {
-    return this.properties.parse;
-  }
-
-  /**
-   * Returns field's prepare function.
-   * todo remove method
-   * @return {Function|*}
-   */
-  getPrepareFunction() {
-    return this.properties.prepare;
-  }
-
-  /**
    * Returns field's properties.
    * @return {Object}
    */
@@ -485,8 +449,8 @@ class SchemaField {
 
         default: {
           if (typeof type === 'function' && !(type instanceof Schema)
-            && typeof this.getParseFunction() === 'function') {
-            newValue = this.getParseFunction()(value);
+            && typeof this.properties.parse === 'function') {
+            newValue = this.properties.parse(value);
           }
         }
       }
