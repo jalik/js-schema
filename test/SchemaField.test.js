@@ -173,12 +173,18 @@ describe('isNullable()', () => {
 });
 
 describe('isRequired()', () => {
-  it('should return a boolean', () => {
-    const field = new SchemaField('quantity', {
-      type: 'number',
-      nullable: true,
+  describe('with required = undefined', () => {
+    it('should return false', () => {
+      const field = new SchemaField('quantity', { type: 'number' });
+      expect(field.isRequired()).toBe(false);
     });
-    expect(field.isRequired()).toEqual(true);
+  });
+
+  describe('with required = true', () => {
+    it('should return true', () => {
+      const field = new SchemaField('quantity', { type: 'number', required: true });
+      expect(field.isRequired()).toBe(true);
+    });
   });
 });
 

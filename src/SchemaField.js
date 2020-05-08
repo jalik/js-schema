@@ -244,7 +244,7 @@ class SchemaField {
       parse: undefined,
       pattern: undefined,
       prepare: undefined,
-      required: true,
+      required: undefined,
       type: undefined,
       ...properties,
     };
