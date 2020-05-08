@@ -202,8 +202,9 @@ function checkFieldProperties(name, props) {
   }
 
   // Check pattern (regular expression)
-  if (typeof pattern !== 'undefined' && !contains(['function'], typeof pattern) && !(pattern instanceof RegExp)) {
-    throw new TypeError(`${name}.pattern must be a regular expression or function`);
+  if (!contains(['undefined', 'string', 'object', 'function'], typeof pattern)
+    || (typeof pattern === 'object' && !(pattern instanceof RegExp))) {
+    throw new TypeError(`${name}.pattern must be a string, a RegExp or function`);
   }
 
   // Check required
@@ -754,8 +755,11 @@ class SchemaField {
 
     // Test regular expression
     if (typeof props.pattern !== 'undefined') {
-      const pattern = computeValue(props.pattern, context);
+      let pattern = computeValue(props.pattern, context);
 
+      if (typeof pattern === 'string') {
+        pattern = new RegExp(pattern);
+      }
       if (!pattern.test(newVal)) {
         throw new FieldPatternError(label, pattern);
       }

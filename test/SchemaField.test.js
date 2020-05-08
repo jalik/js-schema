@@ -1092,7 +1092,32 @@ describe('validate(object)', () => {
     });
   });
 
-  describe('with pattern: (RegExp|Function)', () => {
+  describe('with pattern: (String|RegExp|Function)', () => {
+    describe('pattern: String', () => {
+      const field = new SchemaField('field', { pattern: '^[01]+$' });
+
+      describe('with incorrect value', () => {
+        it('should throw FieldPatternError', () => {
+          expect(() => { field.validate('12345'); })
+            .toThrow(FieldPatternError);
+        });
+      });
+
+      describe('with correct value', () => {
+        it('should not throw FieldPatternError', () => {
+          expect(() => { field.validate('01101'); })
+            .not.toThrow(FieldPatternError);
+        });
+      });
+
+      describe('with undefined', () => {
+        it('should not throw FieldPatternError', () => {
+          expect(() => { field.validate(undefined); })
+            .not.toThrow(FieldPatternError);
+        });
+      });
+    });
+
     describe('pattern: RegExp', () => {
       const field = new SchemaField('field', { pattern: /^[01]+$/ });
 

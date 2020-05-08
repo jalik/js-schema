@@ -144,7 +144,7 @@ const PhoneSchema = new Schema({
   number: {
     type: 'string',
     required: true,
-    pattern: /^\+[0-9.]+$/
+    pattern: '^\+[0-9.]+$'
   },
   type: {
     type: 'string',
@@ -162,7 +162,7 @@ const UserSchema = new Schema({
     type: 'string',
     maxLength: 255,
     // Don't use this regexp, it's just for the example.
-    pattern: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+/,
+    pattern: '^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+',
     required: true,
   },
   friends: {
@@ -509,22 +509,27 @@ const schema = new Schema({
 export default schema;
 ```
 
-## Checking with regular expression
+## Checking with a pattern (regular expression)
 
 Use `pattern` to check if a field value matches a regular expression.
 
-- Accepts `RegEx`, `Function`
-- Throws `FieldRegExError`
+- Accepts `String`, `RegExp`, `Function`
+- Throws `FieldPatternExError`
 
 ```js
 import Schema from '@jalik/schema';
 
 const schema = new Schema({
-  // The time must be like 'HH:mm'.
   time: {
     type: 'string',
-    pattern: /^\d{1,2}:\d{1,2}$/
+    // The time must be like 'HH:mm'.
+    pattern: '^\d{1,2}:\d{1,2}$'
   },
+  password: {
+    type: 'string',
+    // The password must contain alphanumeric and special characters.
+    pattern: /^[a-zA-Z0-9_&#@$*%?!]+$/
+  }
 });
 
 export default schema;
