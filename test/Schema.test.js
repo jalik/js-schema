@@ -55,14 +55,6 @@ describe('Schema', () => {
     expect(typeof Schema).toEqual('function');
   });
 
-  describe('addField(name, properties)', () => {
-    it('should add a field of the schema', () => {
-      const schema = new Schema({ a: { type: 'string' } });
-      schema.addField('b', { type: 'number' });
-      expect(schema.getField('b').getType()).toEqual('number');
-    });
-  });
-
   describe('clone()', () => {
     it('should create a copy of the schema', () => {
       const schema = new Schema({ fieldA: { type: 'string' } });

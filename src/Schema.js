@@ -35,19 +35,12 @@ class Schema {
   constructor(fields) {
     this.fields = {};
 
-    // Prepare fields
+    // Adds fields.
     Object.entries(fields).forEach((field) => {
-      this.addField(field[0], field[1]);
+      const name = field[0];
+      const properties = field[1];
+      this.fields[name] = new SchemaField(name, properties);
     });
-  }
-
-  /**
-   * Adds field to the schema.
-   * @param {string} name
-   * @param {Object} props
-   */
-  addField(name, props) {
-    this.fields[name] = new SchemaField(name, props);
   }
 
   /**
