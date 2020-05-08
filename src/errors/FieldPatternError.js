@@ -24,11 +24,11 @@
 
 import FieldError from './FieldError';
 
-class FieldRegExError extends FieldError {
-  constructor(field, regEx) {
-    super(field, 'field-regex', { regEx });
-    this.message = `The field "${field}" does not match the pattern ${regEx}.`;
+class FieldPatternError extends FieldError {
+  constructor(field, pattern) {
+    super(field, 'field-pattern', { pattern });
+    this.message = `The field "${field}" does not match the pattern ${pattern}.`;
   }
 }
 
-export default FieldRegExError;
+export default FieldPatternError;

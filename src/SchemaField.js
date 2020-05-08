@@ -35,7 +35,7 @@ import FieldMinError from './errors/FieldMinError';
 import FieldMinLengthError from './errors/FieldMinLengthError';
 import FieldMinWordsError from './errors/FieldMinWordsError';
 import FieldNullableError from './errors/FieldNullableError';
-import FieldRegExError from './errors/FieldRegExError';
+import FieldPatternError from './errors/FieldPatternError';
 import FieldRequiredError from './errors/FieldRequiredError';
 import FieldTypeError from './errors/FieldTypeError';
 import FieldValueTypesError from './errors/FieldValueTypesError';
@@ -66,8 +66,8 @@ export const fieldProperties = [
   'name',
   'nullable',
   'parse',
+  'pattern',
   'prepare',
-  'regEx',
   'required',
   'type',
 ];
@@ -101,8 +101,8 @@ function checkFieldProperties(name, props) {
     minWords,
     nullable,
     parse,
+    pattern,
     prepare,
-    regEx,
     required,
     type,
   } = props;
@@ -207,9 +207,9 @@ function checkFieldProperties(name, props) {
     throw new TypeError(`${name}.prepare must be a function`);
   }
 
-  // Check regular expression
-  if (typeof regEx !== 'undefined' && !contains(['function'], typeof regEx) && !(regEx instanceof RegExp)) {
-    throw new TypeError(`${name}.regEx must be a regular expression or function`);
+  // Check pattern (regular expression)
+  if (typeof pattern !== 'undefined' && !contains(['function'], typeof pattern) && !(pattern instanceof RegExp)) {
+    throw new TypeError(`${name}.pattern must be a regular expression or function`);
   }
 
   // Check required
@@ -242,8 +242,8 @@ class SchemaField {
       minWords: undefined,
       nullable: true,
       parse: undefined,
+      pattern: undefined,
       prepare: undefined,
-      regEx: undefined,
       required: true,
       type: undefined,
       ...properties,
@@ -393,19 +393,19 @@ class SchemaField {
   }
 
   /**
+   * Returns field's pattern (regular expression).
+   * @return {string|RegExp|*}
+   */
+  getPattern() {
+    return this.properties.pattern;
+  }
+
+  /**
    * Returns a copy of the field's properties.
    * @return {Object}
    */
   getProperties() {
     return deepExtend({}, this.properties);
-  }
-
-  /**
-   * Returns field's regular expression.
-   * @return {RegExp|*}
-   */
-  getRegEx() {
-    return this.properties.regEx;
   }
 
   /**
@@ -775,11 +775,11 @@ class SchemaField {
     }
 
     // Test regular expression
-    if (typeof props.regEx !== 'undefined') {
-      const regEx = computeValue(props.regEx, context);
+    if (typeof props.pattern !== 'undefined') {
+      const pattern = computeValue(props.pattern, context);
 
-      if (!regEx.test(newVal)) {
-        throw new FieldRegExError(label, regEx);
+      if (!pattern.test(newVal)) {
+        throw new FieldPatternError(label, pattern);
       }
     }
 
