@@ -93,6 +93,7 @@ function checkFieldProperties(name, props) {
     clean,
     decimal,
     denied,
+    label,
     length,
     max,
     maxLength,
@@ -152,7 +153,7 @@ function checkFieldProperties(name, props) {
     throw new TypeError(`${name}.denied must be an array or function`);
   }
 
-  // Set default label if missing
+  // Check label
   if (typeof label !== 'undefined' && !contains(['function', 'string'], typeof label)) {
     throw new TypeError(`${name}.label must be a string or function`);
   }
