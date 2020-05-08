@@ -402,6 +402,7 @@ class SchemaField {
 
   /**
    * Returns a copy of the field's properties.
+   * todo remove if useless
    * @return {Object}
    */
   getProperties() {
@@ -563,7 +564,7 @@ class SchemaField {
         break;
 
       case 'object':
-        if (typeof newVal !== 'object') {
+        if (typeof newVal !== 'object' || newVal instanceof Array) {
           throw new FieldTypeError(label, 'object');
         }
         break;
@@ -627,7 +628,7 @@ class SchemaField {
 
               case 'object':
                 for (let i = 0; i < newVal.length; i += 1) {
-                  if (typeof newVal[i] !== 'object') {
+                  if (typeof newVal[i] !== 'object' || newVal[i] instanceof Array) {
                     throw new FieldValueTypesError(label, 'object');
                   }
                 }
