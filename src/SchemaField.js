@@ -450,7 +450,7 @@ class SchemaField {
         default: {
           if (typeof type === 'function' && !(type instanceof Schema)
             && typeof this.properties.parse === 'function') {
-            newValue = this.properties.parse(value);
+            newValue = this.properties.parse.call(this, value);
           }
         }
       }
