@@ -170,32 +170,6 @@ describe('Schema', () => {
     });
   });
 
-  describe('update(Object)', () => {
-    it('should modify the schema', () => {
-      const PhoneSchema = new Schema({
-        number: {
-          type: String,
-          required: true,
-        },
-      });
-      const PersonSchema = new Schema({
-        name: {
-          type: String,
-          required: true,
-        },
-        phone: {
-          type: PhoneSchema.clone().update({
-            number: { required: false },
-          }),
-          required: true,
-        },
-      });
-      expect(PersonSchema.getField('name').isRequired()).toEqual(true);
-      expect(PersonSchema.getField('phone[number]').isRequired()).toEqual(false);
-      expect(PhoneSchema.getField('number').isRequired()).toEqual(true);
-    });
-  });
-
   describe('validate(Object, Object)', () => {
     describe('ignoreMissing: true', () => {
       it('should not throw an error for missing fields', () => {

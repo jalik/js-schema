@@ -272,25 +272,6 @@ class Schema {
   }
 
   /**
-   * Updates existing fields.
-   * @param {Object} fields
-   * @return {Schema}
-   */
-  update(fields) {
-    const schemaFields = this.getFields();
-    const keys = Object.keys(fields);
-    const keysLength = keys.length;
-
-    for (let i = 0; i < keysLength; i += 1) {
-      const fieldName = keys[i];
-      const props = fields[fieldName];
-      const field = schemaFields[fieldName].getProperties() || {};
-      this.addField(fieldName, deepExtend({}, field, props));
-    }
-    return this;
-  }
-
-  /**
    * Validates an object.
    * todo do not parse in validate
    * todo return a Promise
