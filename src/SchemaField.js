@@ -47,7 +47,7 @@ import {
 
 /**
  * Schema field properties
- * @type {[string]}
+ * @type {string[]}
  */
 export const fieldProperties = [
   'allowed',
@@ -225,6 +225,11 @@ function checkFieldProperties(name, props) {
 }
 
 class SchemaField {
+  /**
+   * Creates a schema field.
+   * @param {string} name
+   * @param {Object} properties
+   */
   constructor(name, properties) {
     // Default properties
     const props = {
@@ -259,6 +264,7 @@ class SchemaField {
 
   /**
    * Cleans a value.
+   * todo clean if field type is a schema
    * todo return a Promise
    * @param {*} value
    * @return {*}
@@ -444,6 +450,7 @@ class SchemaField {
 
   /**
    * Parses a value.
+   * todo parse if field type is a schema
    * todo return a Promise
    * @param {*} value
    * @return {*}
@@ -491,7 +498,7 @@ class SchemaField {
    * @param {Object} options
    * @return {*}
    */
-  validate(value, options) {
+  validate(value, options = {}) {
     // Default options
     const opt = {
       context: { [this.name]: value },

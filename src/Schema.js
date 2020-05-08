@@ -28,17 +28,17 @@ import SchemaError from './errors/SchemaError';
 import SchemaField from './SchemaField';
 
 class Schema {
+  /**
+   * Creates a schema.
+   * @param {Object} fields
+   */
   constructor(fields) {
     this.fields = {};
 
-    const fieldsKeys = Object.keys(fields);
-    const fieldsLength = fieldsKeys.length;
-
     // Prepare fields
-    for (let i = 0; i < fieldsLength; i += 1) {
-      const field = fieldsKeys[i];
-      this.addField(field, fields[field]);
-    }
+    Object.entries(fields).forEach((field) => {
+      this.addField(field[0], field[1]);
+    });
   }
 
   /**
@@ -310,7 +310,7 @@ class Schema {
    * @throws {SchemaError|FieldUnknownError}
    * @return {Object}
    */
-  validate(object, options) {
+  validate(object, options = {}) {
     // Default options
     const opt = {
       clean: true,
