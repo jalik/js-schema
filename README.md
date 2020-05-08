@@ -248,7 +248,7 @@ function getSchemaErrorMessage(error, locale) {
 
 Use `type` to check the type of the field value. It can be a basic type (array, boolean, number, object, string), or an advanced type like an instance of `Schema` or an object constructor like `Date`.
 
-- Accepts `"array"`, `"boolean"`, `"number"`, `"string"`, `Date`, `instance of Schema`
+- Accepts `"array"`, `"boolean"`, `"integer"`, `"number"`, `"string"`, `Date`, `instance of Schema`
 - Throws `FieldTypeError`
 
 ```js
@@ -260,7 +260,11 @@ const schema = new Schema({
   boolean: {
     type: 'boolean'
   },
-  // The field must be a number.
+  // The field must be an integer.
+  integer: {
+    type: 'integer'
+  },
+  // The field must be a number (integer or float).
   number: {
     type: 'number'
   },
@@ -280,6 +284,10 @@ const schema = new Schema({
   booleanArray: {
     type: ['boolean']
   },
+  // The field must be an array of integers.
+  integerArray: {
+    type: ['integer']
+  },
   // The field must be an array of numbers.
   numberArray: {
     type: ['number']
@@ -293,32 +301,6 @@ const schema = new Schema({
     type: [UserSchema]
   },
 });
-```
-
-## Checking floating/integer number
-
-Use `decimal` to check if a field value is a floating number.
-
-- Accepts `"boolean"`, `Function`
-- Throws `FieldDecimalError`
-
-```js
-import Schema from '@jalik/schema';
-
-const schema = new Schema({
-  // The field must be a float.
-  float: {
-    type: 'number',
-    decimal: true
-  },
-  // The field must be an integer.
-  integer: {
-    type: 'number',
-    decimal: false
-  },
-});
-
-export default schema;
 ```
 
 ## Checking length

@@ -162,16 +162,6 @@ describe('getName()', () => {
   });
 });
 
-describe('isDecimal()', () => {
-  it('should return a boolean', () => {
-    const field = new SchemaField('quantity', {
-      type: 'number',
-      decimal: false,
-    });
-    expect(field.isDecimal()).toEqual(false);
-  });
-});
-
 describe('isNullable()', () => {
   it('should return a boolean', () => {
     const field = new SchemaField('quantity', {
@@ -1359,82 +1349,72 @@ describe('constructor(name, props)', () => {
       });
     });
 
-    describe('type: "number" (float)', () => {
-      const field = new SchemaField('float', {
-        type: 'number',
+    describe('type: "integer"', () => {
+      const field = new SchemaField('integer', {
+        type: 'integer',
         required: true,
-        decimal: true,
       });
 
-      describe('float value', () => {
+      describe('with integer value', () => {
         it('should not throw an error', () => {
-          expect(() => {
-            field.validate(13.37);
-          }).not.toThrow();
+          expect(() => { field.validate(100); })
+            .not.toThrow();
         });
       });
 
-      describe('integer value', () => {
-        it('should not throw an error', () => {
-          expect(() => {
-            field.validate(100);
-          }).not.toThrow();
-        });
-      });
-
-      describe('boolean value', () => {
+      describe('with float value', () => {
         it('should throw an Error', () => {
-          expect(() => {
-            field.validate(true);
-          }).toThrow(FieldTypeError);
+          expect(() => { field.validate(13.37); })
+            .toThrow(FieldTypeError);
         });
       });
 
-      describe('string value', () => {
+      describe('with boolean value', () => {
         it('should throw an Error', () => {
-          expect(() => {
-            field.validate('20');
-          }).toThrow(FieldTypeError);
+          expect(() => { field.validate(true); })
+            .toThrow(FieldTypeError);
+        });
+      });
+
+      describe('with string value', () => {
+        it('should throw an Error', () => {
+          expect(() => { field.validate('20'); })
+            .toThrow(FieldTypeError);
         });
       });
     });
 
-    describe('type: "number" (integer)', () => {
-      const field = new SchemaField('int', {
+    describe('type: "number"', () => {
+      const field = new SchemaField('number', {
         type: 'number',
         required: true,
-        decimal: false,
       });
 
-      describe('integer value', () => {
+      describe('with integer value', () => {
         it('should not throw an error', () => {
-          expect(() => {
-            field.validate(100);
-          }).not.toThrow();
+          expect(() => { field.validate(100); })
+            .not.toThrow();
         });
       });
 
-      describe('float value', () => {
+      describe('with float value', () => {
         it('should throw an Error', () => {
-          expect(() => {
-            field.validate(13.37);
-          }).toThrow(FieldTypeError);
+          expect(() => { field.validate(13.37); })
+            .not.toThrow(FieldTypeError);
         });
       });
 
-      describe('boolean value', () => {
+      describe('with boolean value', () => {
         it('should throw an Error', () => {
-          expect(() => {
-            field.validate(true);
-          }).toThrow(FieldTypeError);
+          expect(() => { field.validate(true); })
+            .toThrow(FieldTypeError);
         });
       });
 
-      describe('string value', () => {
+      describe('with string value', () => {
         it('should throw an Error', () => {
-          expect(() => {
-            field.validate('20');
-          }).toThrow(FieldTypeError);
+          expect(() => { field.validate('20'); })
+            .toThrow(FieldTypeError);
         });
       });
     });

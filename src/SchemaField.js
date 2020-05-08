@@ -53,7 +53,6 @@ export const fieldProperties = [
   'allowed',
   'check',
   'clean',
-  'decimal',
   'defaultValue',
   'denied',
   'label',
@@ -91,7 +90,6 @@ function checkFieldProperties(name, props) {
     allowed,
     check,
     clean,
-    decimal,
     denied,
     label,
     length,
@@ -141,11 +139,6 @@ function checkFieldProperties(name, props) {
   // Check custom clean function
   if (typeof clean !== 'undefined' && typeof clean !== 'function') {
     throw new TypeError(`${name}.clean must be a function`);
-  }
-
-  // Check number decimal
-  if (typeof decimal !== 'undefined' && !contains(['function', 'boolean'], typeof decimal)) {
-    throw new TypeError(`${name}.decimal must be a boolean or function`);
   }
 
   // Check denied values
@@ -237,7 +230,6 @@ class SchemaField {
       allowed: undefined,
       check: undefined,
       clean: undefined,
-      decimal: undefined,
       defaultValue: undefined,
       denied: undefined,
       label: name,
@@ -425,15 +417,6 @@ class SchemaField {
   }
 
   /**
-   * Checks if field supports decimals.
-   * todo remove when type 'float' is added
-   * @return {boolean}
-   */
-  isDecimal() {
-    return this.properties.decimal === true;
-  }
-
-  /**
    * Checks if field is nullable.
    * @return {boolean}
    */
@@ -468,9 +451,10 @@ class SchemaField {
           newValue = /^(?:1|true)$/i.test(value);
           break;
 
-        // todo add case 'float':
-        // todo add case 'integer':
-        // todo add case 'int':
+        case 'integer':
+          newValue = parseInt(value, 10);
+          break;
+
         case 'number':
           newValue = Number(value);
           break;
@@ -566,22 +550,15 @@ class SchemaField {
         }
         break;
 
+      case 'integer':
+        if (typeof newVal !== 'number' || Number.isNaN(newVal) || newVal !== Math.round(newVal)) {
+          throw new FieldTypeError(label, 'integer');
+        }
+        break;
+
       case 'number':
         if (typeof newVal !== 'number' || Number.isNaN(newVal)) {
           throw new FieldTypeError(label, 'number');
-        }
-        if (typeof props.decimal !== 'undefined') {
-          const isDecimal = computeValue(props.decimal, context);
-
-          // Check decimal
-          if (typeof isDecimal !== 'undefined') {
-            if (isDecimal === true && !/^[0-9][0-9]*(\.[0-9]+)?$/.test(String(newVal))) {
-              throw new FieldTypeError(label, 'float');
-            }
-            if (isDecimal === false && !/^[0-9]+$/.test(String(newVal))) {
-              throw new FieldTypeError(label, 'integer');
-            }
-          }
         }
         break;
 
@@ -628,6 +605,14 @@ class SchemaField {
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'boolean') {
                     throw new FieldValueTypesError(label, 'boolean');
+                  }
+                }
+                break;
+
+              case 'integer':
+                for (let i = 0; i < newVal.length; i += 1) {
+                  if (typeof newVal[i] !== 'number' || Number.isNaN(newVal[i]) || newVal[i] !== Math.round(newVal[i])) {
+                    throw new FieldValueTypesError(label, 'integer');
                   }
                 }
                 break;
