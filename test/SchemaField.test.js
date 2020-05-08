@@ -192,7 +192,7 @@ describe('isRequired()', () => {
   });
 });
 
-describe('parse(Object)', () => {
+describe('parse(object)', () => {
   it('should parse boolean fields', () => {
     const field = new SchemaField('boolean', { type: Boolean });
     expect(field.parse('false')).toEqual(false);

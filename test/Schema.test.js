@@ -55,7 +55,7 @@ describe('Schema', () => {
     expect(typeof Schema).toEqual('function');
   });
 
-  describe('addField(String, Object)', () => {
+  describe('addField(name, properties)', () => {
     it('should add a field of the schema', () => {
       const schema = new Schema({ a: { type: String } });
       schema.addField('b', { type: Number });
@@ -70,7 +70,7 @@ describe('Schema', () => {
     });
   });
 
-  describe('extend(Object)', () => {
+  describe('extend(schema)', () => {
     it('should create an extended version of the schema', () => {
       const parent = new Schema({ fieldA: { type: String } });
       const child = parent.extend({ fieldB: { type: Number } });
@@ -79,7 +79,7 @@ describe('Schema', () => {
     });
   });
 
-  describe('getField(String)', () => {
+  describe('getField(name)', () => {
     it('should return field properties', () => {
       const fields = { text: { type: String } };
       const schema = new Schema(fields);
@@ -94,7 +94,7 @@ describe('Schema', () => {
     });
   });
 
-  describe('parse(Object)', () => {
+  describe('parse(object)', () => {
     it('should parse boolean fields', () => {
       const schema = new Schema({ boolean: { type: Boolean } });
       expect(schema.parse({ boolean: 'true' })).toEqual({ boolean: true });
@@ -129,7 +129,7 @@ describe('Schema', () => {
     });
   });
 
-  describe('removeUnknownFields(Object)', () => {
+  describe('removeUnknownFields(object)', () => {
     it('should remove unknown fields', () => {
       const schema = new Schema({ a: { type: Number } });
       expect(schema.removeUnknownFields({ a: 1, b: 2, c: 3 })).toEqual({ a: 1 });
@@ -185,7 +185,7 @@ describe('Schema', () => {
     });
   });
 
-  describe('validate(Object, Object)', () => {
+  describe('validate(object, options)', () => {
     describe('ignoreMissing: true', () => {
       it('should not throw an error for missing fields', () => {
         expect(() => {
