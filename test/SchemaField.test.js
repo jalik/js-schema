@@ -37,7 +37,6 @@ import FieldPatternError from '../src/errors/FieldPatternError';
 import FieldRequiredError from '../src/errors/FieldRequiredError';
 import FieldTypeError from '../src/errors/FieldTypeError';
 import FieldValueTypesError from '../src/errors/FieldValueTypesError';
-import Schema from '../src/Schema';
 import SchemaField from '../src/SchemaField';
 
 describe('SchemaField', () => {
@@ -664,124 +663,6 @@ describe('validate(object)', () => {
     });
 
     // todo add tests with length: Function
-
-    // todo remove tests
-    const LimitedLengthSchema = new Schema({
-      array: {
-        type: 'array',
-        required: false,
-        length: [3, 6],
-      },
-      object: {
-        type: Object,
-        required: false,
-        length: [5, 10],
-      },
-      string: {
-        type: 'string',
-        required: false,
-        length: [5, 10],
-      },
-    });
-    describe('Minimal length', () => {
-      describe('Array field with length < min length', () => {
-        it('should throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ array: [1] });
-          }).toThrow(FieldMinLengthError);
-        });
-      });
-
-      describe('Array field with length > min length', () => {
-        it('should not throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ array: [1, 2, 3, 4] });
-          }).not.toThrow();
-        });
-      });
-
-      describe('Object field with length < min length', () => {
-        it('should throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ object: { length: 0 } });
-          }).toThrow(FieldMinLengthError);
-        });
-      });
-      describe('Object field with length > min length', () => {
-        it('should not throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ object: { length: 5 } });
-          }).not.toThrow();
-        });
-      });
-
-      describe('String field with length < min length', () => {
-        it('should throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ string: 'shor' });
-          }).toThrow(FieldMinLengthError);
-        });
-      });
-
-      describe('String field with length > min length', () => {
-        it('should not throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ string: '123456' });
-          }).not.toThrow();
-        });
-      });
-    });
-
-    // todo remove tests
-    describe('Maximal length', () => {
-      describe('Array field with length > max length', () => {
-        it('should throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ array: [1, 2, 3, 4, 5, 6, 7, 8] });
-          }).toThrow(FieldMaxLengthError);
-        });
-      });
-
-      describe('Array field with length < max length', () => {
-        it('should not throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ array: [1, 2, 3] });
-          }).not.toThrow();
-        });
-      });
-
-      describe('Object field with length > max length', () => {
-        it('should throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ object: { length: 99 } });
-          }).toThrow(FieldMaxLengthError);
-        });
-      });
-
-      describe('Object field with length < max length', () => {
-        it('should not throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ object: { length: 6 } });
-          }).not.toThrow();
-        });
-      });
-
-      describe('String field with length > max length', () => {
-        it('should throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ string: 'loooooooooong' });
-          }).toThrow(FieldMaxLengthError);
-        });
-      });
-
-      describe('String field with length < max length', () => {
-        it('should not throw an Error', () => {
-          expect(() => {
-            LimitedLengthSchema.validate({ string: '1234567' });
-          }).not.toThrow();
-        });
-      });
-    });
   });
 
   describe('with max: (Number|Date|Function)', () => {

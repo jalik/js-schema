@@ -152,14 +152,8 @@ function checkFieldProperties(name, props) {
   }
 
   // Check length
-  if (typeof length !== 'undefined') {
-    if (length instanceof Array) {
-      if (length.length > 2) {
-        throw new RangeError(`${name}.length must only have 2 values [min, max]`);
-      }
-    } else if (!contains(['function', 'number'], typeof length)) {
-      throw new TypeError(`${name}.length must be a function, a number or an array[min, max]`);
-    }
+  if (typeof length !== 'undefined' && !contains(['function', 'number'], typeof length)) {
+    throw new TypeError(`${name}.length must be a function or number`);
   }
 
   // Check max value
@@ -697,19 +691,7 @@ class SchemaField {
     if (typeof props.length !== 'undefined' && typeof newVal.length !== 'undefined') {
       const length = computeValue(props.length, context);
 
-      // Ranged length
-      if (length instanceof Array) {
-        const minLength = length[0];
-        const maxLength = length[1];
-
-        if (typeof minLength === 'number' && newVal.length < minLength) {
-          throw new FieldMinLengthError(label, minLength);
-        }
-        if (typeof maxLength === 'number' && newVal.length > maxLength) {
-          throw new FieldMaxLengthError(label, maxLength);
-        }
-      } else if (newVal.length !== length) {
-        // Fixed length
+      if (newVal.length !== length) {
         throw new FieldLengthError(label, length);
       }
     }
