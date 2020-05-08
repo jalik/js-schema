@@ -240,7 +240,7 @@ class SchemaField {
       min: undefined,
       minLength: undefined,
       minWords: undefined,
-      nullable: true,
+      nullable: undefined,
       parse: undefined,
       pattern: undefined,
       prepare: undefined,

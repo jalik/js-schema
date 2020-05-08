@@ -1013,7 +1013,7 @@ describe('constructor(name, props)', () => {
   });
 
   describe('nullable: (Boolean|Function)', () => {
-    it('should equals true by default', () => {
+    it('should equals false by default', () => {
       expect(() => {
         new Schema({
           text: {
@@ -1021,7 +1021,7 @@ describe('constructor(name, props)', () => {
             required: false,
           },
         }).validate({ text: null });
-      }).not.toThrow();
+      }).toThrow();
     });
 
     describe('Not nullable field with null value', () => {
