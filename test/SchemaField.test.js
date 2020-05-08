@@ -191,14 +191,20 @@ describe('parse(object)', () => {
     expect(field.parse('TRUE')).toEqual(true);
   });
 
-  it('should parse number fields', () => {
+  it('should parse integer values', () => {
+    const field = new SchemaField('integer', { type: 'integer' });
+    expect(field.parse('12478.395')).toEqual(12478);
+    expect(field.parse('3.14')).toEqual(3);
+  });
+
+  it('should parse number values', () => {
     const field = new SchemaField('number', { type: 'number' });
     expect(field.parse('01010')).toEqual(1010);
     expect(field.parse('12345')).toEqual(12345);
     expect(field.parse('99.99')).toEqual(99.99);
   });
 
-  it('should parse fields using custom function if present', () => {
+  it('should parse values using custom function if present', () => {
     const field = new SchemaField('date', {
       type: Date,
       parse(value) {
