@@ -300,7 +300,7 @@ class SchemaField {
    * Returns field's allowed values.
    * @return {[]|Function}
    */
-  getAllowedValues() {
+  getAllowed() {
     return this.properties.allowed;
   }
 

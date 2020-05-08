@@ -66,18 +66,18 @@ describe('clean(any)', () => {
   });
 });
 
-describe('getAllowedValues()', () => {
+describe('getAllowed()', () => {
   describe('with allowed: Array', () => {
     it('should return an array', () => {
       const field = new SchemaField('field', { allowed: [1, 0] });
-      expect(field.getAllowedValues()).toStrictEqual([1, 0]);
+      expect(field.getAllowed()).toStrictEqual([1, 0]);
     });
   });
 
   describe('with allowed: undefined', () => {
     it('should return undefined', () => {
       const field = new SchemaField('field', {});
-      expect(field.getAllowedValues()).toBeUndefined();
+      expect(field.getAllowed()).toBeUndefined();
     });
   });
 });
