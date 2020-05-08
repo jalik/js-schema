@@ -233,6 +233,7 @@ class SchemaField {
 
   /**
    * Cleans a value.
+   * todo return a Promise
    * @param {*} value
    * @return {*}
    */
@@ -271,7 +272,7 @@ class SchemaField {
   }
 
   /**
-   * Returns allowed values.
+   * Returns field's allowed values.
    * @return {[]|Function}
    */
   getAllowedValues() {
@@ -279,7 +280,8 @@ class SchemaField {
   }
 
   /**
-   * Returns check function.
+   * Returns field's check function.
+   * todo remove method
    * @return {Function|*}
    */
   getCheckFunction() {
@@ -288,6 +290,7 @@ class SchemaField {
 
   /**
    * Returns clean function.
+   * todo remove method
    * @return {Function|*}
    */
   getCleanFunction() {
@@ -295,7 +298,7 @@ class SchemaField {
   }
 
   /**
-   * Returns default value.
+   * Returns field's default value.
    * @return {*}
    */
   getDefaultValue() {
@@ -303,7 +306,7 @@ class SchemaField {
   }
 
   /**
-   * Returns denied values.
+   * Returns field's denied values.
    * @return {[]|Function}
    */
   getDeniedValues() {
@@ -311,7 +314,7 @@ class SchemaField {
   }
 
   /**
-   * Returns label.
+   * Returns field's label.
    * @return {string}
    */
   getLabel() {
@@ -319,7 +322,7 @@ class SchemaField {
   }
 
   /**
-   * Returns length.
+   * Returns field's length.
    * @return {number}
    */
   getLength() {
@@ -327,7 +330,7 @@ class SchemaField {
   }
 
   /**
-   * Returns maximal length.
+   * Returns field's maximal length.
    * @return {number}
    */
   getMaxLength() {
@@ -335,7 +338,7 @@ class SchemaField {
   }
 
   /**
-   * Returns maximal value.
+   * Returns field's maximal value.
    * @return {number}
    */
   getMaxValue() {
@@ -343,7 +346,7 @@ class SchemaField {
   }
 
   /**
-   * Returns maximal words.
+   * Returns field's maximal words.
    * @return {number}
    */
   getMaxWords() {
@@ -351,7 +354,7 @@ class SchemaField {
   }
 
   /**
-   * Returns minimal length.
+   * Returns field's minimal length.
    * @return {number}
    */
   getMinLength() {
@@ -359,7 +362,7 @@ class SchemaField {
   }
 
   /**
-   * Returns minimal value.
+   * Returns field's minimal value.
    * @return {number}
    */
   getMinValue() {
@@ -367,7 +370,7 @@ class SchemaField {
   }
 
   /**
-   * Returns minimal words.
+   * Returns field's minimal words.
    * @return {number}
    */
   getMinWords() {
@@ -384,6 +387,7 @@ class SchemaField {
 
   /**
    * Returns field's parsing function.
+   * todo remove method
    * @return {Function|*}
    */
   getParseFunction() {
@@ -392,6 +396,7 @@ class SchemaField {
 
   /**
    * Returns field's prepare function.
+   * todo remove method
    * @return {Function|*}
    */
   getPrepareFunction() {
@@ -424,6 +429,7 @@ class SchemaField {
 
   /**
    * Checks if field supports decimals.
+   * todo remove when type 'float' is added
    * @return {boolean}
    */
   isDecimal() {
@@ -448,6 +454,7 @@ class SchemaField {
 
   /**
    * Parses a value.
+   * todo return a Promise
    * @param {*} value
    * @return {*}
    */
@@ -457,15 +464,25 @@ class SchemaField {
     if (typeof value === 'string') {
       const type = this.getType();
 
+      // todo check if typeof type === 'function' else if type === 'string'
       switch (type) {
+        // todo add case 'boolean'
         case Boolean:
           newValue = /^(?:1|true)$/i.test(value);
           break;
+
+        // todo add case 'number'
+        // todo add case 'float'
+        // todo add case 'integer'
+        // todo add case 'int'
         case Number:
           newValue = Number(value);
           break;
-        case String:// do nothing
+
+        // todo add case 'string'
+        case String:
           break;
+
         default: {
           if (typeof type === 'function' && !(type instanceof Schema)
             && typeof this.getParseFunction() === 'function') {
