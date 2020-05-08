@@ -352,6 +352,20 @@ describe('SchemaField({ minLength })', () => {
 
 describe('constructor(name, props)', () => {
   describe('allowed: (Array|Function)', () => {
+    describe('allowed and denied are defined', () => {
+      it('should throw an error', () => {
+        expect(() => (
+          new Schema({
+            color: {
+              type: String,
+              allowed: ['red'],
+              denied: ['blue'],
+            },
+          })
+        )).toThrow();
+      });
+    });
+
     describe('allowed: Array', () => {
       const field = new SchemaField('strings', {
         type: [String],

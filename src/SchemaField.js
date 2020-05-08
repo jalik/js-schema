@@ -135,6 +135,11 @@ class SchemaField {
       }
     }
 
+    // Check conflicting options.
+    if (props.allowed && props.denied) {
+      throw new TypeError('allowed and denied cannot be defined together');
+    }
+
     // Check allowed values
     if (typeof props.allowed !== 'undefined' && !(props.allowed instanceof Array) && typeof props.allowed !== 'function') {
       throw new TypeError(`${name}.allowed must be an array or function`);
@@ -664,8 +669,10 @@ class SchemaField {
       } else if (!contains(allowed, newVal)) {
         throw new FieldAllowedError(label, allowed);
       }
-    } else if (typeof props.denied !== 'undefined') {
-      // Check denied values
+    }
+
+    // Check denied values
+    if (typeof props.denied !== 'undefined') {
       const denied = computeValue(props.denied, context);
 
       if (newVal instanceof Array) {
