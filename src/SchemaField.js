@@ -115,10 +115,10 @@ function checkFieldProperties(name, props) {
       const arrayType = type[0];
 
       // Check that array type is a function or class
-      if (typeof arrayType !== 'function' && typeof arrayType !== 'object') {
+      if (!contains(['function', 'object', 'string'], typeof arrayType)) {
         throw new TypeError(`${name}.type[] must contain a class or a function`);
       }
-    } else if (!contains(['function', 'object'], typeof type)) {
+    } else if (!contains(['function', 'object', 'string'], typeof type)) {
       throw new TypeError(`${name}.type = "${type}" is not a valid type`);
     }
   }
@@ -464,21 +464,18 @@ class SchemaField {
 
       // todo check if typeof type === 'function' else if type === 'string'
       switch (type) {
-        // todo add case 'boolean'
-        case Boolean:
+        case 'boolean':
           newValue = /^(?:1|true)$/i.test(value);
           break;
 
-        // todo add case 'number'
-        // todo add case 'float'
-        // todo add case 'integer'
-        // todo add case 'int'
-        case Number:
+        // todo add case 'float':
+        // todo add case 'integer':
+        // todo add case 'int':
+        case 'number':
           newValue = Number(value);
           break;
 
-        // todo add case 'string'
-        case String:
+        case 'string':
           break;
 
         default: {
@@ -553,28 +550,23 @@ class SchemaField {
 
     // Check type
     switch (props.type) {
-      case Array:
+      case 'array':
         if (!(newVal instanceof Array)) {
           throw new FieldTypeError(label, 'array');
-        } else if (newVal.length === 0 && !isRequired) {
+        }
+        if (newVal.length === 0 && !isRequired) {
           // Ignore empty array if field is not required
           return newVal;
         }
         break;
 
-      case Boolean:
+      case 'boolean':
         if (typeof newVal !== 'boolean') {
           throw new FieldTypeError(label, 'boolean');
         }
         break;
 
-      case Function:
-        if (typeof newVal !== 'function') {
-          throw new FieldTypeError(label, 'function');
-        }
-        break;
-
-      case Number:
+      case 'number':
         if (typeof newVal !== 'number' || Number.isNaN(newVal)) {
           throw new FieldTypeError(label, 'number');
         }
@@ -593,15 +585,21 @@ class SchemaField {
         }
         break;
 
-      case Object:
+      case 'object':
         if (typeof newVal !== 'object') {
           throw new FieldTypeError(label, 'object');
         }
         break;
 
-      case String:
+      case 'string':
         if (typeof newVal !== 'string') {
           throw new FieldTypeError(label, 'string');
+        }
+        break;
+
+      case Function:
+        if (typeof newVal !== 'function') {
+          throw new FieldTypeError(label, 'function');
         }
         break;
 
@@ -626,10 +624,34 @@ class SchemaField {
           } else {
             // Check that array contains the declared type
             switch (arrayType) {
-              case Boolean:
+              case 'boolean':
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'boolean') {
                     throw new FieldValueTypesError(label, 'boolean');
+                  }
+                }
+                break;
+
+              case 'number':
+                for (let i = 0; i < newVal.length; i += 1) {
+                  if (typeof newVal[i] !== 'number') {
+                    throw new FieldValueTypesError(label, 'number');
+                  }
+                }
+                break;
+
+              case 'object':
+                for (let i = 0; i < newVal.length; i += 1) {
+                  if (typeof newVal[i] !== 'object') {
+                    throw new FieldValueTypesError(label, 'object');
+                  }
+                }
+                break;
+
+              case 'string':
+                for (let i = 0; i < newVal.length; i += 1) {
+                  if (typeof newVal[i] !== 'string') {
+                    throw new FieldValueTypesError(label, 'string');
                   }
                 }
                 break;
@@ -638,30 +660,6 @@ class SchemaField {
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'function') {
                     throw new FieldValueTypesError(label, 'function');
-                  }
-                }
-                break;
-
-              case Number:
-                for (let i = 0; i < newVal.length; i += 1) {
-                  if (typeof newVal[i] !== 'number') {
-                    throw new FieldValueTypesError(label, 'number');
-                  }
-                }
-                break;
-
-              case Object:
-                for (let i = 0; i < newVal.length; i += 1) {
-                  if (typeof newVal[i] !== 'object') {
-                    throw new FieldValueTypesError(label, 'object');
-                  }
-                }
-                break;
-
-              case String:
-                for (let i = 0; i < newVal.length; i += 1) {
-                  if (typeof newVal[i] !== 'string') {
-                    throw new FieldValueTypesError(label, 'string');
                   }
                 }
                 break;

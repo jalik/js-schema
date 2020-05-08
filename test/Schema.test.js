@@ -29,24 +29,24 @@ import Schema from '../src/Schema';
 describe('Schema', () => {
   const StringSchema = new Schema({
     string: {
-      type: String,
+      type: 'string',
       required: true,
     },
   });
 
   const TestSchema = new Schema({
     array: {
-      type: [Number],
+      type: ['number'],
       nullable: false,
       required: true,
       defaultValue: [],
     },
     number: {
-      type: Number,
+      type: 'number',
       required: true,
     },
     string: {
-      type: String,
+      type: 'string',
       required: true,
     },
   });
@@ -57,23 +57,23 @@ describe('Schema', () => {
 
   describe('addField(name, properties)', () => {
     it('should add a field of the schema', () => {
-      const schema = new Schema({ a: { type: String } });
-      schema.addField('b', { type: Number });
-      expect(schema.getField('b').getType()).toEqual(Number);
+      const schema = new Schema({ a: { type: 'string' } });
+      schema.addField('b', { type: 'number' });
+      expect(schema.getField('b').getType()).toEqual('number');
     });
   });
 
   describe('clone()', () => {
     it('should create a copy of the schema', () => {
-      const schema = new Schema({ fieldA: { type: String } });
+      const schema = new Schema({ fieldA: { type: 'string' } });
       expect(schema.clone()).toEqual(schema);
     });
   });
 
   describe('extend(schema)', () => {
     it('should create an extended version of the schema', () => {
-      const parent = new Schema({ fieldA: { type: String } });
-      const child = parent.extend({ fieldB: { type: Number } });
+      const parent = new Schema({ fieldA: { type: 'string' } });
+      const child = parent.extend({ fieldB: { type: 'number' } });
       const fields = child.getFields();
       expect(typeof fields.fieldA !== 'undefined' && typeof fields.fieldB !== 'undefined').toEqual(true);
     });
@@ -81,7 +81,7 @@ describe('Schema', () => {
 
   describe('getField(name)', () => {
     it('should return field properties', () => {
-      const fields = { text: { type: String } };
+      const fields = { text: { type: 'string' } };
       const schema = new Schema(fields);
       expect(() => (schema.getField('text').type)).not.toThrow();
     });
@@ -89,14 +89,14 @@ describe('Schema', () => {
 
   describe('getFields()', () => {
     it('should return all fields', () => {
-      const schema = new Schema({ field: { type: Array } });
+      const schema = new Schema({ field: { type: 'array' } });
       expect(schema.getFields() !== null).toEqual(true);
     });
   });
 
   describe('parse(object)', () => {
     it('should parse boolean fields', () => {
-      const schema = new Schema({ boolean: { type: Boolean } });
+      const schema = new Schema({ boolean: { type: 'boolean' } });
       expect(schema.parse({ boolean: 'true' })).toEqual({ boolean: true });
       expect(schema.parse({ boolean: 'FALSE' })).toEqual({ boolean: false });
       expect(schema.parse({ boolean: 'TRUE' })).toEqual({ boolean: true });
@@ -105,7 +105,7 @@ describe('Schema', () => {
     });
 
     it('should parse number fields', () => {
-      const schema = new Schema({ number: { type: Number } });
+      const schema = new Schema({ number: { type: 'number' } });
       expect(schema.parse({ number: '01010' })).toEqual({ number: 1010 });
       expect(schema.parse({ number: '12345' })).toEqual({ number: 12345 });
       expect(schema.parse({ number: '99.99' })).toEqual({ number: 99.99 });
@@ -131,13 +131,13 @@ describe('Schema', () => {
 
   describe('removeUnknownFields(object)', () => {
     it('should remove unknown fields', () => {
-      const schema = new Schema({ a: { type: Number } });
+      const schema = new Schema({ a: { type: 'number' } });
       expect(schema.removeUnknownFields({ a: 1, b: 2, c: 3 })).toEqual({ a: 1 });
     });
     it('should remove nested unknown fields', () => {
       const schema = new Schema({
-        a: { type: Number },
-        b: { type: new Schema({ b: { type: Number } }) },
+        a: { type: 'number' },
+        b: { type: new Schema({ b: { type: 'number' } }) },
       });
       expect(schema.removeUnknownFields({
         a: 1,
@@ -154,7 +154,7 @@ describe('Schema', () => {
 
   describe('resolveField(name)', () => {
     const PhoneSchema = new Schema({
-      number: { type: String },
+      number: { type: 'string' },
     });
     const ChildSchema = new Schema({
       phones: { type: [PhoneSchema] },

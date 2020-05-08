@@ -25,21 +25,21 @@ import Schema from '@jalik/schema';
 
 const PersonSchema = new Schema({
   name: {
-    type: String,
+    type: 'string',
     required: true,
     maxLength: 50
   },
   age: {
-    type: Number,
+    type: 'number',
     min: 1,
     max: 100
   },
   gender: {
-    type: String,
+    type: 'string',
     allowed: ['male', 'female'],
   },
   hobbies: {
-    type: [String],
+    type: ['string'],
     allowed: ['coding', 'playing', 'trolling']
   }
 });
@@ -77,11 +77,11 @@ import Schema from '@jalik/schema';
 
 const ProductSchema = new Schema({
   name: {
-    type: String,
+    type: 'string',
     required: true
   },
   price: {
-    type: Number,
+    type: 'number',
     min: 0.0,
     required: true
   }
@@ -106,7 +106,7 @@ import PersonSchema from './PersonSchema';
 PersonSchema.update({
   // Add or update this field
   nickName: {
-    type: String,
+    type: 'string',
     required: false
   }
 });
@@ -123,12 +123,12 @@ import Schema from '@jalik/schema';
 
 const AddressSchema = new Schema({
   city: {
-    type: String,
+    type: 'string',
     maxLength: 100,
     required: true
   },
   country: {
-    type: String,
+    type: 'string',
     allowed: ['PF', 'FR', 'US', 'CA'],
     required: true
   }
@@ -136,24 +136,24 @@ const AddressSchema = new Schema({
 
 const PhoneSchema = new Schema({
   number: {
-    type: String,
+    type: 'string',
     required: true,
     regEx: /^\+[0-9.]+$/
   },
   type: {
-    type: String,
+    type: 'string',
     allowed: ['mobile', 'home', 'business']
   }
 });
 
 const UserSchema = new Schema({
   name: {
-    type: String,
+    type: 'string',
     maxLength: 50,
     required: true,
   },
   email: {
-    type: String,
+    type: 'string',
     maxLength: 255,
     // Don't use this regexp, it's just for the example.
     regEx: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+/,
@@ -241,7 +241,7 @@ function getSchemaErrorMessage(error, locale) {
 ## Checking field's type
 
 The type of a field can be checked with the following option:
-- `type: Array or Boolean or Number or String or Schema`
+- `type: 'array' or Boolean or Number or String or Schema`
 
 ```js
 import Schema from '@jalik/schema';
@@ -250,15 +250,15 @@ import UserSchema from './UserSchema';
 const schema = new Schema({
   // The field must be a boolean.
   checkable: {
-    type: Boolean
+    type: 'boolean'
   },
   // The field must be a number.
   number: {
-    type: Number
+    type: 'number'
   },
   // The field must be a string.
   string: {
-    type: String
+    type: 'string'
   },
   // The field must matches UserSchema.
   user: {
@@ -266,19 +266,19 @@ const schema = new Schema({
   },
   // The field must be an array of any values.
   array: {
-    type: Array
+    type: 'array'
   },
   // The field must be an array of booleans.
   booleanArray: {
-    type: [Boolean]
+    type: ['boolean']
   },
   // The field must be an array of numbers.
   numberArray: {
-    type: [Number]
+    type: ['number']
   },
   // The field must be an array of strings.
   stringArray: {
-    type: [String]
+    type: ['string']
   },
   // The field must be an array of objects matching UserSchema.
   users: {
@@ -298,12 +298,12 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The field must be a float.
   float: {
-    type: Number,
+    type: 'number',
     decimal: true
   },
   // The field must be an integer.
   integer: {
-    type: Number,
+    type: 'number',
     decimal: false
   },
 });
@@ -326,27 +326,27 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The array must have exactly two values.
   arrayLength: {
-    type: Array,
+    type: 'array',
     length: 2
   },
   // The string must have exactly ten characters.
   fixedLength: {
-    type: String,
+    type: 'string',
     length: 10
   },
   // The string must have at least three characters.
   minLength: {
-    type: String,
+    type: 'string',
     minLength: 3
   },
   // The array must have ten values or less.
   maxLength: {
-    type: String,
+    type: 'string',
     maxLength: 10
   },
   // The string must have between five and ten characters (inclusive).
   minMaxLength: {
-    type: String,
+    type: 'string',
     minLength: 5,
     maxLength: 10
   }
@@ -373,12 +373,12 @@ const schema = new Schema({
   },
   // The number must be negative.
   negativeNumber: {
-    type: Number,
+    type: 'number',
     max: -1
   },
   // The number must be positive.
   positiveNumber: {
-    type: Number,
+    type: 'number',
     min: 0
   }
 });
@@ -397,12 +397,12 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The field cannot be null
   notNullable: {
-    type: String,
+    type: 'string',
     nullable: false
   },
   // The field can be null
   nullable: {
-    type: String,
+    type: 'string',
     nullable: true
   },
 });
@@ -422,12 +422,12 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The summary must not have more than 50 words.
   summary: {
-    type: String,
+    type: 'string',
     maxWords: 50
   },
   // The description must have at least ten words.
   description: {
-    type: String,
+    type: 'string',
     minWords: 10
   },
 });
@@ -446,12 +446,12 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The field is optional.
   optional: {
-    type: String,
+    type: 'string',
     required: false
   },
   // The field must be present.
   required: {
-    type: String,
+    type: 'string',
     required: true
   },
 });
@@ -470,17 +470,17 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The string must contain only '0' and '1'.
   binaryString: {
-    type: String,
+    type: 'string',
     allowed: ['0', '1']
   },
   // The array must contain only 0 and 1 as numbers.
   binaryNumber: {
-    type: [Number],
+    type: ['number'],
     allowed: [0, 1]
  },
   // The array must contain only hot colors.
   hotColors: {
-    type: [String],
+    type: ['string'],
     allowed: ['red', 'yellow', 'orange']
  },
 });
@@ -499,7 +499,7 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The array of strings must not contain 'yes' or 'no'.
   message: {
-    type: [String],
+    type: ['string'],
     denied: ['yes', 'no']
   },
 });
@@ -518,7 +518,7 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The time must be like 'HH:mm'.
   time: {
-    type: String,
+    type: 'string',
     regEx:/^\d{1,2}:\d{1,2}$/
   },
 });
@@ -542,7 +542,7 @@ const schema = new Schema({
     // It can be useful in some case
     // where clean cannot be used to do what you want.
     orderedNumbers: {
-        type: [Number],
+        type: ['number'],
         prepare: numbers => numbers.sort()
     },
 });
@@ -561,7 +561,7 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // The number must be even.
   evenNumber: {
-    type: Number,
+    type: 'number',
     check: value => value % 2 === 0
   }
 });
@@ -580,7 +580,7 @@ import Schema from '@jalik/schema';
 const schema = new Schema({
   // Every items in the list will be trimmed and lowercase.
   list: {
-    type: [String],
+    type: ['string'],
     clean: list => list.map(item => item.trim().toLowerCase())
   },
 });
@@ -600,7 +600,7 @@ import moment from 'moment';
 const schema = new Schema({
   // The date is formatted to ISO8601 using moment.
   birthday: {
-    type: String,
+    type: 'string',
     parse: value => moment(value, 'DD-MM-YYYY').format()
   },
 });
@@ -626,7 +626,7 @@ const schema = new Schema({
   },
   // The default priority is zero.
   priority: {
-    type: Number,
+    type: 'number',
     defaultValue: 0
   }
 });
@@ -669,17 +669,17 @@ const isPublishing = function(context) {
 
 const PostSchema = new Schema({
     title: {
-        type: String,
+        type: 'string',
         nullable: false,
         required: isPublishing
     },
     text: {
-        type: String,
+        type: 'string',
         nullable: false,
         required: isPublishing
     },
     status: {
-        type: String,
+        type: 'string',
         required: true,
         allowed: ['published', 'draft']
     }

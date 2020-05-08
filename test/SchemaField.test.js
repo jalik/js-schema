@@ -46,7 +46,7 @@ describe('SchemaField', () => {
 describe('getAllowedValues()', () => {
   it('should return allowed values', () => {
     const field = new SchemaField('quantity', {
-      type: Number,
+      type: 'number',
       allowed: [10, 20],
     });
     expect(field.getAllowedValues()).toEqual([10, 20]);
@@ -56,7 +56,7 @@ describe('getAllowedValues()', () => {
 describe('getDefaultValue()', () => {
   it('should return default value', () => {
     const field = new SchemaField('quantity', {
-      type: Number,
+      type: 'number',
       defaultValue: 99,
     });
     expect(field.getDefaultValue()).toEqual(99);
@@ -66,7 +66,7 @@ describe('getDefaultValue()', () => {
 describe('getDeniedValues()', () => {
   it('should return denied values', () => {
     const field = new SchemaField('quantity', {
-      type: Number,
+      type: 'number',
       denied: [5, 15],
     });
     expect(field.getDeniedValues()).toEqual([5, 15]);
@@ -76,7 +76,7 @@ describe('getDeniedValues()', () => {
 describe('getLabel()', () => {
   it('should return label', () => {
     const field = new SchemaField('name', {
-      type: String,
+      type: 'string',
       label: 'Name',
     });
     expect(field.getLabel()).toEqual('Name');
@@ -86,7 +86,7 @@ describe('getLabel()', () => {
 describe('getLength()', () => {
   it('should return length', () => {
     const field = new SchemaField('name', {
-      type: String,
+      type: 'string',
       length: 10,
     });
     expect(field.getLength()).toEqual(10);
@@ -96,7 +96,7 @@ describe('getLength()', () => {
 describe('getMaxLength()', () => {
   it('should return max length', () => {
     const field = new SchemaField('text', {
-      type: String,
+      type: 'string',
       maxLength: 25,
     });
     expect(field.getMaxLength()).toEqual(25);
@@ -106,7 +106,7 @@ describe('getMaxLength()', () => {
 describe('getMaxValue()', () => {
   it('should return max value', () => {
     const field = new SchemaField('num', {
-      type: Number,
+      type: 'number',
       max: 100,
     });
     expect(field.getMaxValue()).toEqual(100);
@@ -116,7 +116,7 @@ describe('getMaxValue()', () => {
 describe('getMaxWords()', () => {
   it('should return max words', () => {
     const field = new SchemaField('text', {
-      type: String,
+      type: 'string',
       maxWords: 30,
     });
     expect(field.getMaxWords()).toEqual(30);
@@ -126,7 +126,7 @@ describe('getMaxWords()', () => {
 describe('getMinLength()', () => {
   it('should return min length', () => {
     const field = new SchemaField('text', {
-      type: String,
+      type: 'string',
       minLength: 25,
     });
     expect(field.getMinLength()).toEqual(25);
@@ -136,7 +136,7 @@ describe('getMinLength()', () => {
 describe('getMinValue()', () => {
   it('should return min value', () => {
     const field = new SchemaField('num', {
-      type: Number,
+      type: 'number',
       min: 100,
     });
     expect(field.getMinValue()).toEqual(100);
@@ -146,7 +146,7 @@ describe('getMinValue()', () => {
 describe('getMinWords()', () => {
   it('should return min words', () => {
     const field = new SchemaField('text', {
-      type: String,
+      type: 'string',
       minWords: 30,
     });
     expect(field.getMinWords()).toEqual(30);
@@ -156,7 +156,7 @@ describe('getMinWords()', () => {
 describe('getName()', () => {
   it('should return field name', () => {
     const field = new SchemaField('text', {
-      type: String,
+      type: 'string',
     });
     expect(field.getName()).toEqual('text');
   });
@@ -165,7 +165,7 @@ describe('getName()', () => {
 describe('isDecimal()', () => {
   it('should return a boolean', () => {
     const field = new SchemaField('quantity', {
-      type: Number,
+      type: 'number',
       decimal: false,
     });
     expect(field.isDecimal()).toEqual(false);
@@ -175,7 +175,7 @@ describe('isDecimal()', () => {
 describe('isNullable()', () => {
   it('should return a boolean', () => {
     const field = new SchemaField('quantity', {
-      type: Number,
+      type: 'number',
       nullable: false,
     });
     expect(field.isNullable()).toEqual(false);
@@ -185,7 +185,7 @@ describe('isNullable()', () => {
 describe('isRequired()', () => {
   it('should return a boolean', () => {
     const field = new SchemaField('quantity', {
-      type: Number,
+      type: 'number',
       nullable: true,
     });
     expect(field.isRequired()).toEqual(true);
@@ -194,7 +194,7 @@ describe('isRequired()', () => {
 
 describe('parse(object)', () => {
   it('should parse boolean fields', () => {
-    const field = new SchemaField('boolean', { type: Boolean });
+    const field = new SchemaField('boolean', { type: 'boolean' });
     expect(field.parse('false')).toEqual(false);
     expect(field.parse('true')).toEqual(true);
     expect(field.parse('FALSE')).toEqual(false);
@@ -204,7 +204,7 @@ describe('parse(object)', () => {
   });
 
   it('should parse number fields', () => {
-    const field = new SchemaField('number', { type: Number });
+    const field = new SchemaField('number', { type: 'number' });
     expect(field.parse('01010')).toEqual(1010);
     expect(field.parse('12345')).toEqual(12345);
     expect(field.parse('99.99')).toEqual(99.99);
@@ -227,11 +227,11 @@ describe('parse(object)', () => {
 // maxLength
 
 describe('SchemaField({ maxLength })', () => {
-  describe('SchemaField({ maxLength, type: String })', () => {
+  describe('SchemaField({ maxLength, type: "string" })', () => {
     it('should throw an error if length is above max length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: String,
+          type: 'string',
           maxLength: 3,
         }).validate('1234');
       }).toThrow(FieldMaxLengthError);
@@ -240,7 +240,7 @@ describe('SchemaField({ maxLength })', () => {
     it('should not throw an error if length is equal to max length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: String,
+          type: 'string',
           maxLength: 3,
         }).validate('123');
       }).not.toThrow();
@@ -249,18 +249,18 @@ describe('SchemaField({ maxLength })', () => {
     it('should not throw an error if length is below max length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: String,
+          type: 'string',
           maxLength: 3,
         }).validate('12');
       }).not.toThrow();
     });
   });
 
-  describe('SchemaField({ maxLength, type: Array })', () => {
+  describe('SchemaField({ maxLength, type: "array" })', () => {
     it('should throw an error if length is above max length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: Array,
+          type: 'array',
           maxLength: 3,
         }).validate([1, 2, 3, 4]);
       }).toThrow(FieldMaxLengthError);
@@ -269,7 +269,7 @@ describe('SchemaField({ maxLength })', () => {
     it('should not throw an error if length is equal to max length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: Array,
+          type: 'array',
           maxLength: 3,
         }).validate([1, 2, 3]);
       }).not.toThrow();
@@ -278,7 +278,7 @@ describe('SchemaField({ maxLength })', () => {
     it('should not throw an error if length is below max length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: Array,
+          type: 'array',
           maxLength: 3,
         }).validate([1, 2]);
       }).not.toThrow();
@@ -289,11 +289,11 @@ describe('SchemaField({ maxLength })', () => {
 // minLength
 
 describe('SchemaField({ minLength })', () => {
-  describe('SchemaField({ minLength, type: String })', () => {
+  describe('SchemaField({ minLength, type: "string" })', () => {
     it('should throw an error if length is below min length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: String,
+          type: 'string',
           minLength: 3,
         }).validate('12');
       }).toThrow(FieldMinLengthError);
@@ -302,7 +302,7 @@ describe('SchemaField({ minLength })', () => {
     it('should not throw an error if length is equal to min length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: String,
+          type: 'string',
           minLength: 3,
         }).validate('123');
       }).not.toThrow();
@@ -311,18 +311,18 @@ describe('SchemaField({ minLength })', () => {
     it('should not throw an error if length is above min length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: String,
+          type: 'string',
           minLength: 3,
         }).validate('1234');
       }).not.toThrow();
     });
   });
 
-  describe('SchemaField({ minLength, type: Array })', () => {
+  describe('SchemaField({ minLength, type: "array" })', () => {
     it('should throw an error if length is below min length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: Array,
+          type: 'array',
           minLength: 3,
         }).validate([1, 2]);
       }).toThrow(FieldMinLengthError);
@@ -331,7 +331,7 @@ describe('SchemaField({ minLength })', () => {
     it('should not throw an error if length is equal to min length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: Array,
+          type: 'array',
           minLength: 3,
         }).validate([1, 2, 3]);
       }).not.toThrow();
@@ -340,7 +340,7 @@ describe('SchemaField({ minLength })', () => {
     it('should not throw an error if length is above min length', () => {
       expect(() => {
         new SchemaField('test', {
-          type: Array,
+          type: 'array',
           minLength: 3,
         }).validate([1, 2, 3, 4]);
       }).not.toThrow();
@@ -357,7 +357,7 @@ describe('constructor(name, props)', () => {
         expect(() => (
           new Schema({
             color: {
-              type: String,
+              type: 'string',
               allowed: ['red'],
               denied: ['blue'],
             },
@@ -368,7 +368,7 @@ describe('constructor(name, props)', () => {
 
     describe('allowed: Array', () => {
       const field = new SchemaField('strings', {
-        type: [String],
+        type: ['string'],
         nullable: false,
         required: false,
         allowed: ['off', 'on'],
@@ -393,7 +393,7 @@ describe('constructor(name, props)', () => {
 
     describe('allowed: Function', () => {
       const field = new SchemaField('strings', {
-        type: [String],
+        type: ['string'],
         nullable: false,
         required: false,
         allowed() {
@@ -422,7 +422,7 @@ describe('constructor(name, props)', () => {
   describe('check: Function', () => {
     describe('check on Array', () => {
       const field = new SchemaField('array', {
-        type: [Number],
+        type: ['number'],
         nullable: false,
         required: false,
         check(value) {
@@ -454,7 +454,7 @@ describe('constructor(name, props)', () => {
 
     describe('check on Number', () => {
       const field = new SchemaField('number', {
-        type: Number,
+        type: 'number',
         nullable: false,
         required: false,
         check(value) {
@@ -485,7 +485,7 @@ describe('constructor(name, props)', () => {
 
   describe('clean: Function', () => {
     const field = new SchemaField('text', {
-      type: String,
+      type: 'string',
       nullable: false,
       required: false,
       clean(value) {
@@ -500,7 +500,7 @@ describe('constructor(name, props)', () => {
 
   describe('prepare: Function', () => {
     const field = new SchemaField('price', {
-      type: String,
+      type: 'string',
       prepare(value) {
         return `${value}F`;
       },
@@ -514,7 +514,7 @@ describe('constructor(name, props)', () => {
   describe('defaultValue: (*|Function)', () => {
     describe('defaultValue: String', () => {
       const field = new SchemaField('optional', {
-        type: String,
+        type: 'string',
         nullable: true,
         required: false,
         defaultValue: 'test',
@@ -530,7 +530,7 @@ describe('constructor(name, props)', () => {
 
     describe('defaultValue: [Number]', () => {
       const field = new SchemaField('numbers', {
-        type: [Number],
+        type: ['number'],
         nullable: false,
         required: true,
         defaultValue: [0, 2],
@@ -552,7 +552,7 @@ describe('constructor(name, props)', () => {
 
     describe('defaultValue: Boolean', () => {
       const field = new SchemaField('bool', {
-        type: Boolean,
+        type: 'boolean',
         nullable: false,
         required: true,
         defaultValue: true,
@@ -600,7 +600,7 @@ describe('constructor(name, props)', () => {
 
     describe('defaultValue: Number', () => {
       const field = new SchemaField('number', {
-        type: Number,
+        type: 'number',
         nullable: false,
         required: true,
         defaultValue: 100,
@@ -621,7 +621,7 @@ describe('constructor(name, props)', () => {
 
     describe('defaultValue: String', () => {
       const field = new SchemaField('text', {
-        type: String,
+        type: 'string',
         nullable: false,
         required: true,
         defaultValue: 'default',
@@ -644,7 +644,7 @@ describe('constructor(name, props)', () => {
   describe('denied: (Array|Function)', () => {
     describe('denied: Array', () => {
       const field = new SchemaField('string', {
-        type: [String],
+        type: ['string'],
         nullable: false,
         required: false,
         denied: ['yes', 'no'],
@@ -669,7 +669,7 @@ describe('constructor(name, props)', () => {
 
     describe('denied: Function', () => {
       const field = new SchemaField('numbers', {
-        type: [String],
+        type: ['string'],
         nullable: false,
         required: false,
         denied() {
@@ -698,7 +698,7 @@ describe('constructor(name, props)', () => {
   describe('length: (Array|Number|Function)', () => {
     const FixedLengthSchema = new Schema({
       array: {
-        type: Array,
+        type: 'array',
         required: false,
         length: 3,
       },
@@ -708,7 +708,7 @@ describe('constructor(name, props)', () => {
         length: 22,
       },
       string: {
-        type: String,
+        type: 'string',
         required: false,
         length: 5,
       },
@@ -716,7 +716,7 @@ describe('constructor(name, props)', () => {
 
     const LimitedLengthSchema = new Schema({
       array: {
-        type: Array,
+        type: 'array',
         required: false,
         length: [3, 6],
       },
@@ -726,7 +726,7 @@ describe('constructor(name, props)', () => {
         length: [5, 10],
       },
       string: {
-        type: String,
+        type: 'string',
         required: false,
         length: [5, 10],
       },
@@ -885,7 +885,7 @@ describe('constructor(name, props)', () => {
   describe('max: (Number|Date|Function)', () => {
     const MaxSchema = new Schema({
       array: {
-        type: Array,
+        type: 'array',
         required: false,
         max: 10,
       },
@@ -895,7 +895,7 @@ describe('constructor(name, props)', () => {
         max: new Date(),
       },
       number: {
-        type: Number,
+        type: 'number',
         required: false,
         max: 10,
       },
@@ -953,7 +953,7 @@ describe('constructor(name, props)', () => {
   describe('min: (Number|Date|Function)', () => {
     const MinSchema = new Schema({
       array: {
-        type: Array,
+        type: 'array',
         required: false,
         min: 10,
       },
@@ -963,7 +963,7 @@ describe('constructor(name, props)', () => {
         min: new Date(),
       },
       number: {
-        type: Number,
+        type: 'number',
         required: false,
         min: 10,
       },
@@ -1023,7 +1023,7 @@ describe('constructor(name, props)', () => {
       expect(() => {
         new Schema({
           text: {
-            type: String,
+            type: 'string',
             required: false,
           },
         }).validate({ text: null });
@@ -1035,7 +1035,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: true,
               nullable: false,
             },
@@ -1049,7 +1049,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               nullable: true,
               required: false,
             },
@@ -1062,7 +1062,7 @@ describe('constructor(name, props)', () => {
   describe('required: (Boolean|Function)', () => {
     const Address = new Schema({
       city: {
-        type: String,
+        type: 'string',
         length: [0, 30],
         required: true,
         nullable: true,
@@ -1076,7 +1076,7 @@ describe('constructor(name, props)', () => {
         nullable: true,
       },
       name: {
-        type: String,
+        type: 'string',
         required: true,
         nullable: true,
       },
@@ -1084,14 +1084,14 @@ describe('constructor(name, props)', () => {
 
     const PostSchema = new Schema({
       text: {
-        type: String,
+        type: 'string',
         nullable: false,
         required(context) {
           return context.status === 'published';
         },
       },
       status: {
-        type: String,
+        type: 'string',
         required: true,
         allowed: ['published', 'draft'],
       },
@@ -1118,7 +1118,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: true,
               nullable: false,
             },
@@ -1136,7 +1136,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: true,
               nullable: true,
             },
@@ -1150,7 +1150,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: true,
               nullable: true,
             },
@@ -1164,7 +1164,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: false,
               nullable: true,
             },
@@ -1178,7 +1178,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: false,
               nullable: true,
             },
@@ -1192,7 +1192,7 @@ describe('constructor(name, props)', () => {
         expect(() => {
           new Schema({
             text: {
-              type: String,
+              type: 'string',
               required: false,
               nullable: true,
             },
@@ -1203,9 +1203,9 @@ describe('constructor(name, props)', () => {
   });
 
   describe('type: (Array|Boolean|Number|Object|String)', () => {
-    describe('type: [Boolean]', () => {
+    describe('type: ["boolean"]', () => {
       const field = new SchemaField('booleans', {
-        type: [Boolean],
+        type: ['boolean'],
         required: true,
       });
 
@@ -1226,9 +1226,9 @@ describe('constructor(name, props)', () => {
       });
     });
 
-    describe('type: [Number]', () => {
+    describe('type: ["number"]', () => {
       const field = new SchemaField('numbers', {
-        type: [Number],
+        type: ['number'],
         required: true,
       });
 
@@ -1249,32 +1249,80 @@ describe('constructor(name, props)', () => {
       });
     });
 
-    describe('type: [String]', () => {
-      const field = new SchemaField('strings', {
-        type: [String],
+    describe('type: ["object"]', () => {
+      const field = new SchemaField('objects', {
+        type: ['object'],
         required: true,
       });
 
-      describe('string values', () => {
+      describe('with objects', () => {
         it('should not throw an error', () => {
-          expect(() => {
-            field.validate(['a', 'b', 'c']);
-          }).not.toThrow();
+          const result = () => { field.validate([{}, {}]); };
+          expect(result).not.toThrow();
         });
       });
 
-      describe('mixed values', () => {
+      describe('with mixed values', () => {
         it('should throw an error', () => {
-          expect(() => {
-            field.validate([true, 100, 'false']);
-          }).toThrow(FieldValueTypesError);
+          const result = () => { field.validate([{}, true, 100, 'false']); };
+          expect(result).toThrow(FieldValueTypesError);
         });
       });
     });
 
-    describe('type: Boolean', () => {
+    describe('type: ["string"]', () => {
+      const field = new SchemaField('strings', {
+        type: ['string'],
+        required: true,
+      });
+
+      describe('with string values', () => {
+        it('should not throw an error', () => {
+          const result = () => { field.validate(['a', 'b', 'c']); };
+          expect(result).not.toThrow();
+        });
+      });
+
+      describe('with mixed values', () => {
+        it('should throw an error', () => {
+          const result = () => { field.validate([true, 100, 'false']); };
+          expect(result).toThrow(FieldValueTypesError);
+        });
+      });
+    });
+
+    // todo allow to check several types in an array
+    // describe('type: ["string", "number"]', () => {
+    //   const field = new SchemaField('strings', {
+    //     type: ['string', 'number'],
+    //     required: true,
+    //   });
+    //
+    //   describe('with string values', () => {
+    //     it('should not throw an error', () => {
+    //       const result = () => { field.validate(['a', 'b', 'c']); };
+    //       expect(result).not.toThrow();
+    //     });
+    //   });
+    //
+    //   describe('with number values', () => {
+    //     it('should not throw an error', () => {
+    //       const result = () => { field.validate([1, 2, 3]); };
+    //       expect(result).not.toThrow(FieldValueTypesError);
+    //     });
+    //   });
+    //
+    //   describe('with string and number values', () => {
+    //     it('should not throw an error', () => {
+    //       const result = () => { field.validate(['1', 2]); };
+    //       expect(result).not.toThrow(FieldValueTypesError);
+    //     });
+    //   });
+    // });
+
+    describe('type: "boolean"', () => {
       const field = new SchemaField('bool', {
-        type: Boolean,
+        type: 'boolean',
         required: true,
       });
 
@@ -1311,9 +1359,9 @@ describe('constructor(name, props)', () => {
       });
     });
 
-    describe('type: Number (float)', () => {
+    describe('type: "number" (float)', () => {
       const field = new SchemaField('float', {
-        type: Number,
+        type: 'number',
         required: true,
         decimal: true,
       });
@@ -1351,9 +1399,9 @@ describe('constructor(name, props)', () => {
       });
     });
 
-    describe('type: Number (integer)', () => {
+    describe('type: "number" (integer)', () => {
       const field = new SchemaField('int', {
-        type: Number,
+        type: 'number',
         required: true,
         decimal: false,
       });
@@ -1391,9 +1439,44 @@ describe('constructor(name, props)', () => {
       });
     });
 
-    describe('type: String', () => {
+    describe('type: "object"', () => {
+      const field = new SchemaField('obj', {
+        type: 'object',
+        required: true,
+      });
+
+      describe('with object', () => {
+        it('should not throw an error', () => {
+          const result = () => { field.validate({}); };
+          expect(result).not.toThrow();
+        });
+      });
+
+      describe('with boolean', () => {
+        it('should throw an Error', () => {
+          const result = () => { field.validate(true); };
+          expect(result).toThrow(FieldTypeError);
+        });
+      });
+
+      describe('with float', () => {
+        it('should throw an Error', () => {
+          const result = () => { field.validate(13.37); };
+          expect(result).toThrow(FieldTypeError);
+        });
+      });
+
+      describe('with integer', () => {
+        it('should throw an Error', () => {
+          const result = () => { field.validate(20); };
+          expect(result).toThrow(FieldTypeError);
+        });
+      });
+    });
+
+    describe('type: "string"', () => {
       const field = new SchemaField('text', {
-        type: String,
+        type: 'string',
         required: true,
       });
 
