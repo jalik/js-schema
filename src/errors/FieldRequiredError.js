@@ -26,8 +26,8 @@ import FieldError from './FieldError';
 
 class FieldRequiredError extends FieldError {
   constructor(field) {
-    super(field, 'field-missing'); // todo rename to field-required
-    this.message = `The field "${field}" is required.`;
+    super(field, 'field-required');
+    this.message = `"${field}" is required.`;
   }
 }
 
