@@ -81,7 +81,7 @@ function checkFieldProperties(name, props) {
   Object.entries(props).forEach((prop) => {
     if (!contains(fieldProperties, prop[0])) {
       // eslint-disable-next-line no-console
-      console.warn(`Unknown schema field property "${name}.${prop}"`);
+      console.warn(`Unknown schema field property "${name}.${prop[0]}"`);
     }
   });
 
