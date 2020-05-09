@@ -23,57 +23,128 @@
  */
 
 import {
-  AlphaRegex,
-  EmailRegex,
-  FQDNRegex,
+  DateRegExp,
+  DateTimeRegExp,
+  EmailRegExp,
+  HostnameRegExp,
+  IPv4RegExp,
+  TimeRegExp,
 } from '../src/regex';
 
-/**
- * REGULAR EXPRESSIONS
- */
-describe('RegEx', () => {
-  const invalidAlpha = 'aa .bbb';
-  const validAlpha = 'abcDEF';
-
-  describe('Valid alpha', () => {
+describe('DateRegExp', () => {
+  describe('with correct value', () => {
     it('should return true', () => {
-      expect(AlphaRegex.test(validAlpha)).toEqual(true);
+      expect(DateRegExp.test('2019-04-11'))
+        .toBeTruthy();
     });
   });
 
-  describe('Invalid alpha', () => {
+  describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(AlphaRegex.test(invalidAlpha)).toEqual(false);
+      expect(DateRegExp.test('2019-13-11'))
+        .toBeFalsy();
+      expect(DateRegExp.test('2019-04-32'))
+        .toBeFalsy();
     });
   });
+});
 
-  const invalidEmail = 'aa_aa@ bb.cc';
-  const validEmail = 'quick-test.1337@domain.com';
-
-  describe('Valid Email', () => {
+describe('DateTimeRegExp', () => {
+  describe('with correct value', () => {
     it('should return true', () => {
-      expect(EmailRegex.test(validEmail)).toEqual(true);
+      expect(DateTimeRegExp.test('2019-04-11T00:00:00+00:00'))
+        .toBeTruthy();
+      expect(DateTimeRegExp.test('2019-04-11T07:00:00-10:00'))
+        .toBeTruthy();
     });
   });
 
-  describe('Invalid Email', () => {
+  describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(EmailRegex.test(invalidEmail)).toEqual(false);
+      expect(DateTimeRegExp.test('2019-13-11T07:00:00-10:00'))
+        .toBeFalsy();
+      expect(DateTimeRegExp.test('2019-04-32T07:00:00-10:00'))
+        .toBeFalsy();
+      expect(DateTimeRegExp.test('2019-04-11T24:00:00-10:00'))
+        .toBeFalsy();
+      expect(DateTimeRegExp.test('2019-04-11T00:60:00-10:00'))
+        .toBeFalsy();
     });
   });
+});
 
-  const invalidFQDN = 'a.bcd_ef.ghi';
-  const validFQDN = 'a.bcd-ef.ghi';
-
-  describe('Valid FQDN', () => {
+describe('EmailRegExp', () => {
+  describe('with correct value', () => {
     it('should return true', () => {
-      expect(FQDNRegex.test(validFQDN)).toEqual(true);
+      expect(EmailRegExp.test('quick-test.1337@domain.com'))
+        .toBeTruthy();
     });
   });
 
-  describe('Invalid FQDN', () => {
+  describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(FQDNRegex.test(invalidFQDN)).toEqual(false);
+      expect(EmailRegExp.test('aa_aa@ bb.cc'))
+        .toBeFalsy();
+    });
+  });
+});
+
+describe('HostnameRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(HostnameRegExp.test('a.bcd-ef.ghi'))
+        .toBeTruthy();
+    });
+  });
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(HostnameRegExp.test('a.bcd_ef.ghi'))
+        .toBeFalsy();
+    });
+  });
+});
+
+describe('IPv4RegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(IPv4RegExp.test('192.168.0.1'))
+        .toBeTruthy();
+    });
+  });
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(IPv4RegExp.test('256.256.256.256'))
+        .toBeFalsy();
+    });
+  });
+});
+
+describe('TimeRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(TimeRegExp.test('00:00:00+00:00'))
+        .toBeTruthy();
+      expect(TimeRegExp.test('19:10:00+00:00'))
+        .toBeTruthy();
+      expect(TimeRegExp.test('21:10:00-10:00'))
+        .toBeTruthy();
+    });
+  });
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(TimeRegExp.test('24:00:00+00:00'))
+        .toBeFalsy();
+      expect(TimeRegExp.test('00:60:00+00:00'))
+        .toBeFalsy();
+      expect(TimeRegExp.test('00:00:60+00:00'))
+        .toBeFalsy();
+      expect(TimeRegExp.test('00:00:00+24:00'))
+        .toBeFalsy();
+      expect(TimeRegExp.test('00:00:00+00:60'))
+        .toBeFalsy();
     });
   });
 });
