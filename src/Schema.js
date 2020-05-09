@@ -66,11 +66,9 @@ class Schema {
 
       if (field) {
         const value = clonedObject[key];
-        // eslint-disable-next-line no-param-reassign
         clonedObject[key] = field.clean(value);
       } else if (opts.removeUnknown) {
         // Remove unknown field
-        // eslint-disable-next-line no-param-reassign
         delete clonedObject[key];
       }
     }
@@ -145,7 +143,6 @@ class Schema {
       const field = fields[key];
 
       if (key in clonedObject) {
-        // eslint-disable-next-line no-param-reassign
         clonedObject[key] = field.parse(clonedObject[key]);
       }
     }
@@ -189,10 +186,8 @@ class Schema {
       const field = fields[key];
 
       if (!field) {
-        // eslint-disable-next-line no-param-reassign
         delete clonedObject[key];
       } else if (field.getType() instanceof Schema) {
-        // eslint-disable-next-line no-param-reassign
         clonedObject[key] = field.getType().removeUnknownFields(clonedObject[key]);
       }
     }
@@ -295,8 +290,6 @@ class Schema {
 
   /**
    * Validates an object.
-   * todo do not parse in validate
-   * todo return a Promise
    * @param {Object} object
    * @param {Object} options
    * @throws {SchemaError|FieldUnknownError}
