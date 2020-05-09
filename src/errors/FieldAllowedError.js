@@ -26,8 +26,8 @@ import FieldError from './FieldError';
 
 class FieldAllowedError extends FieldError {
   constructor(field, allowed) {
-    super(field, 'field-bad-value', { allowed }); // todo rename to field-allowed
-    this.message = `The field "${field}" contains a bad value (${allowed}).`;
+    super(field, 'field-allowed', { allowed });
+    this.message = `"${field}" contains a value that is not allowed (${allowed}).`;
   }
 }
 
