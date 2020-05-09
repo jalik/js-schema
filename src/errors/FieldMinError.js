@@ -26,8 +26,8 @@ import FieldError from './FieldError';
 
 class FieldMinError extends FieldError {
   constructor(field, min) {
-    super(field, 'field-min-value', { min }); // todo rename to field-min
-    this.message = `The field "${field}" must be greater than or equals to ${min}.`;
+    super(field, 'field-min', { min });
+    this.message = `"${field}" must be greater than or equals to ${min}.`;
   }
 }
 
