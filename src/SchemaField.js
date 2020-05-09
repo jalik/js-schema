@@ -38,7 +38,6 @@ import FieldNullableError from './errors/FieldNullableError';
 import FieldPatternError from './errors/FieldPatternError';
 import FieldRequiredError from './errors/FieldRequiredError';
 import FieldTypeError from './errors/FieldTypeError';
-import FieldValueTypesError from './errors/FieldValueTypesError';
 import Schema from './Schema';
 import {
   computeValue,
@@ -527,7 +526,7 @@ class SchemaField {
     switch (props.type) {
       case 'array':
         if (!(newVal instanceof Array)) {
-          throw new FieldTypeError(label, 'array');
+          throw new FieldTypeError(label, props.type);
         }
         if (newVal.length === 0 && !isRequired) {
           // Ignore empty array if field is not required
@@ -537,31 +536,31 @@ class SchemaField {
 
       case 'boolean':
         if (typeof newVal !== 'boolean') {
-          throw new FieldTypeError(label, 'boolean');
+          throw new FieldTypeError(label, props.type);
         }
         break;
 
       case 'integer':
         if (typeof newVal !== 'number' || Number.isNaN(newVal) || newVal !== Math.round(newVal)) {
-          throw new FieldTypeError(label, 'integer');
+          throw new FieldTypeError(label, props.type);
         }
         break;
 
       case 'number':
         if (typeof newVal !== 'number' || Number.isNaN(newVal)) {
-          throw new FieldTypeError(label, 'number');
+          throw new FieldTypeError(label, props.type);
         }
         break;
 
       case 'object':
         if (typeof newVal !== 'object' || newVal instanceof Array) {
-          throw new FieldTypeError(label, 'object');
+          throw new FieldTypeError(label, props.type);
         }
         break;
 
       case 'string':
         if (typeof newVal !== 'string') {
-          throw new FieldTypeError(label, 'string');
+          throw new FieldTypeError(label, props.type);
         }
         break;
 
@@ -595,7 +594,7 @@ class SchemaField {
               case 'boolean':
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'boolean') {
-                    throw new FieldValueTypesError(label, 'boolean');
+                    throw new FieldTypeError(label, props.type);
                   }
                 }
                 break;
@@ -603,7 +602,7 @@ class SchemaField {
               case 'integer':
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'number' || Number.isNaN(newVal[i]) || newVal[i] !== Math.round(newVal[i])) {
-                    throw new FieldValueTypesError(label, 'integer');
+                    throw new FieldTypeError(label, props.type);
                   }
                 }
                 break;
@@ -611,7 +610,7 @@ class SchemaField {
               case 'number':
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'number') {
-                    throw new FieldValueTypesError(label, 'number');
+                    throw new FieldTypeError(label, props.type);
                   }
                 }
                 break;
@@ -619,7 +618,7 @@ class SchemaField {
               case 'object':
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'object' || newVal[i] instanceof Array) {
-                    throw new FieldValueTypesError(label, 'object');
+                    throw new FieldTypeError(label, props.type);
                   }
                 }
                 break;
@@ -627,7 +626,7 @@ class SchemaField {
               case 'string':
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'string') {
-                    throw new FieldValueTypesError(label, 'string');
+                    throw new FieldTypeError(label, props.type);
                   }
                 }
                 break;
@@ -635,7 +634,7 @@ class SchemaField {
               case Function:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (typeof newVal[i] !== 'function') {
-                    throw new FieldValueTypesError(label, 'function');
+                    throw new FieldTypeError(label, 'function');
                   }
                 }
                 break;
@@ -643,7 +642,7 @@ class SchemaField {
               default:
                 for (let i = 0; i < newVal.length; i += 1) {
                   if (!(newVal[i] instanceof arrayType)) {
-                    throw new FieldValueTypesError(label, arrayType);
+                    throw new FieldTypeError(label, arrayType);
                   }
                 }
             }
