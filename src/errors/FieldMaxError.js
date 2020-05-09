@@ -26,8 +26,8 @@ import FieldError from './FieldError';
 
 class FieldMaxError extends FieldError {
   constructor(field, max) {
-    super(field, 'field-max-value', { max }); // todo rename to field-max
-    this.message = `The field "${field}" must be lesser than or equals to ${max}.`;
+    super(field, 'field-max', { max });
+    this.message = `"${field}" must be lesser than or equals to ${max}.`;
   }
 }
 
