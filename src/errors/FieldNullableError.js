@@ -26,8 +26,8 @@ import FieldError from './FieldError';
 
 class FieldNullableError extends FieldError {
   constructor(field) {
-    super(field, 'field-null'); // todo rename to field-nullable
-    this.message = `The field "${field}" cannot be null.`;
+    super(field, 'field-nullable');
+    this.message = `"${field}" cannot be null.`;
   }
 }
 
