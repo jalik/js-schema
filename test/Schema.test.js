@@ -152,6 +152,18 @@ describe('Schema', () => {
     const ParentSchema = new Schema({
       child: { type: ChildSchema },
     });
+    const EmailSchema = new Schema({
+      address: { type: 'string' },
+    });
+    const UserSchema = new Schema({
+      emails: { type: [EmailSchema] },
+    });
+
+    it('should return field properties with dot syntax', () => {
+      expect(() => {
+        UserSchema.resolveField('emails[0].address').getType();
+      }).not.toThrow();
+    });
 
     it('should return field properties with dot syntax', () => {
       expect(() => {

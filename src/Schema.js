@@ -206,27 +206,30 @@ class Schema {
       throw new Error('path must be a string');
     }
 
-    const bracketIndex = path.indexOf('[');
-    const bracketEnd = path.indexOf(']');
-    const dotIndex = path.indexOf('.');
+    // Removes array indexes from path because we want to resolve field and not data.
+    const realPath = path.replace(/\[\d+]/g, '');
+
+    const bracketIndex = realPath.indexOf('[');
+    const bracketEnd = realPath.indexOf(']');
+    const dotIndex = realPath.indexOf('.');
 
     // Do not check syntax errors if already done.
     if (!syntaxChecked) {
       // Check for extra space.
-      if (path.indexOf(' ') !== -1) {
+      if (realPath.indexOf(' ') !== -1) {
         throw new SyntaxError(`path "${path}" is not valid`);
       }
       // Check if key is not defined (ex: []).
-      if (path.indexOf('[]') !== -1) {
+      if (realPath.indexOf('[]') !== -1) {
         throw new SyntaxError(`missing array index or object attribute in "${path}"`);
       }
       // Check for missing object attribute.
-      if (dotIndex + 1 === path.length) {
+      if (dotIndex + 1 === realPath.length) {
         throw new SyntaxError(`missing object attribute in "${path}"`);
       }
 
-      const closingBrackets = path.split(']').length;
-      const openingBrackets = path.split('[').length;
+      const closingBrackets = realPath.split(']').length;
+      const openingBrackets = realPath.split('[').length;
 
       // Check for missing opening bracket.
       if (openingBrackets < closingBrackets) {
@@ -237,9 +240,6 @@ class Schema {
         throw new SyntaxError(`missing closing bracket "]" in "${path}"`);
       }
     }
-
-    // Removes array indexes from path because we want to resolve field and not data.
-    const realPath = path.replace(/\[[0-9]+]/g, '');
 
     const fields = this.getFields();
     let name = realPath;
@@ -256,14 +256,14 @@ class Schema {
     if (bracketIndex !== -1 && (dotIndex === -1 || bracketIndex < dotIndex)) {
       // ex: "[a].field" => field: "[a]", subPath: "field"
       if (bracketIndex === 0) {
-        name = path.substring(bracketIndex + 1, bracketEnd);
+        name = realPath.substring(bracketIndex + 1, bracketEnd);
         // Resolve "field" instead of ".field" if array is followed by a dot.
         subPath = realPath.substr(bracketEnd + (
           realPath.substr(bracketEnd + 1, 1) === '.' ? 2 : 1
         ));
       } else {
         // ex: "array[a].field" => field: "array", subPath: "[a].field"
-        name = path.substr(0, bracketIndex);
+        name = realPath.substr(0, bracketIndex);
         subPath = realPath.substr(bracketIndex);
       }
     }
@@ -278,9 +278,9 @@ class Schema {
       const type = field.getType();
 
       if (type instanceof Schema) {
-        field = type.resolveField(subPath);
+        field = type.resolveField(subPath, true);
       } else if (type instanceof Array && type[0] instanceof Schema) {
-        field = type[0].resolveField(subPath);
+        field = type[0].resolveField(subPath, true);
       } else {
         throw new Error(`Field type not supported for "${name}".`);
       }
