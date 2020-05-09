@@ -474,6 +474,7 @@ class SchemaField {
     // Default options
     const opts = {
       context: { [this.name]: value },
+      rootOnly: false,
       ...options,
     };
 
@@ -572,7 +573,9 @@ class SchemaField {
 
       default:
         if (props.type instanceof Schema) {
-          props.type.validate(newVal, opts);
+          if (!opts.rootOnly) {
+            props.type.validate(newVal, opts);
+          }
         } else if (props.type instanceof Array) {
           // Check that value is an array
           if (!(newVal instanceof Array)) {
@@ -586,7 +589,9 @@ class SchemaField {
           // Validate array items
           if (arrayType instanceof Schema) {
             for (let i = 0; i < newVal.length; i += 1) {
-              arrayType.validate(newVal[i], opts);
+              if (!opts.rootOnly) {
+                arrayType.validate(newVal[i], opts);
+              }
             }
           } else {
             // Check that array contains the declared type

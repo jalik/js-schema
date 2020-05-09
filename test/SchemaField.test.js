@@ -1348,35 +1348,6 @@ describe('validate(object)', () => {
       });
     });
 
-    // todo allow to check several types in an array
-    // describe('type: ["string", "number"]', () => {
-    //   const field = new SchemaField('strings', {
-    //     type: ['string', 'number'],
-    //     required: true,
-    //   });
-    //
-    //   describe('with string values', () => {
-    //     it('should not throw an error', () => {
-    //       const result = () => { field.validate(['a', 'b', 'c']); };
-    //       expect(result).not.toThrow();
-    //     });
-    //   });
-    //
-    //   describe('with number values', () => {
-    //     it('should not throw an error', () => {
-    //       const result = () => { field.validate([1, 2, 3]); };
-    //       expect(result).not.toThrow(FieldValueTypesError);
-    //     });
-    //   });
-    //
-    //   describe('with string and number values', () => {
-    //     it('should not throw an error', () => {
-    //       const result = () => { field.validate(['1', 2]); };
-    //       expect(result).not.toThrow(FieldValueTypesError);
-    //     });
-    //   });
-    // });
-
     describe('type: String', () => {
       describe('type: "array"', () => {
         const field = new SchemaField('field', { type: 'array' });
@@ -1627,4 +1598,6 @@ describe('validate(object)', () => {
       });
     });
   });
+
+  // todo add tests to check rootOnly option
 });
