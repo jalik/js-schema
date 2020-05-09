@@ -50,8 +50,7 @@ class Schema {
    * @return {Object}
    */
   clean(object, options) {
-    // Default options
-    const opt = {
+    const opts = {
       removeUnknown: true,
       ...options,
     };
@@ -69,7 +68,7 @@ class Schema {
         const value = clonedObject[key];
         // eslint-disable-next-line no-param-reassign
         clonedObject[key] = field.clean(value);
-      } else if (opt.removeUnknown) {
+      } else if (opts.removeUnknown) {
         // Remove unknown field
         // eslint-disable-next-line no-param-reassign
         delete clonedObject[key];
@@ -304,8 +303,7 @@ class Schema {
    * @return {Object}
    */
   validate(object, options = {}) {
-    // Default options
-    const opt = {
+    const opts = {
       clean: true,
       ignoreMissing: false,
       ignoreUnknown: false,
@@ -323,13 +321,13 @@ class Schema {
     }
 
     // Remove unknown fields
-    if (opt.removeUnknown) {
+    if (opts.removeUnknown) {
       // eslint-disable-next-line no-param-reassign
       clonedObject = this.removeUnknownFields(clonedObject);
     }
 
     // Check unknown fields
-    if (!opt.ignoreUnknown) {
+    if (!opts.ignoreUnknown) {
       const objKeys = Object.keys(clonedObject);
       const objKeysLength = objKeys.length;
 
@@ -343,13 +341,13 @@ class Schema {
     }
 
     // Parse object fields
-    if (opt.parse) {
+    if (opts.parse) {
       // eslint-disable-next-line no-param-reassign
       clonedObject = this.parse(clonedObject);
     }
 
     // Add object as context of validation
-    opt.context = clonedObject;
+    opts.context = clonedObject;
 
     const keys = Object.keys(fields);
     const keyLength = keys.length;
@@ -360,10 +358,10 @@ class Schema {
       const value = clonedObject[key];
 
       // Ignore missing fields
-      if (typeof value !== 'undefined' || !opt.ignoreMissing) {
+      if (typeof value !== 'undefined' || !opts.ignoreMissing) {
         // Validate field and return processed value
         // eslint-disable-next-line no-param-reassign
-        clonedObject[key] = fields[key].validate(value, opt);
+        clonedObject[key] = fields[key].validate(value, opts);
       }
     }
     return clonedObject;
