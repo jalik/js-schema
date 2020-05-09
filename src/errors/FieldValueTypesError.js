@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_VALUES_TYPE = 'field-values-type';
+
 class FieldValueTypesError extends FieldError {
   constructor(field, type) {
-    super(field, 'field-values-type', { type });
-    this.message = `The field "${field}" contains values of incorrect type.`;
+    super(field, ERROR_FIELD_VALUES_TYPE, { type });
+    this.message = `"${field}" contains values of incorrect type.`;
   }
 }
 

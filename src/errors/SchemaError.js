@@ -29,7 +29,7 @@ class SchemaError extends Error {
    * @param {string} message
    * @param {Object} context
    */
-  constructor(reason, message, context) {
+  constructor(reason, message, context = {}) {
     super();
     this.context = context;
     this.message = message;

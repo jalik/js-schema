@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_TYPE = 'field-type';
+
 class FieldTypeError extends FieldError {
   constructor(field, type) {
-    super(field, 'field-type', { type });
-    this.message = `The field "${field}" is not of type ${type}.`;
+    super(field, ERROR_FIELD_TYPE, { type });
+    this.message = `"${field}" is not of type "${type}".`;
   }
 }
 

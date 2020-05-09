@@ -24,6 +24,8 @@
 
 import SchemaError from './SchemaError';
 
+export const ERROR_FIELD_INVALID = 'field-invalid';
+
 class FieldError extends SchemaError {
   /**
    * Creates a generic field error.
@@ -31,8 +33,8 @@ class FieldError extends SchemaError {
    * @param {string} reason
    * @param {Object} context
    */
-  constructor(field, reason = 'field-invalid', context = {}) {
-    super(reason, `The field ${field} is not valid`, { ...context, field });
+  constructor(field, reason = ERROR_FIELD_INVALID, context = {}) {
+    super(reason, `"${field}" is not valid`, { ...context, field });
   }
 }
 

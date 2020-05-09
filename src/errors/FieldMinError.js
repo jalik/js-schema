@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_MIN = 'field-min';
+
 class FieldMinError extends FieldError {
   constructor(field, min) {
-    super(field, 'field-min', { min });
-    this.message = `"${field}" must be greater than or equals to ${min}.`;
+    super(field, ERROR_FIELD_MIN, { min });
+    this.message = `"${field}" must be greater than or equal to ${min}.`;
   }
 }
 

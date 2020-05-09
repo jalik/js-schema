@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_UNKNOWN = 'field-unknown';
+
 class FieldUnknownError extends FieldError {
   constructor(field) {
-    super(field, 'field-unknown');
-    this.message = `The field "${field}" is unknown.`;
+    super(field, ERROR_FIELD_UNKNOWN);
+    this.message = `"${field}" is not described in schema.`;
   }
 }
 

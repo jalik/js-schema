@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_INSTANCE = 'field-instance';
+
 class FieldInstanceError extends FieldError {
   constructor(field) {
-    super(field, 'field-instance');
-    this.message = `The field "${field}" is not a valid instance.`;
+    super(field, ERROR_FIELD_INSTANCE);
+    this.message = `"${field}" contains a value that is not a valid instance.`;
   }
 }
 

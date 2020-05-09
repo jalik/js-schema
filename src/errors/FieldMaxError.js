@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_MAX = 'field-max';
+
 class FieldMaxError extends FieldError {
   constructor(field, max) {
-    super(field, 'field-max', { max });
-    this.message = `"${field}" must be lesser than or equals to ${max}.`;
+    super(field, ERROR_FIELD_MAX, { max });
+    this.message = `"${field}" must be lesser than or equal to ${max}.`;
   }
 }
 

@@ -24,10 +24,12 @@
 
 import FieldError from './FieldError';
 
+export const ERROR_FIELD_MAX_WORDS = 'field-max-words';
+
 class FieldMaxWordsError extends FieldError {
   constructor(field, maxWords) {
-    super(field, 'field-max-words', { maxWords });
-    this.message = `The field "${field}" must contain ${maxWords} words max.`;
+    super(field, ERROR_FIELD_MAX_WORDS, { maxWords });
+    this.message = `"${field}" must not contain more than ${maxWords} words.`;
   }
 }
 
