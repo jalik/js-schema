@@ -292,7 +292,7 @@ class SchemaField {
 
   /**
    * Returns field's allowed values.
-   * @return {[]|Function}
+   * @return {[]|function}
    */
   getAllowed() {
     return this.properties.allowed;
@@ -308,7 +308,7 @@ class SchemaField {
 
   /**
    * Returns field's denied values.
-   * @return {[]|Function}
+   * @return {[]|function}
    */
   getDenied() {
     return this.properties.denied;
