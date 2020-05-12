@@ -71,7 +71,7 @@ class Schema {
    * @return {Schema}
    */
   clone() {
-    return this.pick(Object.keys(this.getFields()));
+    return this.pick(Object.keys(this.fields));
   }
 
   /**
@@ -203,7 +203,6 @@ class Schema {
       }
     }
 
-    const fields = this.getFields();
     let name = realPath;
     let subPath;
 
@@ -230,11 +229,11 @@ class Schema {
       }
     }
 
-    if (typeof fields[name] === 'undefined') {
+    if (typeof this.fields[name] === 'undefined') {
       throw new Error(`Field "${name}" does not exist`);
     }
 
-    let field = fields[name];
+    let field = this.fields[name];
 
     if (typeof subPath === 'string' && subPath.length > 0) {
       const type = field.getType();
