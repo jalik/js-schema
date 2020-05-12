@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_INSTANCE = 'field-instance';
 
 class FieldInstanceError extends FieldError {
-  constructor(fieldName) {
-    super(fieldName, ERROR_FIELD_INSTANCE);
-    this.message = `"${fieldName}" contains a value that is not a valid instance.`;
+  constructor(label, path) {
+    super(label, ERROR_FIELD_INSTANCE, { path });
+    this.message = `"${label}" contains a value that is not a valid instance.`;
   }
 }
 

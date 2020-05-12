@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import FieldRequiredError from '../src/errors/FieldRequiredError';
 import FieldUnknownError from '../src/errors/FieldUnknownError';
+import SchemaError from '../src/errors/SchemaError';
 import Schema from '../src/Schema';
 
 describe('Schema', () => {
@@ -206,10 +206,10 @@ describe('Schema', () => {
     describe('ignoreMissing: false', () => {
       it('should throw an error for missing fields', () => {
         expect(() => {
-          BaseSchema.validate({ string: 'abc' }, {
+          BaseSchema.validate({ string: 'abc', embedded: {} }, {
             ignoreMissing: false,
           });
-        }).toThrow(FieldRequiredError);
+        }).toThrow(SchemaError);
       });
       it('should use default value for undefined fields', () => {
         const obj = { number: 1, string: 'a' };

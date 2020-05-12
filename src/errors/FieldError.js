@@ -22,19 +22,20 @@
  * SOFTWARE.
  */
 
-import SchemaError from './SchemaError';
-
 export const ERROR_FIELD_INVALID = 'field-invalid';
 
-class FieldError extends SchemaError {
+class FieldError extends Error {
   /**
-   * Creates a generic field error.
-   * @param {string} fieldName
+   * Creates a field error.
+   * @param {string} label
    * @param {string} reason
    * @param {Object} context
    */
-  constructor(fieldName, reason = ERROR_FIELD_INVALID, context = {}) {
-    super(reason, `"${fieldName}" is not valid`, { ...context, field: fieldName });
+  constructor(label, reason = ERROR_FIELD_INVALID, context = {}) {
+    super();
+    this.context = { ...context, field: label };
+    this.message = `"${label}" is not valid`;
+    this.reason = reason;
   }
 }
 

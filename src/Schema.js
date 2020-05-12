@@ -23,7 +23,9 @@
  */
 
 import deepExtend from '@jalik/deep-extend';
+import FieldError from './errors/FieldError';
 import FieldUnknownError from './errors/FieldUnknownError';
+import SchemaError, { ERROR_SCHEMA_INVALID } from './errors/SchemaError';
 import SchemaField from './SchemaField';
 
 class Schema {
@@ -251,12 +253,13 @@ class Schema {
   /**
    * Throws an error when an unknown field is found.
    * @param {Object} object
+   * @param {string} path
    * @throws {FieldUnknownError}
    */
-  throwUnknownFields(object) {
+  throwUnknownFields(object, path) {
     Object.keys(object).forEach((name) => {
       if (typeof this.fields[name] === 'undefined') {
-        throw new FieldUnknownError(name);
+        throw new FieldUnknownError(name, path);
       }
     });
   }
@@ -265,7 +268,7 @@ class Schema {
    * Validates an object.
    * @param {Object} object
    * @param {Object} options
-   * @throws {FieldUnknownError}
+   * @throws {SchemaError|FieldUnknownError}
    * @return {Object}
    */
   validate(object, options = {}) {
@@ -278,19 +281,18 @@ class Schema {
       ignoreMissing: false,
       ignoreUnknown: false,
       parse: true,
+      path: null,
       removeUnknown: false,
       ...options,
     };
 
     let clone = deepExtend({}, object);
-    const fields = this.getFields();
-    const fieldNames = Object.keys(fields);
 
     // Removes or throws unknown fields.
     if (opts.removeUnknown) {
       clone = this.removeUnknownFields(clone);
     } else if (!opts.ignoreUnknown) {
-      this.throwUnknownFields(clone);
+      this.throwUnknownFields(clone, opts.path);
     }
 
     // Parses values.
@@ -298,17 +300,33 @@ class Schema {
       clone = this.parse(clone);
     }
 
-    // Sets object as validation context.
+    // Sets validation context.
     opts.context = clone;
 
-    for (let i = 0; i < fieldNames.length; i += 1) {
-      const name = fieldNames[i];
+    const errors = {};
+
+    Object.keys(this.fields).forEach((name) => {
       const value = clone[name];
 
       // Ignore missing field if allowed.
       if (typeof value !== 'undefined' || !opts.ignoreMissing) {
-        clone[name] = fields[name].validate(value, opts);
+        try {
+          clone[name] = this.fields[name].validate(value, opts);
+        } catch (error) {
+          if (error instanceof FieldError) {
+            errors[error.context.path] = error;
+          } else if (error instanceof SchemaError) {
+            Object.keys(error.context.errors).forEach((path) => {
+              errors[path] = error.context.errors[path];
+            });
+          }
+        }
       }
+    });
+
+    // Throws schema errors.
+    if (Object.keys(errors).length > 0) {
+      throw new SchemaError(ERROR_SCHEMA_INVALID, 'Schema is not valid', { ...opts, errors });
     }
     return clone;
   }

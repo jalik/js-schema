@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_PATTERN = 'field-pattern';
 
 class FieldPatternError extends FieldError {
-  constructor(fieldName, pattern) {
-    super(fieldName, ERROR_FIELD_PATTERN, { pattern });
-    this.message = `"${fieldName}" does not match the pattern /${pattern}/.`;
+  constructor(label, pattern, path) {
+    super(label, ERROR_FIELD_PATTERN, { pattern, path });
+    this.message = `"${label}" does not match the pattern /${pattern}/.`;
   }
 }
 

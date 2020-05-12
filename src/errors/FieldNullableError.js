@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_NULLABLE = 'field-nullable';
 
 class FieldNullableError extends FieldError {
-  constructor(fieldName) {
-    super(fieldName, ERROR_FIELD_NULLABLE);
-    this.message = `"${fieldName}" cannot be null.`;
+  constructor(label, path) {
+    super(label, ERROR_FIELD_NULLABLE, { path });
+    this.message = `"${label}" cannot be null.`;
   }
 }
 

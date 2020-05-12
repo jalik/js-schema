@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_MAX_LENGTH = 'field-max-length';
 
 class FieldMaxLengthError extends FieldError {
-  constructor(fieldName, maxLength) {
-    super(fieldName, ERROR_FIELD_MAX_LENGTH, { maxLength });
-    this.message = `Length of "${fieldName}" must be lesser than or equal to ${maxLength}.`;
+  constructor(label, maxLength, path) {
+    super(label, ERROR_FIELD_MAX_LENGTH, { maxLength, path });
+    this.message = `Length of "${label}" must be lesser than or equal to ${maxLength}.`;
   }
 }
 

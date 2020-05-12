@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_DENIED = 'field-denied-value';
 
 class FieldDeniedError extends FieldError {
-  constructor(fieldName, denied) {
-    super(fieldName, ERROR_FIELD_DENIED, { denied });
-    this.message = `"${fieldName}" contains a value that is denied (${denied}).`;
+  constructor(label, denied, path) {
+    super(label, ERROR_FIELD_DENIED, { denied, path });
+    this.message = `"${label}" contains a value that is denied (${denied}).`;
   }
 }
 

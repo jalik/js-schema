@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_MIN_WORDS = 'field-min-words';
 
 class FieldMinWordsError extends FieldError {
-  constructor(fieldName, minWords) {
-    super(fieldName, ERROR_FIELD_MIN_WORDS, { minWords });
-    this.message = `"${fieldName}" must contain at least ${minWords} words.`;
+  constructor(label, minWords, path) {
+    super(label, ERROR_FIELD_MIN_WORDS, { minWords, path });
+    this.message = `"${label}" must contain at least ${minWords} words.`;
   }
 }
 

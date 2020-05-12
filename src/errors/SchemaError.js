@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+export const ERROR_SCHEMA_INVALID = 'field-invalid';
+
 class SchemaError extends Error {
   /**
    * Creates a schema error.
@@ -29,7 +31,7 @@ class SchemaError extends Error {
    * @param {string} message
    * @param {Object} context
    */
-  constructor(reason, message, context = {}) {
+  constructor(reason = ERROR_SCHEMA_INVALID, message = 'Schema is not valid', context = {}) {
     super();
     this.context = context;
     this.message = message;
