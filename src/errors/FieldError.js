@@ -29,12 +29,12 @@ export const ERROR_FIELD_INVALID = 'field-invalid';
 class FieldError extends SchemaError {
   /**
    * Creates a generic field error.
-   * @param {string} field
+   * @param {string} fieldName
    * @param {string} reason
    * @param {Object} context
    */
-  constructor(field, reason = ERROR_FIELD_INVALID, context = {}) {
-    super(reason, `"${field}" is not valid`, { ...context, field });
+  constructor(fieldName, reason = ERROR_FIELD_INVALID, context = {}) {
+    super(reason, `"${fieldName}" is not valid`, { ...context, field: fieldName });
   }
 }
 

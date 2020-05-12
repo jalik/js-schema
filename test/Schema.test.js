@@ -34,12 +34,25 @@ describe('Schema', () => {
     },
   });
 
-  const TestSchema = new Schema({
+  const BaseSchema = new Schema({
     array: {
       type: ['number'],
       nullable: false,
       required: true,
       defaultValue: [],
+    },
+    boolean: {
+      type: 'boolean',
+    },
+    date: {
+      type: Date,
+      parse(value) {
+        const [year, month, day] = value.split('-');
+        return new Date(year, parseInt(month, 10) - 1, day);
+      },
+    },
+    embedded: {
+      type: StringSchema,
     },
     number: {
       type: 'number',
@@ -57,88 +70,73 @@ describe('Schema', () => {
 
   describe('clone()', () => {
     it('should create a copy of the schema', () => {
-      const schema = new Schema({ fieldA: { type: 'string' } });
-      expect(schema.clone()).toEqual(schema);
+      expect(BaseSchema.clone()).not.toBe(BaseSchema);
+      expect(BaseSchema.clone()).toMatchObject(BaseSchema);
     });
   });
 
   describe('extend(schema)', () => {
+    const ExtendedSchema = BaseSchema.extend({ extended: {} });
+
     it('should create an extended version of the schema', () => {
-      const parent = new Schema({ fieldA: { type: 'string' } });
-      const child = parent.extend({ fieldB: { type: 'number' } });
-      const fields = child.getFields();
-      expect(typeof fields.fieldA !== 'undefined' && typeof fields.fieldB !== 'undefined').toEqual(true);
+      expect(typeof ExtendedSchema.getField('array')).not.toBeUndefined();
+      expect(typeof ExtendedSchema.getField('extended')).not.toBeUndefined();
+    });
+
+    it('should not modify parent schema', () => {
+      expect(() => BaseSchema.getField('extended')).toThrow();
     });
   });
 
   describe('getField(name)', () => {
     it('should return field properties', () => {
-      const fields = { text: { type: 'string' } };
-      const schema = new Schema(fields);
-      expect(() => (schema.getField('text').type)).not.toThrow();
+      expect(() => BaseSchema.getField('string').getType()).not.toThrow();
+    });
+
+    describe('with incorrect field name', () => {
+      it('should throw an error', () => {
+        expect(() => BaseSchema.getField('unknown').getType()).toThrow();
+      });
     });
   });
 
   describe('getFields()', () => {
     it('should return all fields', () => {
-      const schema = new Schema({ field: { type: 'array' } });
-      expect(schema.getFields() !== null).toEqual(true);
+      expect(BaseSchema.getFields()).toMatchObject(BaseSchema.fields);
     });
   });
 
   describe('parse(object)', () => {
     it('should parse boolean fields', () => {
-      const schema = new Schema({ boolean: { type: 'boolean' } });
-      expect(schema.parse({ boolean: 'true' })).toEqual({ boolean: true });
-      expect(schema.parse({ boolean: 'FALSE' })).toEqual({ boolean: false });
-      expect(schema.parse({ boolean: 'TRUE' })).toEqual({ boolean: true });
+      expect(BaseSchema.parse({ boolean: 'true' })).toEqual({ boolean: true });
+      expect(BaseSchema.parse({ boolean: 'FALSE' })).toEqual({ boolean: false });
+      expect(BaseSchema.parse({ boolean: 'TRUE' })).toEqual({ boolean: true });
     });
 
     it('should parse number fields', () => {
-      const schema = new Schema({ number: { type: 'number' } });
-      expect(schema.parse({ number: '01010' })).toEqual({ number: 1010 });
-      expect(schema.parse({ number: '12345' })).toEqual({ number: 12345 });
-      expect(schema.parse({ number: '99.99' })).toEqual({ number: 99.99 });
+      expect(BaseSchema.parse({ number: '01010' })).toEqual({ number: 1010 });
+      expect(BaseSchema.parse({ number: '12345' })).toEqual({ number: 12345 });
+      expect(BaseSchema.parse({ number: '99.99' })).toEqual({ number: 99.99 });
     });
 
     it('should parse fields using custom function if present', () => {
-      const schema = new Schema({
-        date: {
-          type: Date,
-          parse(value) {
-            const [year, month, day] = value.split('-');
-            return new Date(year, parseInt(month, 10) - 1, day);
-          },
-        },
-      });
-      expect(schema.parse({
-        date: '2018-04-05',
-      })).toEqual({
-        date: new Date(2018, 3, 5),
-      });
+      const object = { date: '2018-04-05' };
+      const result = { date: new Date(2018, 3, 5) };
+      expect(BaseSchema.parse(object)).toMatchObject(result);
     });
   });
 
   describe('removeUnknownFields(object)', () => {
     it('should remove unknown fields', () => {
-      const schema = new Schema({ a: { type: 'number' } });
-      expect(schema.removeUnknownFields({ a: 1, b: 2, c: 3 })).toEqual({ a: 1 });
+      const object = { string: 'test', unknown: true };
+      const result = { string: object.string };
+      expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result);
     });
+
     it('should remove nested unknown fields', () => {
-      const schema = new Schema({
-        a: { type: 'number' },
-        b: { type: new Schema({ b: { type: 'number' } }) },
-      });
-      expect(schema.removeUnknownFields({
-        a: 1,
-        b: {
-          b: 2, d: 9,
-        },
-        c: 3,
-      })).toEqual({
-        a: 1,
-        b: { b: 2 },
-      });
+      const object = { string: 'test', embedded: { string: 'test', unknown: true } };
+      const result = { string: 'test', embedded: { string: 'test' } };
+      expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result);
     });
   });
 
@@ -191,14 +189,14 @@ describe('Schema', () => {
     describe('ignoreMissing: true', () => {
       it('should not throw an error for missing fields', () => {
         expect(() => {
-          TestSchema.validate({ string: 'abc' }, {
+          BaseSchema.validate({ string: 'abc' }, {
             ignoreMissing: true,
           });
         }).not.toThrow();
       });
       it('should not use default value for undefined fields', () => {
         const obj = { number: 1 };
-        TestSchema.validate(obj, {
+        BaseSchema.validate(obj, {
           ignoreMissing: true,
         });
         expect(obj).toEqual({ number: 1 });
@@ -208,21 +206,21 @@ describe('Schema', () => {
     describe('ignoreMissing: false', () => {
       it('should throw an error for missing fields', () => {
         expect(() => {
-          TestSchema.validate({ string: 'abc' }, {
+          BaseSchema.validate({ string: 'abc' }, {
             ignoreMissing: false,
           });
         }).toThrow(FieldRequiredError);
       });
       it('should use default value for undefined fields', () => {
         const obj = { number: 1, string: 'a' };
-        const result = TestSchema.validate(obj, {
+        const result = BaseSchema.validate(obj, {
           ignoreMissing: false,
         });
         expect(result).toEqual({ array: [], number: 1, string: 'a' });
       });
       it('should use default value for null fields', () => {
         const obj = { array: null, number: 1, string: 'a' };
-        const result = TestSchema.validate(obj, {
+        const result = BaseSchema.validate(obj, {
           ignoreMissing: false,
         });
         expect(result).toEqual({ array: [], number: 1, string: 'a' });

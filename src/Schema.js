@@ -24,7 +24,6 @@
 
 import deepExtend from '@jalik/deep-extend';
 import FieldUnknownError from './errors/FieldUnknownError';
-import SchemaError from './errors/SchemaError';
 import SchemaField from './SchemaField';
 
 class Schema {
@@ -36,43 +35,33 @@ class Schema {
     this.fields = {};
 
     // Adds fields.
-    Object.entries(fields).forEach((field) => {
-      const name = field[0];
-      const properties = field[1];
-      this.fields[name] = new SchemaField(name, properties);
+    Object.keys(fields).forEach((name) => {
+      this.fields[name] = new SchemaField(name, fields[name]);
     });
   }
 
   /**
-   * Returns a cloned version of the object with all fields cleaned.
+   * Returns a copy of the object with all fields cleaned.
    * @param {Object} object
    * @param {Object} options
    * @return {Object}
    */
-  clean(object, options) {
+  clean(object, options = {}) {
     const opts = {
       removeUnknown: true,
       ...options,
     };
 
-    const clonedObject = deepExtend({}, object);
-    const fields = this.getFields();
-    const keys = Object.keys(clonedObject);
-    const keysLength = keys.length;
+    const clone = deepExtend({}, object);
 
-    for (let i = 0; i < keysLength; i += 1) {
-      const key = keys[i];
-      const field = fields[key];
-
-      if (field) {
-        const value = clonedObject[key];
-        clonedObject[key] = field.clean(value);
+    Object.keys(clone).forEach((name) => {
+      if (typeof this.fields[name] !== 'undefined') {
+        clone[name] = this.fields[name].clean(clone[name]);
       } else if (opts.removeUnknown) {
-        // Remove unknown field
-        delete clonedObject[key];
+        delete clone[name];
       }
-    }
-    return clonedObject;
+    });
+    return clone;
   }
 
   /**
@@ -80,16 +69,7 @@ class Schema {
    * @return {Schema}
    */
   clone() {
-    const fields = this.getFields();
-    const fieldNames = [];
-    const keys = Object.keys(fields);
-    const keysLength = keys.length;
-
-    for (let i = 0; i < keysLength; i += 1) {
-      const fieldName = keys[i];
-      fieldNames.push(fieldName);
-    }
-    return this.pick(fieldNames);
+    return this.pick(Object.keys(this.getFields()));
   }
 
   /**
@@ -98,16 +78,12 @@ class Schema {
    * @return {Schema}
    */
   extend(fields) {
-    const fieldProperties = {};
-    const schemaFields = this.getFields();
-    const keys = Object.keys(schemaFields);
-    const keysLength = keys.length;
+    const properties = {};
 
-    for (let i = 0; i < keysLength; i += 1) {
-      const fieldName = keys[i];
-      fieldProperties[fieldName] = schemaFields[fieldName].getProperties();
-    }
-    return new Schema(deepExtend({}, fieldProperties, fields));
+    Object.keys(this.fields).forEach((name) => {
+      properties[name] = this.fields[name].getProperties();
+    });
+    return new Schema(deepExtend({}, properties, fields));
   }
 
   /**
@@ -128,25 +104,19 @@ class Schema {
   }
 
   /**
-   * Returns the cloned object with all fields parsed.
+   * Returns a copy of the object with all fields parsed.
    * @param {Object} object
    * @return {Object}
    */
   parse(object) {
-    const fields = this.getFields();
-    const keys = Object.keys(fields);
-    const keysLength = keys.length;
-    const clonedObject = deepExtend({}, object);
+    const clone = deepExtend({}, object);
 
-    for (let i = 0; i < keysLength; i += 1) {
-      const key = keys[i];
-      const field = fields[key];
-
-      if (key in clonedObject) {
-        clonedObject[key] = field.parse(clonedObject[key]);
+    Object.keys(clone).forEach((name) => {
+      if (typeof this.fields[name] !== 'undefined') {
+        clone[name] = this.fields[name].parse(clone[name]);
       }
-    }
-    return clonedObject;
+    });
+    return clone;
   }
 
   /**
@@ -156,16 +126,12 @@ class Schema {
    */
   pick(fieldNames) {
     const fields = {};
-    const schemaFields = this.getFields();
-    const keysLength = fieldNames.length;
 
-    for (let i = 0; i < keysLength; i += 1) {
-      const fieldName = fieldNames[i];
-
-      if (typeof schemaFields[fieldName] !== 'undefined') {
-        fields[fieldName] = schemaFields[fieldName].getProperties();
+    fieldNames.forEach((name) => {
+      if (typeof this.fields[name] !== 'undefined') {
+        fields[name] = this.fields[name].getProperties();
       }
-    }
+    });
     return new Schema(deepExtend({}, fields));
   }
 
@@ -176,22 +142,16 @@ class Schema {
    * @return {Object}
    */
   removeUnknownFields(object) {
-    const fields = this.getFields();
-    const clonedObject = deepExtend({}, object);
-    const keys = Object.keys(clonedObject);
-    const keysLength = keys.length;
+    const clone = deepExtend({}, object);
 
-    for (let i = 0; i < keysLength; i += 1) {
-      const key = keys[i];
-      const field = fields[key];
-
-      if (!field) {
-        delete clonedObject[key];
-      } else if (field.getType() instanceof Schema) {
-        clonedObject[key] = field.getType().removeUnknownFields(clonedObject[key]);
+    Object.keys(clone).forEach((name) => {
+      if (typeof this.fields[name] === 'undefined') {
+        delete clone[name];
+      } else if (this.fields[name].getType() instanceof Schema) {
+        clone[name] = this.fields[name].getType().removeUnknownFields(clone[name]);
       }
-    }
-    return clonedObject;
+    });
+    return clone;
   }
 
   /**
@@ -289,13 +249,30 @@ class Schema {
   }
 
   /**
+   * Throws an error when an unknown field is found.
+   * @param {Object} object
+   * @throws {FieldUnknownError}
+   */
+  throwUnknownFields(object) {
+    Object.keys(object).forEach((name) => {
+      if (typeof this.fields[name] === 'undefined') {
+        throw new FieldUnknownError(name);
+      }
+    });
+  }
+
+  /**
    * Validates an object.
    * @param {Object} object
    * @param {Object} options
-   * @throws {SchemaError|FieldUnknownError}
+   * @throws {FieldUnknownError}
    * @return {Object}
    */
   validate(object, options = {}) {
+    if (typeof object !== 'object' || object === null) {
+      throw new TypeError('cannot validate null object');
+    }
+
     const opts = {
       clean: true,
       ignoreMissing: false,
@@ -305,59 +282,35 @@ class Schema {
       ...options,
     };
 
-    let clonedObject = deepExtend({}, object);
+    let clone = deepExtend({}, object);
     const fields = this.getFields();
+    const fieldNames = Object.keys(fields);
 
-    // Check if object is null
-    if (typeof clonedObject !== 'object' || clonedObject === null) {
-      throw new SchemaError('object-invalid', 'cannot validate null object');
-    }
-
-    // Remove unknown fields
+    // Removes or throws unknown fields.
     if (opts.removeUnknown) {
-      // eslint-disable-next-line no-param-reassign
-      clonedObject = this.removeUnknownFields(clonedObject);
+      clone = this.removeUnknownFields(clone);
+    } else if (!opts.ignoreUnknown) {
+      this.throwUnknownFields(clone);
     }
 
-    // Check unknown fields
-    if (!opts.ignoreUnknown) {
-      const objKeys = Object.keys(clonedObject);
-      const objKeysLength = objKeys.length;
-
-      for (let i = 0; i < objKeysLength; i += 1) {
-        const key = objKeys[i];
-
-        if (!fields[key]) {
-          throw new FieldUnknownError(key);
-        }
-      }
-    }
-
-    // Parse object fields
+    // Parses values.
     if (opts.parse) {
-      // eslint-disable-next-line no-param-reassign
-      clonedObject = this.parse(clonedObject);
+      clone = this.parse(clone);
     }
 
-    // Add object as context of validation
-    opts.context = clonedObject;
+    // Sets object as validation context.
+    opts.context = clone;
 
-    const keys = Object.keys(fields);
-    const keyLength = keys.length;
+    for (let i = 0; i < fieldNames.length; i += 1) {
+      const name = fieldNames[i];
+      const value = clone[name];
 
-    // Validate fields
-    for (let i = 0; i < keyLength; i += 1) {
-      const key = keys[i];
-      const value = clonedObject[key];
-
-      // Ignore missing fields
+      // Ignore missing field if allowed.
       if (typeof value !== 'undefined' || !opts.ignoreMissing) {
-        // Validate field and return processed value
-        // eslint-disable-next-line no-param-reassign
-        clonedObject[key] = fields[key].validate(value, opts);
+        clone[name] = fields[name].validate(value, opts);
       }
     }
-    return clonedObject;
+    return clone;
   }
 }
 

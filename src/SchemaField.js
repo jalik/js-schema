@@ -38,7 +38,6 @@ import FieldNullableError from './errors/FieldNullableError';
 import FieldPatternError from './errors/FieldPatternError';
 import FieldRequiredError from './errors/FieldRequiredError';
 import FieldTypeError from './errors/FieldTypeError';
-import Schema from './Schema';
 import {
   computeValue,
   contains,
@@ -78,10 +77,10 @@ export const fieldProperties = [
  */
 function checkFieldProperties(name, props) {
   // Check unknown properties.
-  Object.entries(props).forEach((prop) => {
-    if (!contains(fieldProperties, prop[0])) {
+  Object.keys(props).forEach((prop) => {
+    if (!contains(fieldProperties, prop)) {
       // eslint-disable-next-line no-console
-      console.warn(`Unknown schema field property "${name}.${prop[0]}"`);
+      console.warn(`Unknown schema field property "${name}.${prop}"`);
     }
   });
 
@@ -251,22 +250,25 @@ class SchemaField {
 
   /**
    * Cleans a value.
-   * todo clean if field type is a schema
    * todo return a Promise
    * @param {*} value
+   * @param {Object} options
    * @return {*}
    */
-  clean(value) {
+  clean(value, options = {}) {
     let newValue = value;
 
     if (newValue !== null) {
-      switch (typeof value) {
+      switch (typeof newValue) {
         case 'object': {
-          const keys = Object.keys(newValue);
-
-          for (let i = 0; i < keys.length; i += 1) {
-            const key = keys[i];
-            newValue[key] = this.clean(newValue[key]);
+          // Cleans all values in the array.
+          if (newValue instanceof Array) {
+            Object.keys(newValue).forEach((key) => {
+              newValue[key] = this.clean(newValue[key]);
+            });
+          } else if (typeof this.properties.type === 'object' && this.properties.type !== null
+            && typeof this.properties.type.clean === 'function') {
+            newValue = this.properties.type.clean(newValue, options);
           }
           break;
         }
@@ -285,6 +287,9 @@ class SchemaField {
           break;
 
         default:
+          if (typeof this.properties.clean === 'function') {
+            newValue = this.properties.clean.call(this, newValue);
+          }
       }
     }
     return newValue;
@@ -396,7 +401,6 @@ class SchemaField {
 
   /**
    * Returns a copy of the field's properties.
-   * todo remove if useless
    * @return {Object}
    */
   getProperties() {
@@ -405,7 +409,7 @@ class SchemaField {
 
   /**
    * Returns field's type.
-   * @return {boolean|number|string|Object|Schema}
+   * @return {[]|string|Schema}
    */
   getType() {
     return this.properties.type;
@@ -429,7 +433,6 @@ class SchemaField {
 
   /**
    * Parses a value.
-   * todo parse value using type.parse(value) if field type instanceof Schema
    * todo return a Promise
    * @param {*} value
    * @return {*}
@@ -437,27 +440,43 @@ class SchemaField {
   parse(value) {
     let newValue = value;
 
-    if (typeof value === 'string') {
-      if (typeof this.properties.parse === 'function') {
-        newValue = this.properties.parse.call(this, value);
-      } else {
-        const type = this.getType();
+    if (newValue !== null) {
+      switch (typeof newValue) {
+        case 'object':
+          // Parses all values in the array.
+          if (newValue instanceof Array) {
+            Object.keys(newValue).forEach((key) => {
+              newValue[key] = this.parse(newValue[key]);
+            });
+          } else if (typeof this.properties.type === 'object' && this.properties.type !== null
+            && typeof this.properties.type.parse === 'function') {
+            this.properties.type.parse(newValue);
+          }
+          break;
 
-        switch (type) {
-          case 'boolean':
-            newValue = /^true$/i.test(value);
-            break;
+        case 'string':
+          if (typeof this.properties.parse === 'function') {
+            newValue = this.properties.parse.call(this, newValue);
+          } else {
+            switch (this.properties.type) {
+              case 'boolean':
+                newValue = /^true$/i.test(newValue);
+                break;
 
-          case 'integer':
-            newValue = parseInt(value, 10);
-            break;
+              case 'integer':
+                newValue = parseInt(newValue, 10);
+                break;
 
-          case 'number':
-            newValue = Number(value);
-            break;
+              case 'number':
+                newValue = Number(newValue);
+                break;
 
-          default:
-        }
+              default:
+            }
+          }
+          break;
+
+        default:
       }
     }
     return newValue;
@@ -572,7 +591,8 @@ class SchemaField {
         break;
 
       default:
-        if (props.type instanceof Schema) {
+        if (typeof props.type === 'object' && props.type !== null
+          && typeof props.type.validate === 'function') {
           if (!opts.rootOnly) {
             props.type.validate(newVal, opts);
           }
@@ -587,7 +607,8 @@ class SchemaField {
           const arrayType = props.type[0];
 
           // Validate array items
-          if (arrayType instanceof Schema) {
+          if (typeof arrayType === 'object' && arrayType !== null
+            && typeof arrayType.validate === 'function') {
             for (let i = 0; i < newVal.length; i += 1) {
               if (!opts.rootOnly) {
                 arrayType.validate(newVal[i], opts);

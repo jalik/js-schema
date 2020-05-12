@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_UNKNOWN = 'field-unknown';
 
 class FieldUnknownError extends FieldError {
-  constructor(field) {
-    super(field, ERROR_FIELD_UNKNOWN);
-    this.message = `"${field}" is not described in schema.`;
+  constructor(fieldName) {
+    super(fieldName, ERROR_FIELD_UNKNOWN);
+    this.message = `"${fieldName}" is not described in schema.`;
   }
 }
 
