@@ -371,14 +371,16 @@ describe('SchemaField', () => {
   });
 
   describe('validate(object)', () => {
+    // todo check that path is returned in errors
+
     describe('with allowed and denied', () => {
-      it('should throw an error', () => {
+      it('should throw TypeError', () => {
         expect(() => (
-          new SchemaField('color', {
+          new SchemaField('field', {
             allowed: ['red'],
             denied: ['blue'],
           })
-        )).toThrow();
+        )).toThrow(TypeError);
       });
     });
 
@@ -445,130 +447,122 @@ describe('SchemaField', () => {
     });
 
     describe('with defaultValue: (*|Function)', () => {
-      describe('defaultValue: String', () => {
-        const field = new SchemaField('optional', {
-          type: 'string',
+      describe('with option required=false', () => {
+        const field = new SchemaField('field', {
+          defaultValue: 'default',
           nullable: true,
           required: false,
-          defaultValue: 'test',
         });
 
-        describe('default value', () => {
-          it('should not be returned when field is not required and can be null', () => {
-            expect(field.validate(null)).toEqual(null);
-            expect(field.validate(undefined)).toEqual(undefined);
+        describe('with null', () => {
+          it('should not return default value', () => {
+            expect(field.validate(null)).toBeNull();
+          });
+        });
+
+        describe('with undefined', () => {
+          it('should not return default value', () => {
+            expect(field.validate(undefined)).toBeUndefined();
           });
         });
       });
 
-      describe('defaultValue: [Number]', () => {
-        const field = new SchemaField('numbers', {
-          type: ['number'],
-          nullable: false,
-          required: true,
-          defaultValue: [0, 2],
-        });
+      describe('with option required=true', () => {
+        describe('defaultValue: Boolean', () => {
+          const field = new SchemaField('field', {
+            defaultValue: false,
+            required: true,
+          });
 
-        describe('empty array', () => {
-          it('should return default values', () => {
-            expect(field.validate(undefined)).toEqual([0, 2]);
-            expect(field.validate(null)).toEqual([0, 2]);
+          describe('with undefined', () => {
+            it('should return default value', () => {
+              expect(field.validate(undefined)).toBe(field.getDefaultValue());
+            });
+          });
+
+          describe('with value', () => {
+            it('should not return default value', () => {
+              expect(field.validate(true)).toBe(true);
+            });
           });
         });
 
-        describe('filled array', () => {
-          it('should not be replaced with default value', () => {
-            expect(field.validate([1, 3])).toEqual([1, 3]);
+        describe('defaultValue: Function', () => {
+          const defaultValue = () => new Date().getFullYear();
+          const field = new SchemaField('field', {
+            defaultValue,
+            required: true,
           });
-        });
-      });
 
-      describe('defaultValue: Boolean', () => {
-        const field = new SchemaField('bool', {
-          type: 'boolean',
-          nullable: false,
-          required: true,
-          defaultValue: true,
-        });
-
-        describe('empty value', () => {
-          it('should return default value', () => {
-            expect(field.validate(undefined)).toEqual(field.getDefaultValue());
+          describe('with undefined', () => {
+            it('should return default value', () => {
+              expect(field.validate(undefined)).toBe(defaultValue());
+            });
           });
-        });
 
-        describe('filled value', () => {
-          it('should not be replaced with default value', () => {
-            expect(field.validate(false)).toEqual(false);
-          });
-        });
-      });
-
-      describe('defaultValue: Function', () => {
-        let date = null;
-
-        const field = new SchemaField('text', {
-          type: Date,
-          nullable: false,
-          required: true,
-          defaultValue() {
-            date = new Date();
-            return date;
-          },
-        });
-
-        describe('empty value', () => {
-          it('should return default value', () => {
-            expect(field.validate(undefined)).toEqual(date);
+          describe('with value', () => {
+            it('should not return default value', () => {
+              expect(field.validate(2020)).toBe(2020);
+            });
           });
         });
 
-        describe('filled value', () => {
-          it('should not be replaced with default value', () => {
-            const now = new Date();
-            expect(field.validate(now)).toEqual(now);
+        describe('defaultValue: Number', () => {
+          const field = new SchemaField('field', {
+            defaultValue: 100,
+            required: true,
           });
-        });
-      });
 
-      describe('defaultValue: Number', () => {
-        const field = new SchemaField('number', {
-          type: 'number',
-          nullable: false,
-          required: true,
-          defaultValue: 100,
-        });
+          describe('with undefined', () => {
+            it('should return default value', () => {
+              expect(field.validate(undefined)).toBe(field.getDefaultValue());
+            });
+          });
 
-        describe('empty value', () => {
-          it('should return default value', () => {
-            expect(field.validate(undefined)).toEqual(field.getDefaultValue());
+          describe('with value', () => {
+            it('should not return default value', () => {
+              expect(field.validate(50)).toBe(50);
+            });
           });
         });
 
-        describe('filled value', () => {
-          it('should not be replaced with default value', () => {
-            expect(field.validate(50)).toEqual(50);
+        describe('defaultValue: String', () => {
+          const field = new SchemaField('field', {
+            defaultValue: 'default',
+            required: true,
+          });
+
+          describe('with undefined', () => {
+            it('should return default value', () => {
+              expect(field.validate(undefined)).toBe(field.getDefaultValue());
+            });
+          });
+
+          describe('with value', () => {
+            it('should not return default value', () => {
+              expect(field.validate('test')).toBe('test');
+            });
           });
         });
-      });
 
-      describe('defaultValue: String', () => {
-        const field = new SchemaField('text', {
-          type: 'string',
-          nullable: false,
-          required: true,
-          defaultValue: 'default',
-        });
-
-        describe('empty value', () => {
-          it('should return default value', () => {
-            expect(field.validate(undefined)).toEqual(field.getDefaultValue());
+        describe('defaultValue: [Number]', () => {
+          const field = new SchemaField('field', {
+            type: ['number'],
+            required: true,
+            defaultValue: [0, 2],
           });
-        });
 
-        describe('filled value', () => {
-          it('should not be replaced with default value', () => {
-            expect(field.validate('karl')).toEqual('karl');
+          describe('empty array', () => {
+            it('should return default values', () => {
+              expect(field.validate(undefined)).toEqual([0, 2]);
+              expect(field.validate(null)).toEqual([0, 2]);
+            });
+          });
+
+          describe('filled array', () => {
+            it('should not be replaced with default value', () => {
+              expect(field.validate([1, 3])).toEqual([1, 3]);
+            });
           });
         });
       });

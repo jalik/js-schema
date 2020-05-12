@@ -277,14 +277,19 @@ class Schema {
     }
 
     const opts = {
-      clean: true,
+      clean: false,
       ignoreMissing: false,
       ignoreUnknown: false,
-      parse: true,
+      parse: false,
       path: null,
       removeUnknown: false,
       ...options,
     };
+
+    // Checks conflicting options.
+    if (opts.ignoreUnknown && opts.removeUnknown) {
+      throw new Error('options "ignoreUnknown" and "removeUnknown" cannot be both true');
+    }
 
     let clone = deepExtend({}, object);
 

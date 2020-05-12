@@ -495,7 +495,7 @@ class SchemaField {
    */
   validate(value, options = {}) {
     const opts = {
-      context: { [this.name]: value },
+      clean: false,
       rootOnly: false,
       ...options,
       // Sets validation context.
@@ -509,8 +509,21 @@ class SchemaField {
     const label = computeValue(props.label, context);
     const isNullable = computeValue(props.nullable, context);
     const isRequired = computeValue(props.required, context);
-    const isArray = props.type === Array || props.type instanceof Array;
-    let newVal = value;
+    const isArray = props.type === 'array' || props.type instanceof Array;
+    let newVal;
+
+    // Clone value.
+    if (typeof value === 'object' && value !== null) {
+      if (value instanceof Array) {
+        newVal = deepExtend([], value);
+      } else if (value instanceof Date) {
+        newVal = new Date(value.getTime());
+      } else {
+        newVal = deepExtend({}, value);
+      }
+    } else {
+      newVal = value;
+    }
 
     // Prepare value
     if (typeof props.prepare === 'function') {

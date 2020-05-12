@@ -194,6 +194,7 @@ describe('Schema', () => {
           });
         }).not.toThrow();
       });
+
       it('should not use default value for undefined fields', () => {
         const obj = { number: 1 };
         BaseSchema.validate(obj, {
@@ -204,13 +205,14 @@ describe('Schema', () => {
     });
 
     describe('ignoreMissing: false', () => {
-      it('should throw an error for missing fields', () => {
+      it('should throw SchemaError', () => {
         expect(() => {
           BaseSchema.validate({ string: 'abc', embedded: {} }, {
             ignoreMissing: false,
           });
         }).toThrow(SchemaError);
       });
+
       it('should use default value for undefined fields', () => {
         const obj = { number: 1, string: 'a' };
         const result = BaseSchema.validate(obj, {
@@ -218,6 +220,7 @@ describe('Schema', () => {
         });
         expect(result).toEqual({ array: [], number: 1, string: 'a' });
       });
+
       it('should use default value for null fields', () => {
         const obj = { array: null, number: 1, string: 'a' };
         const result = BaseSchema.validate(obj, {
@@ -228,47 +231,44 @@ describe('Schema', () => {
     });
 
     describe('ignoreUnknown: true', () => {
-      it('should not throw an error for unknown fields', () => {
+      it('should not throw FieldUnknownError', () => {
         expect(() => {
           StringSchema.validate({ string: 'abc', xxx: null }, {
             ignoreUnknown: true,
           });
-        }).not.toThrow();
+        }).not.toThrow(FieldUnknownError);
       });
+      // todo check nested unknown fields
     });
 
     describe('ignoreUnknown: false', () => {
-      it('should throw an error for unknown fields', () => {
-        expect(() => {
-          StringSchema.validate({ string: 'abc', xxx: null }, {
-            ignoreUnknown: false,
-          });
-        }).toThrow(FieldUnknownError);
+      it('should throw FieldUnknownError', () => {
+        const obj = { string: 'abc', xxx: null };
+        expect(() => { StringSchema.validate(obj, { ignoreUnknown: false }); })
+          .toThrow(FieldUnknownError);
       });
+      // todo check nested unknown fields
     });
 
     describe('removeUnknown: true', () => {
       it('should remove unknown fields', () => {
         const obj = { string: 'abc', xxx: null };
-        const result = StringSchema.validate(obj, {
-          clean: true,
-          ignoreUnknown: true,
-          removeUnknown: true,
-        });
+        const result = StringSchema.validate(obj, { removeUnknown: true });
         expect(result.xxx).toBeUndefined();
       });
+      // todo check nested unknown fields
     });
 
     describe('removeUnknown: false', () => {
       it('should not remove unknown fields', () => {
         const obj = { string: 'abc', xxx: null };
         const result = StringSchema.validate(obj, {
-          clean: true,
           ignoreUnknown: true,
           removeUnknown: false,
         });
         expect(result.xxx).not.toBeUndefined();
       });
+      // todo check nested unknown fields
     });
   });
 });
