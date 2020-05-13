@@ -22,21 +22,21 @@
  * SOFTWARE.
  */
 
-export const ERROR_SCHEMA_INVALID = 'field-invalid';
+export const ERROR_VALIDATION = 'object-invalid';
 
-class SchemaError extends Error {
+class ValidationError extends Error {
   /**
-   * Creates a schema error.
-   * @param {string} reason
+   * Creates a validation error.
+   * @param {Object} errors
    * @param {string} message
-   * @param {Object} context
+   * @param {string} reason
    */
-  constructor(reason = ERROR_SCHEMA_INVALID, message = 'Schema is not valid', context = {}) {
+  constructor(errors = {}, message = 'Object is not valid', reason = ERROR_VALIDATION) {
     super();
-    this.context = context;
+    this.errors = errors;
     this.message = message;
     this.reason = reason;
   }
 }
 
-export default SchemaError;
+export default ValidationError;

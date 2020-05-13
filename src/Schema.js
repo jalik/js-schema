@@ -25,7 +25,7 @@
 import deepExtend from '@jalik/deep-extend';
 import FieldError from './errors/FieldError';
 import FieldUnknownError from './errors/FieldUnknownError';
-import SchemaError, { ERROR_SCHEMA_INVALID } from './errors/SchemaError';
+import ValidationError from './errors/ValidationError';
 import SchemaField from './SchemaField';
 
 class Schema {
@@ -267,7 +267,7 @@ class Schema {
    * Validates an object.
    * @param {Object} object
    * @param {Object} options
-   * @throws {SchemaError|FieldUnknownError}
+   * @throws {ValidationError|FieldUnknownError}
    * @return {Object}
    */
   validate(object, options = {}) {
@@ -319,9 +319,9 @@ class Schema {
         } catch (error) {
           if (error instanceof FieldError) {
             errors[error.context.path] = error;
-          } else if (error instanceof SchemaError) {
-            Object.keys(error.context.errors).forEach((path) => {
-              errors[path] = error.context.errors[path];
+          } else if (error instanceof ValidationError) {
+            Object.keys(error.errors).forEach((path) => {
+              errors[path] = error.errors[path];
             });
           }
         }
@@ -330,7 +330,7 @@ class Schema {
 
     // Throws schema errors.
     if (Object.keys(errors).length > 0) {
-      throw new SchemaError(ERROR_SCHEMA_INVALID, 'Schema is not valid', { ...opts, errors });
+      throw new ValidationError(errors);
     }
     return clone;
   }

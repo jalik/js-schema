@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
+import FieldRequiredError from '../src/errors/FieldRequiredError';
 import FieldUnknownError from '../src/errors/FieldUnknownError';
-import SchemaError from '../src/errors/SchemaError';
+import ValidationError from '../src/errors/ValidationError';
 import Schema from '../src/Schema';
 
 describe('Schema', () => {
@@ -186,89 +187,95 @@ describe('Schema', () => {
   });
 
   describe('validate(object, options)', () => {
-    describe('ignoreMissing: true', () => {
-      it('should not throw an error for missing fields', () => {
-        expect(() => {
-          BaseSchema.validate({ string: 'abc' }, {
-            ignoreMissing: true,
-          });
-        }).not.toThrow();
-      });
-
-      it('should not use default value for undefined fields', () => {
-        const obj = { number: 1 };
-        BaseSchema.validate(obj, {
-          ignoreMissing: true,
-        });
-        expect(obj).toEqual({ number: 1 });
+    describe('with invalid object', () => {
+      it('should throw a ValidationError with errors details', () => {
+        try {
+          BaseSchema.validate({});
+        } catch (e) {
+          expect(e.errors).not.toBeUndefined();
+          expect(e.errors.number).toBeInstanceOf(FieldRequiredError);
+          expect(e.errors.string).toBeInstanceOf(FieldRequiredError);
+        }
       });
     });
 
-    describe('ignoreMissing: false', () => {
-      it('should throw SchemaError', () => {
-        expect(() => {
-          BaseSchema.validate({ string: 'abc', embedded: {} }, {
-            ignoreMissing: false,
-          });
-        }).toThrow(SchemaError);
+    describe('with ignoreMissing: Boolean', () => {
+      describe('ignoreMissing: true', () => {
+        it('should not throw an error for missing fields', () => {
+          expect(() => {
+            BaseSchema.validate({ string: 'abc' }, { ignoreMissing: true });
+          }).not.toThrow();
+        });
+
+        it('should not use default value for undefined fields', () => {
+          const obj = { number: 1 };
+          BaseSchema.validate(obj, { ignoreMissing: true });
+          expect(obj).toEqual({ number: 1 });
+        });
       });
 
-      it('should use default value for undefined fields', () => {
-        const obj = { number: 1, string: 'a' };
-        const result = BaseSchema.validate(obj, {
-          ignoreMissing: false,
+      describe('ignoreMissing: false', () => {
+        it('should throw SchemaError', () => {
+          expect(() => { BaseSchema.validate({}, { ignoreMissing: false }); })
+            .toThrow(ValidationError);
         });
-        expect(result).toEqual({ array: [], number: 1, string: 'a' });
-      });
 
-      it('should use default value for null fields', () => {
-        const obj = { array: null, number: 1, string: 'a' };
-        const result = BaseSchema.validate(obj, {
-          ignoreMissing: false,
+        it('should use default value for undefined fields', () => {
+          const obj = { number: 1, string: 'a' };
+          const result = BaseSchema.validate(obj, { ignoreMissing: false });
+          expect(result).toEqual({ array: [], number: 1, string: 'a' });
         });
-        expect(result).toEqual({ array: [], number: 1, string: 'a' });
+
+        it('should use default value for null fields', () => {
+          const obj = { array: null, number: 1, string: 'a' };
+          const result = BaseSchema.validate(obj, { ignoreMissing: false });
+          expect(result).toEqual({ array: [], number: 1, string: 'a' });
+        });
       });
     });
 
-    describe('ignoreUnknown: true', () => {
-      it('should not throw FieldUnknownError', () => {
-        expect(() => {
-          StringSchema.validate({ string: 'abc', xxx: null }, {
+    describe('with ignoreUnknown: Boolean', () => {
+      describe('ignoreUnknown: true', () => {
+        it('should not throw FieldUnknownError', () => {
+          const obj = { string: 'abc', xxx: null };
+          expect(() => {
+            StringSchema.validate(obj, { ignoreUnknown: true });
+          }).not.toThrow(FieldUnknownError);
+        });
+        // todo check nested unknown fields
+      });
+
+      describe('ignoreUnknown: false', () => {
+        it('should throw FieldUnknownError', () => {
+          const obj = { string: 'abc', xxx: null };
+          expect(() => { StringSchema.validate(obj, { ignoreUnknown: false }); })
+            .toThrow(FieldUnknownError);
+        });
+        // todo check nested unknown fields
+      });
+    });
+
+    describe('with removeUnknown: Boolean', () => {
+      describe('removeUnknown: true', () => {
+        it('should remove unknown fields', () => {
+          const obj = { string: 'abc', xxx: null };
+          const result = StringSchema.validate(obj, { removeUnknown: true });
+          expect(result.xxx).toBeUndefined();
+        });
+        // todo check nested unknown fields
+      });
+
+      describe('removeUnknown: false', () => {
+        it('should not remove unknown fields', () => {
+          const obj = { string: 'abc', xxx: null };
+          const result = StringSchema.validate(obj, {
             ignoreUnknown: true,
+            removeUnknown: false,
           });
-        }).not.toThrow(FieldUnknownError);
-      });
-      // todo check nested unknown fields
-    });
-
-    describe('ignoreUnknown: false', () => {
-      it('should throw FieldUnknownError', () => {
-        const obj = { string: 'abc', xxx: null };
-        expect(() => { StringSchema.validate(obj, { ignoreUnknown: false }); })
-          .toThrow(FieldUnknownError);
-      });
-      // todo check nested unknown fields
-    });
-
-    describe('removeUnknown: true', () => {
-      it('should remove unknown fields', () => {
-        const obj = { string: 'abc', xxx: null };
-        const result = StringSchema.validate(obj, { removeUnknown: true });
-        expect(result.xxx).toBeUndefined();
-      });
-      // todo check nested unknown fields
-    });
-
-    describe('removeUnknown: false', () => {
-      it('should not remove unknown fields', () => {
-        const obj = { string: 'abc', xxx: null };
-        const result = StringSchema.validate(obj, {
-          ignoreUnknown: true,
-          removeUnknown: false,
+          expect(result.xxx).not.toBeUndefined();
         });
-        expect(result.xxx).not.toBeUndefined();
+        // todo check nested unknown fields
       });
-      // todo check nested unknown fields
     });
   });
 });

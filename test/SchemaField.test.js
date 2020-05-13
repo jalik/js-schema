@@ -371,7 +371,20 @@ describe('SchemaField', () => {
   });
 
   describe('validate(object)', () => {
-    // todo check that path is returned in errors
+    describe('with incorrect value', () => {
+      const field = new SchemaField('field', { required: true });
+
+      it('should throw FieldError with path in context', () => {
+        try {
+          field.validate(undefined);
+        } catch (e) {
+          expect(e).toBeInstanceOf(FieldRequiredError);
+          expect(e.context).not.toBeUndefined();
+          expect(e.context.field).toBe('field');
+          expect(e.context.path).toBe('field');
+        }
+      });
+    });
 
     describe('with allowed and denied', () => {
       it('should throw TypeError', () => {
