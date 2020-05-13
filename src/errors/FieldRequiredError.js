@@ -27,9 +27,9 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_REQUIRED = 'field-required';
 
 class FieldRequiredError extends FieldError {
-  constructor(label, path) {
-    super(label, ERROR_FIELD_REQUIRED, { path });
-    this.message = `"${label}" is required.`;
+  constructor(field, path) {
+    super(field, path, ERROR_FIELD_REQUIRED);
+    this.message = `"${field}" is required.`;
   }
 }
 

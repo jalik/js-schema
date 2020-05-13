@@ -27,9 +27,10 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_ALLOWED = 'field-allowed';
 
 class FieldAllowedError extends FieldError {
-  constructor(label, allowed, path) {
-    super(label, ERROR_FIELD_ALLOWED, { allowed, path });
-    this.message = `"${label}" contains a value that is not allowed (${allowed}).`;
+  constructor(field, allowed, path) {
+    super(field, path, ERROR_FIELD_ALLOWED);
+    this.allowed = allowed;
+    this.message = `"${field}" contains a value that is not allowed (${allowed}).`;
   }
 }
 

@@ -379,9 +379,9 @@ describe('SchemaField', () => {
           field.validate(undefined);
         } catch (e) {
           expect(e).toBeInstanceOf(FieldRequiredError);
-          expect(e.context).not.toBeUndefined();
-          expect(e.context.field).toBe('field');
-          expect(e.context.path).toBe('field');
+          expect(e).not.toBeUndefined();
+          expect(e.field).toBe('field');
+          expect(e.path).toBe('field');
         }
       });
     });

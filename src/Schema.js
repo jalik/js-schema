@@ -318,7 +318,7 @@ class Schema {
           clone[name] = this.fields[name].validate(value, opts);
         } catch (error) {
           if (error instanceof FieldError) {
-            errors[error.context.path] = error;
+            errors[error.path] = error;
           } else if (error instanceof ValidationError) {
             Object.keys(error.errors).forEach((path) => {
               errors[path] = error.errors[path];

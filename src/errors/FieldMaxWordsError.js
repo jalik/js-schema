@@ -27,9 +27,10 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_MAX_WORDS = 'field-max-words';
 
 class FieldMaxWordsError extends FieldError {
-  constructor(label, maxWords, path) {
-    super(label, ERROR_FIELD_MAX_WORDS, { maxWords, path });
-    this.message = `"${label}" must not contain more than ${maxWords} words.`;
+  constructor(field, maxWords, path) {
+    super(field, path, ERROR_FIELD_MAX_WORDS);
+    this.maxWords = maxWords;
+    this.message = `"${field}" must not contain more than ${maxWords} words.`;
   }
 }
 

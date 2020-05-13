@@ -27,9 +27,10 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_LENGTH = 'field-length';
 
 class FieldLengthError extends FieldError {
-  constructor(label, length, path) {
-    super(label, ERROR_FIELD_LENGTH, { length, path });
-    this.message = `Length of "${label}" must be exactly ${length}.`;
+  constructor(field, length, path) {
+    super(field, path, ERROR_FIELD_LENGTH);
+    this.length = length;
+    this.message = `Length of "${field}" must be exactly ${length}.`;
   }
 }
 

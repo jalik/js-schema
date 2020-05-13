@@ -27,14 +27,15 @@ export const ERROR_FIELD_INVALID = 'field-invalid';
 class FieldError extends Error {
   /**
    * Creates a field error.
-   * @param {string} label
+   * @param {string} field
+   * @param {string} path
    * @param {string} reason
-   * @param {Object} context
    */
-  constructor(label, reason = ERROR_FIELD_INVALID, context = {}) {
+  constructor(field, path, reason = ERROR_FIELD_INVALID) {
     super();
-    this.context = { ...context, field: label };
-    this.message = `"${label}" is not valid`;
+    this.field = field;
+    this.message = `"${field}" is not valid`;
+    this.path = path;
     this.reason = reason;
   }
 }

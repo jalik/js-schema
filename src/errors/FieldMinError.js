@@ -27,9 +27,10 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_MIN = 'field-min';
 
 class FieldMinError extends FieldError {
-  constructor(label, min, path) {
-    super(label, ERROR_FIELD_MIN, { min, path });
-    this.message = `"${label}" must be greater than or equal to ${min}.`;
+  constructor(field, min, path) {
+    super(field, path, ERROR_FIELD_MIN);
+    this.min = min;
+    this.message = `"${field}" must be greater than or equal to ${min}.`;
   }
 }
 

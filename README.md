@@ -150,8 +150,20 @@ UserSchema.validate(invalidUser);
 
 ## Handling errors
 
-If the schema fails to validate an object, it will throw a specific error.
-It's also possible to know what error is returned by checking the `reason` attribute.
+If the schema fails to validate an object, it will throw a specific error (ex: `FieldLengthError`, `FieldTypeError`, `FieldRequiredError`...), which is helpful to handle errors display.
+
+For example, a `FieldRequiredError` looks like this:
+
+```json
+{
+  "reason": "field-required",
+  "message": "\"Phone Number\" is required",
+  "field": "number",
+  "path": "phones.number"
+}
+```
+
+## Translating errors
 
 The following example shows how to return a translated error, however you would adapt this to fit your current i18n library.
 
@@ -160,8 +172,8 @@ import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema'
 
 // Define translations of error messages.
 const errors = {
-  en: { ERROR_FIELD_MIN_LENGTH : 'The field {label} must have at least {minLength} characters.' },
-  fr: { ERROR_FIELD_MIN_LENGTH : 'Le champ {label} doit comporter au moins {minLength} caractères.' }
+  en: { ERROR_FIELD_MIN_LENGTH : 'The field {field} must have at least {minLength} characters.' },
+  fr: { ERROR_FIELD_MIN_LENGTH : 'Le champ {field} doit comporter au moins {minLength} caractères.' }
 };
 
 function getSchemaErrorMessage(error, locale) {
@@ -217,6 +229,52 @@ export const ExampleSchema = new Schema({
   objectArray: { type: ['object'] },
   // The field must be an array of strings.
   stringArray: { type: ['string'] },
+});
+```
+
+## Checking required values
+
+Use `required` to check if a field is `undefined`. Be advised that
+`required` will not throw an error if the field is `null`, use `nullable` if you want to check for `null` value.
+
+- Accepts `Boolean`, `Function`
+- Throws `FieldRequiredError`
+
+```js
+import Schema from '@jalik/schema';
+
+export const ExampleSchema = new Schema({
+  // The field is optional.
+  optional: {
+    required: false
+  },
+  // The field must not be undefined.
+  required: {
+    required: true
+  },
+});
+```
+
+## Checking nullable values
+
+Use `nullable` to check if a field value is `null`.
+
+- Accepts `Boolean`, `Function`
+- Throws `FieldNullableError`
+
+```js
+import Schema from '@jalik/schema';
+
+export const ExampleSchema = new Schema({
+  // The field must be set with anything than null
+  notNullable: {
+    required: true,
+    nullable: false,
+  },
+  // The field can be null or undefined
+  nullable: {
+    nullable: true
+  },
 });
 ```
 
@@ -287,31 +345,13 @@ export const ExampleSchema = new Schema({
     type: 'string',
     minLength: 5,
     maxLength: 10
+  },
+  // It also works with objects having a length attribute.
+  objectWithLength: {
+    type: 'object',
+    minLength: 1,
+    maxLength: 1
   }
-});
-```
-
-## Checking nullable values
-
-Use `nullable` to check if a field value is `null`.
-
-- Accepts `Boolean`, `Function`
-- Throws `FieldNullableError`
-
-```js
-import Schema from '@jalik/schema';
-
-export const ExampleSchema = new Schema({
-  // The field cannot be null
-  notNullable: {
-    type: 'string',
-    nullable: false
-  },
-  // The field can be null
-  nullable: {
-    type: 'string',
-    nullable: true
-  },
 });
 ```
 
@@ -339,31 +379,6 @@ export const ExampleSchema = new Schema({
 });
 ```
 
-## Checking required values
-
-Use `required` to check if a field is `undefined`. Be advised that
-`required` will not throw an error if the field is `null`, use `nullable` if you want to check for `null` value.
-
-- Accepts `Boolean`, `Function`
-- Throws `FieldRequiredError`
-
-```js
-import Schema from '@jalik/schema';
-
-export const ExampleSchema = new Schema({
-  // The field is optional.
-  optional: {
-    type: 'string',
-    required: false
-  },
-  // The field must be present.
-  required: {
-    type: 'string',
-    required: true
-  },
-});
-```
-
 ## Checking allowed values
 
 Use `allowed` to check if a field value is allowed.
@@ -375,13 +390,13 @@ Use `allowed` to check if a field value is allowed.
 import Schema from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
-  // The string must contain only '0' and '1'.
-  binaryString: {
+  // The string must be 'yes' or 'no'.
+  answer: {
     type: 'string',
-    allowed: ['0', '1']
+    allowed: ['yes', 'no']
   },
   // The array must contain only 0 and 1 as numbers.
-  binaryNumber: {
+  binaryNumbers: {
     type: ['number'],
     allowed: [0, 1]
  },
@@ -404,10 +419,9 @@ Use `denied` to check if a field value is denied.
 import Schema from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
-  // The array of strings must not contain 'yes' or 'no'.
   message: {
-    type: ['string'],
-    denied: ['fuck', 'sex', 'slut']
+    type: 'string',
+    denied: ['duck', 'six', 'slot']
   },
 });
 ```
@@ -425,12 +439,12 @@ import Schema from '@jalik/schema';
 export const ExampleSchema = new Schema({
   time: {
     type: 'string',
-    // The time must be like 'HH:mm'.
+    // The time must be like 'HH:mm'
     pattern: '^\d{1,2}:\d{1,2}$'
   },
   password: {
     type: 'string',
-    // The password must contain alphanumeric and special characters.
+    // The password must contain alphanumeric and special characters
     pattern: /^[a-zA-Z0-9_&#@$*%?!]+$/
   }
 });
@@ -484,36 +498,23 @@ Use `prepare` to perform some operations before validation.
 import Schema from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
-    // Execute the prepare function on field value
-    // before clean and check execution.
-    // It can be useful in some case
-    // where clean cannot be used to do what you want.
-    numbers: {
-        type: ['number'],
-        prepare: (numbers) => numbers.sort()
-    },
+  // Execute the prepare function on field value
+  // before clean and check execution.
+  // It can be useful in some case
+  // where clean cannot be used to do what you want.
+  numbers: {
+    type: ['number'],
+    prepare: (numbers) => numbers.sort()
+  },
 });
 
-export default schema;
+const result = ExampleSchema.prepare({ numbers: [5,9,0,3,2,7] })
 ```
 
-## Checking with custom function
+So `result` will be:
 
-The value(s) of a field can be checked using a custom function with the following option:
-- `check: Function`
-
-```js
-import Schema from '@jalik/schema';
-
-const schema = new Schema({
-  // The number must be even.
-  evenNumber: {
-    type: 'number',
-    check: value => value % 2 === 0
-  }
-});
-
-export default schema;
+```json
+{ "numbers": [0,2,3,5,7,9] }
 ```
 
 ## Cleaning values

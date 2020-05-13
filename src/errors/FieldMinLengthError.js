@@ -27,9 +27,10 @@ import FieldError from './FieldError';
 export const ERROR_FIELD_MIN_LENGTH = 'field-min-length';
 
 class FieldMinLengthError extends FieldError {
-  constructor(label, minLength, path) {
-    super(label, ERROR_FIELD_MIN_LENGTH, { minLength, path });
-    this.message = `Length of "${label}" must be at least ${minLength}.`;
+  constructor(field, minLength, path) {
+    super(field, path, ERROR_FIELD_MIN_LENGTH);
+    this.minLength = minLength;
+    this.message = `Length of "${field}" must be at least ${minLength}.`;
   }
 }
 
