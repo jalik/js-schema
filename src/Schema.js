@@ -139,7 +139,6 @@ class Schema {
 
   /**
    * Returns a copy of the object without unknown fields.
-   * todo move logic to clean()
    * @param {Object} object
    * @return {Object}
    */

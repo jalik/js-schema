@@ -257,7 +257,6 @@ class SchemaField {
 
   /**
    * Cleans a value.
-   * todo return a Promise
    * @param {*} value
    * @param {Object} options
    * @return {*}
@@ -440,7 +439,6 @@ class SchemaField {
 
   /**
    * Parses a value.
-   * todo return a Promise
    * @param {*} value
    * @return {*}
    */
@@ -491,7 +489,6 @@ class SchemaField {
 
   /**
    * Validates a value.
-   * todo return a Promise
    * @param {*} value
    * @param {Object} options
    * @return {*}
