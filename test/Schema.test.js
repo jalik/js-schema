@@ -118,11 +118,13 @@ describe('Schema', () => {
   });
 
   describe('getField(name)', () => {
-    it('should return field properties', () => {
-      expect(() => BaseSchema.getField('string').getType()).not.toThrow();
+    describe('with valid field name', () => {
+      it('should return field properties', () => {
+        expect(() => BaseSchema.getField('string').getType()).not.toThrow();
+      });
     });
 
-    describe('with incorrect field name', () => {
+    describe('with invalid field name', () => {
       it('should throw an error', () => {
         expect(() => BaseSchema.getField('unknown').getType()).toThrow();
       });
