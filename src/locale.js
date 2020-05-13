@@ -51,5 +51,3 @@ export function getErrorMessage(error, locale) {
 export function setLocale(locale, dict) {
   locales[locale] = dict;
 }
-
-export default locales;

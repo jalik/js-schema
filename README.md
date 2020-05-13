@@ -225,7 +225,7 @@ import {
 The following example shows how to return a translated error, however you would adapt this to fit your current i18n library.
 
 ```js
-import { getErrorMessage, setLocale } from '@jalik/schema/dist/locales';
+import { getErrorMessage, setLocale } from '@jalik/schema/dist/locale';
 import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema/errors'
 
 // Define french translations of error messages.
