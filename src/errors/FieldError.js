@@ -34,7 +34,7 @@ class FieldError extends Error {
   constructor(field, path, reason = ERROR_FIELD_INVALID) {
     super();
     this.field = field;
-    this.message = `"${field}" is not valid`;
+    this.message = `"${field}" is not valid.`;
     this.path = path;
     this.reason = reason;
   }

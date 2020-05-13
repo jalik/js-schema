@@ -30,7 +30,7 @@ class FieldMinLengthError extends FieldError {
   constructor(field, minLength, path) {
     super(field, path, ERROR_FIELD_MIN_LENGTH);
     this.minLength = minLength;
-    this.message = `Length of "${field}" must be at least ${minLength}.`;
+    this.message = `"${field}" must have a length that is greater than or equal to ${minLength}.`;
   }
 }
 

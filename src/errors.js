@@ -22,16 +22,34 @@
  * SOFTWARE.
  */
 
-import FieldError from './FieldError';
+const Errors = {};
 
-export const ERROR_FIELD_MAX_LENGTH = 'field-max-length';
-
-class FieldMaxLengthError extends FieldError {
-  constructor(field, maxLength, path) {
-    super(field, path, ERROR_FIELD_MAX_LENGTH);
-    this.maxLength = maxLength;
-    this.message = `"${field}" must have a length that is lesser than or equal to ${maxLength}.`;
-  }
+/**
+ * Adds translations for errors.
+ * @param {string} locale
+ * @param {Object} dict
+ */
+export function setLocale(locale, dict) {
+  Errors[locale] = dict;
 }
 
-export default FieldMaxLengthError;
+/**
+ * Returns localized error message if available.
+ * @param {FieldError} error
+ * @param {string} locale
+ * @return {string}
+ */
+export function getErrorMessage(error, locale) {
+  if (typeof Errors[locale] !== 'undefined' && typeof Errors[locale][error.reason] !== 'undefined') {
+    let message = Errors[locale][error.reason];
+
+    // Replace context variables in message.
+    Object.keys(error).forEach((key) => {
+      message = message.replace(`{${key}}`, error[key]);
+    });
+    return message;
+  }
+  return error.message;
+}
+
+export default Errors;

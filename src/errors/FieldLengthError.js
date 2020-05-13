@@ -30,7 +30,7 @@ class FieldLengthError extends FieldError {
   constructor(field, length, path) {
     super(field, path, ERROR_FIELD_LENGTH);
     this.length = length;
-    this.message = `Length of "${field}" must be exactly ${length}.`;
+    this.message = `"${field}" must have a length of ${length}.`;
   }
 }
 
