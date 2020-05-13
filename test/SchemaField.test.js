@@ -34,7 +34,7 @@ import FieldMinLengthError from '../src/errors/FieldMinLengthError';
 import FieldMinWordsError from '../src/errors/FieldMinWordsError';
 import FieldNullableError from '../src/errors/FieldNullableError';
 import FieldPatternError from '../src/errors/FieldPatternError';
-import FieldRequiredError from '../src/errors/FieldRequiredError';
+import FieldRequiredError, { ERROR_FIELD_REQUIRED } from '../src/errors/FieldRequiredError';
 import FieldTypeError from '../src/errors/FieldTypeError';
 import SchemaField from '../src/SchemaField';
 
@@ -382,6 +382,7 @@ describe('SchemaField', () => {
           expect(e).not.toBeUndefined();
           expect(e.field).toBe('field');
           expect(e.path).toBe('field');
+          expect(e.reason).toBe(ERROR_FIELD_REQUIRED);
         }
       });
     });

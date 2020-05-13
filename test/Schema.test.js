@@ -190,11 +190,13 @@ describe('Schema', () => {
     describe('with invalid object', () => {
       it('should throw a ValidationError with errors details', () => {
         try {
-          BaseSchema.validate({});
+          BaseSchema.validate({ embedded: {} });
         } catch (e) {
           expect(e.errors).not.toBeUndefined();
           expect(e.errors.number).toBeInstanceOf(FieldRequiredError);
           expect(e.errors.string).toBeInstanceOf(FieldRequiredError);
+          expect(e.errors['embedded.string']).toBeInstanceOf(FieldRequiredError);
+          expect(e.errors['embedded.string'].path).toBe('embedded.string');
         }
       });
     });
