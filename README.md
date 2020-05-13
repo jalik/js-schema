@@ -204,6 +204,7 @@ Here is the list of all errors types constants:
 import {
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
+  ERROR_FIELD_FORMAT,
   ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
   ERROR_FIELD_MAX,
@@ -508,6 +509,52 @@ export const ExampleSchema = new Schema({
     // The password must contain alphanumeric and special characters
     pattern: /^[a-zA-Z0-9_&#@$*%?!]+$/
   }
+});
+```
+
+## Checking a format (based on regular expression)
+
+Use `format` to check if a field value matches a specific known format.
+
+- Accepts `String`
+- Throws `FieldFormatError`
+
+```js
+import Schema from '@jalik/schema';
+
+export const ExampleSchema = new Schema({
+  date: {
+    type: 'string',
+    format: 'date'
+  },
+  datetime: {
+    type: 'string',
+    format: 'datetime'
+  },
+  email: {
+    type: 'string',
+    format: 'email'
+  },
+  hostname: {
+    type: 'string',
+    format: 'hostname'
+  },
+  ipv4: {
+    type: 'string',
+    format: 'ipv4'
+  },
+  ipv6: {
+    type: 'string',
+    format: 'ipv6'
+  },
+  time: {
+    type: 'string',
+    format: 'time'
+  },
+  uri: {
+    type: 'string',
+    format: 'uri'
+  },
 });
 ```
 

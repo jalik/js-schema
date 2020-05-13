@@ -27,6 +27,7 @@ import {
   checkAllowed,
   checkDenied,
   checkFieldProperties,
+  checkFormat,
   checkLength,
   checkMax,
   checkMaxLength,
@@ -480,6 +481,9 @@ class SchemaField {
 
     // Check denied values
     checkDenied(computeValue(props.denied, context), newVal, label, path);
+
+    // Check string format
+    checkFormat(props.format, newVal, label, path);
 
     // Check length if value has the length attribute
     checkLength(computeValue(props.length, context), newVal, label, path);

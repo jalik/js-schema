@@ -24,6 +24,7 @@
 
 import FieldAllowedError from './errors/FieldAllowedError';
 import FieldDeniedError from './errors/FieldDeniedError';
+import FieldFormatError from './errors/FieldFormatError';
 import FieldLengthError from './errors/FieldLengthError';
 import FieldMaxError from './errors/FieldMaxError';
 import FieldMaxLengthError from './errors/FieldMaxLengthError';
@@ -35,6 +36,16 @@ import FieldNullableError from './errors/FieldNullableError';
 import FieldPatternError from './errors/FieldPatternError';
 import FieldRequiredError from './errors/FieldRequiredError';
 import FieldTypeError from './errors/FieldTypeError';
+import {
+  DateRegExp,
+  DateTimeRegExp,
+  EmailRegExp,
+  HostnameRegExp,
+  IPv4RegExp,
+  IPv6RegExp,
+  TimeRegExp,
+  UriRegExp,
+} from './regex';
 import { contains } from './utils';
 
 /**
@@ -47,6 +58,7 @@ const fieldProperties = [
   'clean',
   'defaultValue',
   'denied',
+  'format',
   'label',
   'length',
   'max',
@@ -125,6 +137,7 @@ export function checkFieldProperties(name, props) {
     check,
     clean,
     denied,
+    format,
     label,
     length,
     max,
@@ -178,6 +191,11 @@ export function checkFieldProperties(name, props) {
   // Check denied values
   if (typeof denied !== 'undefined' && !(denied instanceof Array) && typeof denied !== 'function') {
     throw new TypeError(`${name}.denied must be an array or function`);
+  }
+
+  // Check format
+  if (typeof format !== 'undefined' && !contains(['string'], typeof format)) {
+    throw new TypeError(`${name}.format must be a string`);
   }
 
   // Check label
@@ -244,6 +262,55 @@ export function checkFieldProperties(name, props) {
   // Check required
   if (typeof required !== 'undefined' && !contains(['function', 'boolean'], typeof required)) {
     throw new TypeError(`${name}.required must be a boolean or function`);
+  }
+}
+
+/**
+ * Checks the format of a value.
+ * @param {string} format
+ * @param {string} value
+ * @param {string} label
+ * @param {string} path
+ */
+export function checkFormat(format, value, label, path) {
+  if (typeof format === 'string') {
+    if (typeof value !== 'string') {
+      throw new FieldFormatError(label, format, path);
+    }
+    let regexp;
+
+    switch (format) {
+      case 'date':
+        regexp = DateRegExp;
+        break;
+      case 'datetime':
+        regexp = DateTimeRegExp;
+        break;
+      case 'email':
+        regexp = EmailRegExp;
+        break;
+      case 'hostname':
+        regexp = HostnameRegExp;
+        break;
+      case 'ipv4':
+        regexp = IPv4RegExp;
+        break;
+      case 'ipv6':
+        regexp = IPv6RegExp;
+        break;
+      case 'time':
+        regexp = TimeRegExp;
+        break;
+      case 'uri':
+        regexp = UriRegExp;
+        break;
+      default:
+        throw new Error(`"${format}" is not a valid format`);
+    }
+
+    if (!regexp.test(value)) {
+      throw new FieldFormatError(label, format, path);
+    }
   }
 }
 

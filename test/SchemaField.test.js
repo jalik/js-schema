@@ -26,6 +26,7 @@ import { ERROR_FIELD_REQUIRED } from '../src/errors';
 import FieldAllowedError from '../src/errors/FieldAllowedError';
 import FieldDeniedError from '../src/errors/FieldDeniedError';
 import FieldError from '../src/errors/FieldError';
+import FieldFormatError from '../src/errors/FieldFormatError';
 import FieldLengthError from '../src/errors/FieldLengthError';
 import FieldMaxError from '../src/errors/FieldMaxError';
 import FieldMaxLengthError from '../src/errors/FieldMaxLengthError';
@@ -682,6 +683,134 @@ describe('SchemaField', () => {
       });
 
       // todo add tests with length: Function
+    });
+
+    describe('with format: (String)', () => {
+      describe('format: "date"', () => {
+        const field = new SchemaField('field', { format: 'date' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('2020-05-13'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('2020/05/13'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
+      describe('format: "datetime"', () => {
+        const field = new SchemaField('field', { format: 'datetime' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('2020-05-13T10:00:00-10:00'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('2020-05-13 10:00:00'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
+      describe('format: "email"', () => {
+        const field = new SchemaField('field', { format: 'email' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('valid.address@mail.com'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('invalid@mail'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
+      describe('format: "hostname"', () => {
+        const field = new SchemaField('field', { format: 'hostname' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('www.host.com'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('www.invalid_host.com'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
+      describe('format: "ipv4"', () => {
+        const field = new SchemaField('field', { format: 'ipv4' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('192.168.1.0'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('256.255.255.255'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
+      describe('format: "ipv6"', () => {
+        const field = new SchemaField('field', { format: 'ipv6' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('ff:ff:ff:ff:ff:ff:ff:ff'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('gf:ff:ff:ff:ff:ff:ff:ff'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
+      describe('format: "uri"', () => {
+        const field = new SchemaField('field', { format: 'uri' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('ftp://ftp.is.co.za/rfc/rfc1808.txt'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('https://www.ietf.org/rfc/ rfc2396.txt'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
     });
 
     describe('with max: (Number|Date|Function)', () => {

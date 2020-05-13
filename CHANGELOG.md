@@ -66,6 +66,7 @@
 - Adds function `getErrorMessage()` in locale.js
 - Adds function `setLocale()` in locale.js
 - Adds method `getErrors()` in `Schema`
+- Adds option `format` with accepted values `date`, `datetime`, `email`, `hostname`, `ipv4`, `ipv6`, `time`, `uri` in `SchemaField`
 - Adds option `rootOnly` in `SchemaField.validate()` to not check nested schemas
 - Adds regexp `DateRegExp` in regex.js
 - Adds regexp `DateTimeRegExp` in regex.js
