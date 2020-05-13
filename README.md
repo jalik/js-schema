@@ -159,7 +159,7 @@ For example, a `FieldRequiredError` looks like this:
   "reason": "field-required",
   "message": "\"Phone Number\" is required",
   "field": "Phone Number",
-  "path": "phones.number"
+  "path": "phones[0].number"
 }
 ```
 

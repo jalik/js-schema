@@ -627,7 +627,7 @@ class SchemaField {
                   arrayType.validate(newVal[i], {
                     ...opts,
                     context,
-                    path: joinPath(path, `[${i}]`),
+                    path: `${path}[${i}]`,
                   });
                 }
               }
