@@ -201,7 +201,7 @@ For example, a `FieldRequiredError` looks like this:
 The following example shows how to return a translated error, however you would adapt this to fit your current i18n library.
 
 ```js
-import { setLocale, getErrorMessage } from '@jalik/schema/dist/errors';
+import { getErrorMessage, setLocale } from '@jalik/schema/dist/locales';
 import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema/errors/FieldMinLengthError'
 
 // Define french translations of error messages.
