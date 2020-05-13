@@ -204,7 +204,6 @@ Here is the list of all errors types constants:
 import {
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
-  ERROR_FIELD_INSTANCE,
   ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
   ERROR_FIELD_MAX,

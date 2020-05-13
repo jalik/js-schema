@@ -39,7 +39,6 @@ import {
   checkTypeArray,
 } from './checks';
 import FieldError from './errors/FieldError';
-import FieldInstanceError from './errors/FieldInstanceError';
 import FieldTypeError from './errors/FieldTypeError';
 import {
   computeValue,
@@ -638,7 +637,7 @@ class SchemaField {
           } else if (typeof props.type === 'function') {
             // Check if value is an instance of the function
             if (!(newVal instanceof props.type)) {
-              throw new FieldInstanceError(label, path);
+              throw new FieldTypeError(label, props.type.name, path);
             }
           } else {
             throw new FieldTypeError(label, props.type, path);

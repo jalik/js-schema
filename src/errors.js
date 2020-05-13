@@ -25,7 +25,6 @@
 export const ERROR_FIELD_ALLOWED = 'field-allowed';
 export const ERROR_FIELD_DENIED = 'field-denied-value';
 export const ERROR_FIELD_INVALID = 'field-invalid';
-export const ERROR_FIELD_INSTANCE = 'field-instance';
 export const ERROR_FIELD_LENGTH = 'field-length';
 export const ERROR_FIELD_MAX = 'field-max';
 export const ERROR_FIELD_MAX_LENGTH = 'field-max-length';
