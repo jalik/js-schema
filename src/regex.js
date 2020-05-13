@@ -44,7 +44,7 @@ export const EmailRegExp = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\
  * Hostname pattern.
  * @type {RegExp}
  */
-export const HostnameRegExp = /(?:[a-zA-Z0-9])(?:[a-zA-Z0-9-.]){1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+|\[(?:(?:(?:[a-fA-F0-9]){1,4})(?::(?:[a-fA-F0-9]){1,4}){7}|::1|::)]|(?:(?:[0-9]{1,3})(?:\.[0-9]{1,3}){3})/;
+export const HostnameRegExp = /^[a-zA-Z0-9][a-zA-Z0-9-.]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
 
 /**
  * IPv4 network address pattern.
