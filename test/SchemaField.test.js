@@ -374,17 +374,29 @@ describe('SchemaField', () => {
   describe('validate(object)', () => {
     describe('with incorrect value', () => {
       const field = new SchemaField('field', { required: true });
+      let error;
 
-      it('should throw FieldError with path in context', () => {
-        try {
-          field.validate(undefined);
-        } catch (error) {
-          expect(error).toBeInstanceOf(FieldRequiredError);
-          expect(error).not.toBeUndefined();
-          expect(error.field).toBe('field');
-          expect(error.path).toBe('field');
-          expect(error.reason).toBe(ERROR_FIELD_REQUIRED);
-        }
+      try {
+        field.validate(undefined);
+      } catch (e) {
+        error = e;
+      }
+
+      it('should throw FieldError', () => {
+        expect(error).toBeInstanceOf(FieldRequiredError);
+        expect(error).not.toBeUndefined();
+      });
+
+      it('should throw a FieldError with a "field" attribute', () => {
+        expect(error.field).toBe('field');
+      });
+
+      it('should throw a FieldError with a "path" attribute', () => {
+        expect(error.path).toBe('field');
+      });
+
+      it('should throw a FieldError with a "reason" attribute', () => {
+        expect(error.reason).toBe(ERROR_FIELD_REQUIRED);
       });
     });
 

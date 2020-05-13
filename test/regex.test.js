@@ -34,17 +34,14 @@ import {
 describe('DateRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(DateRegExp.test('2019-04-11'))
-        .toBeTruthy();
+      expect(DateRegExp.test('2019-04-11')).toBeTruthy();
     });
   });
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(DateRegExp.test('2019-13-11'))
-        .toBeFalsy();
-      expect(DateRegExp.test('2019-04-32'))
-        .toBeFalsy();
+      expect(DateRegExp.test('2019-13-11')).toBeFalsy();
+      expect(DateRegExp.test('2019-04-32')).toBeFalsy();
     });
   });
 });
@@ -52,23 +49,17 @@ describe('DateRegExp', () => {
 describe('DateTimeRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(DateTimeRegExp.test('2019-04-11T00:00:00+00:00'))
-        .toBeTruthy();
-      expect(DateTimeRegExp.test('2019-04-11T07:00:00-10:00'))
-        .toBeTruthy();
+      expect(DateTimeRegExp.test('2019-04-11T00:00:00+00:00')).toBeTruthy();
+      expect(DateTimeRegExp.test('2019-04-11T07:00:00-10:00')).toBeTruthy();
     });
   });
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(DateTimeRegExp.test('2019-13-11T07:00:00-10:00'))
-        .toBeFalsy();
-      expect(DateTimeRegExp.test('2019-04-32T07:00:00-10:00'))
-        .toBeFalsy();
-      expect(DateTimeRegExp.test('2019-04-11T24:00:00-10:00'))
-        .toBeFalsy();
-      expect(DateTimeRegExp.test('2019-04-11T00:60:00-10:00'))
-        .toBeFalsy();
+      expect(DateTimeRegExp.test('2019-13-11T07:00:00-10:00')).toBeFalsy();
+      expect(DateTimeRegExp.test('2019-04-32T07:00:00-10:00')).toBeFalsy();
+      expect(DateTimeRegExp.test('2019-04-11T24:00:00-10:00')).toBeFalsy();
+      expect(DateTimeRegExp.test('2019-04-11T00:60:00-10:00')).toBeFalsy();
     });
   });
 });
@@ -76,15 +67,13 @@ describe('DateTimeRegExp', () => {
 describe('EmailRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(EmailRegExp.test('quick-test.1337@domain.com'))
-        .toBeTruthy();
+      expect(EmailRegExp.test('quick-test.1337@domain.com')).toBeTruthy();
     });
   });
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(EmailRegExp.test('aa_aa@ bb.cc'))
-        .toBeFalsy();
+      expect(EmailRegExp.test('aa_aa@ bb.cc')).toBeFalsy();
     });
   });
 });
@@ -92,15 +81,13 @@ describe('EmailRegExp', () => {
 describe('HostnameRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(HostnameRegExp.test('a.bcd-ef.ghi'))
-        .toBeTruthy();
+      expect(HostnameRegExp.test('a.bcd-ef.ghi')).toBeTruthy();
     });
   });
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(HostnameRegExp.test('a.bcd_ef.ghi'))
-        .toBeFalsy();
+      expect(HostnameRegExp.test('a.bcd_ef.ghi')).toBeFalsy();
     });
   });
 });
@@ -108,15 +95,13 @@ describe('HostnameRegExp', () => {
 describe('IPv4RegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(IPv4RegExp.test('192.168.0.1'))
-        .toBeTruthy();
+      expect(IPv4RegExp.test('192.168.0.1')).toBeTruthy();
     });
   });
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(IPv4RegExp.test('256.256.256.256'))
-        .toBeFalsy();
+      expect(IPv4RegExp.test('256.256.256.256')).toBeFalsy();
     });
   });
 });
@@ -124,27 +109,19 @@ describe('IPv4RegExp', () => {
 describe('TimeRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(TimeRegExp.test('00:00:00+00:00'))
-        .toBeTruthy();
-      expect(TimeRegExp.test('19:10:00+00:00'))
-        .toBeTruthy();
-      expect(TimeRegExp.test('21:10:00-10:00'))
-        .toBeTruthy();
+      expect(TimeRegExp.test('00:00:00+00:00')).toBeTruthy();
+      expect(TimeRegExp.test('19:10:00+00:00')).toBeTruthy();
+      expect(TimeRegExp.test('21:10:00-10:00')).toBeTruthy();
     });
   });
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(TimeRegExp.test('24:00:00+00:00'))
-        .toBeFalsy();
-      expect(TimeRegExp.test('00:60:00+00:00'))
-        .toBeFalsy();
-      expect(TimeRegExp.test('00:00:60+00:00'))
-        .toBeFalsy();
-      expect(TimeRegExp.test('00:00:00+24:00'))
-        .toBeFalsy();
-      expect(TimeRegExp.test('00:00:00+00:60'))
-        .toBeFalsy();
+      expect(TimeRegExp.test('24:00:00+00:00')).toBeFalsy();
+      expect(TimeRegExp.test('00:60:00+00:00')).toBeFalsy();
+      expect(TimeRegExp.test('00:00:60+00:00')).toBeFalsy();
+      expect(TimeRegExp.test('00:00:00+24:00')).toBeFalsy();
+      expect(TimeRegExp.test('00:00:00+00:60')).toBeFalsy();
     });
   });
 });
