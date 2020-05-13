@@ -106,7 +106,11 @@ class Schema {
     try {
       this.validate(object, opts);
     } catch (error) {
-      errors = error.errors;
+      if (error instanceof ValidationError) {
+        errors = error.errors;
+      } else {
+        throw error;
+      }
     }
     return errors;
   }
