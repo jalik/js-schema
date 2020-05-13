@@ -29,7 +29,7 @@ export const ERROR_FIELD_PATTERN = 'field-pattern';
 class FieldPatternError extends FieldError {
   constructor(label, pattern, path) {
     super(label, ERROR_FIELD_PATTERN, { pattern, path });
-    this.message = `"${label}" does not match the pattern /${pattern}/.`;
+    this.message = `"${label}" does not match the pattern "${pattern}".`;
   }
 }
 
