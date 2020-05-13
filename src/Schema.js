@@ -89,6 +89,29 @@ class Schema {
   }
 
   /**
+   * Returns fields errors without throwing an error.
+   * @param {Object} object
+   * @param {Object} options
+   * @return {Object}
+   */
+  getErrors(object, options = {}) {
+    const opts = {
+      ...options,
+      clean: false,
+      parse: false,
+      removeUnknown: false,
+    };
+    let errors = {};
+
+    try {
+      this.validate(object, opts);
+    } catch (error) {
+      errors = error.errors;
+    }
+    return errors;
+  }
+
+  /**
    * Returns a field.
    * @param {string} name
    * @return {SchemaField}

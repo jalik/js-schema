@@ -102,50 +102,83 @@ You want to validate an object with a schema, for sure! This is why you're here.
 ```js
 import Schema from '@jalik/schema';
 
-// The schema 
+const PhoneSchema = new Schema({
+  code: {
+    type: 'string',
+    required: true,
+  },
+  number: {
+    type: 'string',
+    required: true,
+  }
+});
+
 const UserSchema = new Schema({
   age: {
     type: 'integer',
     required: true,
-    min: 1,
+    min: 18,
   },
   gender: {
     type: 'string',
     required: true,
     allowed: ['male', 'female'],
   },
-  hobbies: {
-    type: 'array',
-    allowed: ['coding', 'playing', 'sleeping'],
-  },
   name: {
     type: 'string',
     required: true,
     maxLength: 50,
   },
+  phone: {
+    type: PhoneSchema
+  }
 });
 
 // A valid object
 const validUser = {
   age: 33,
   gender: 'male',
-  hobbies: ['coding', 'playing'],
   name: 'me',
-}
+};
 
 // This will not throw an error.
 UserSchema.validate(validUser);
 
 // An invalid object
 const invalidUser = {
-  age: 0,
-  gender: 'unknown',
-  hobbies: ['hacking'],
-  name: null,
-}
+  age: 16,
+  gender: null,
+  phone: { code: 777, number: 10101001 }
+};
 
-// This will throw an error.
+// This will throw a ValidationError.
 UserSchema.validate(invalidUser);
+```
+
+The `ValidationError` object looks like this:
+
+```json
+{
+  "reason": "object-invalid",
+  "message": "Object is not valid",
+  "errors": {
+    "age": "\"age\" must be greater than or equal to 16",
+    "gender": "\"gender\" cannot be null",
+    "name": "\"name\" is required",
+    "phone.code": "\"code\" is not of type \"string\"",
+    "phone.number": "\"number\" is not of type \"string\""
+  }
+}
+```
+
+Note that you can get the errors without throwing a `ValidationError`:
+
+```js
+const errors = UserSchema.getErrors({
+  age: 16,
+  gender: null,
+  phone: { code: 777, number: 10101001 }
+});
 ```
 
 ## Handling errors

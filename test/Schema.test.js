@@ -89,6 +89,34 @@ describe('Schema', () => {
     });
   });
 
+  describe('getErrors(object, options)', () => {
+    describe('with valid object', () => {
+      const object = { number: 1, string: 'string' };
+      const errors = BaseSchema.getErrors(object);
+
+      it('should return no errors', () => {
+        expect(errors).toStrictEqual({});
+      });
+
+      it('should not throw an error', () => {
+        expect(() => BaseSchema.getErrors(object)).not.toThrow();
+      });
+    });
+    describe('with invalid object', () => {
+      const object = {};
+      const errors = BaseSchema.getErrors(object);
+
+      it('should return errors', () => {
+        expect(errors.number).toBeInstanceOf(FieldRequiredError);
+        expect(errors.string).toBeInstanceOf(FieldRequiredError);
+      });
+
+      it('should not throw an error', () => {
+        expect(() => BaseSchema.getErrors(object)).not.toThrow();
+      });
+    });
+  });
+
   describe('getField(name)', () => {
     it('should return field properties', () => {
       expect(() => BaseSchema.getField('string').getType()).not.toThrow();
