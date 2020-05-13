@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_MAX_LENGTH } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_MAX_LENGTH = 'field-max-length';
 
 class FieldMaxLengthError extends FieldError {
   constructor(field, maxLength, path) {

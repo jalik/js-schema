@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_REQUIRED } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_REQUIRED = 'field-required';
 
 class FieldRequiredError extends FieldError {
   constructor(field, path) {

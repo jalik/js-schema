@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_TYPE } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_TYPE = 'field-type';
 
 class FieldTypeError extends FieldError {
   constructor(field, type, path) {

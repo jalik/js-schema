@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_NULLABLE } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_NULLABLE = 'field-nullable';
 
 class FieldNullableError extends FieldError {
   constructor(field, path) {

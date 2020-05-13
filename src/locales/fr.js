@@ -22,22 +22,24 @@
  * SOFTWARE.
  */
 
-import { ERROR_FIELD_ALLOWED } from '../errors/FieldAllowedError';
-import { ERROR_FIELD_DENIED } from '../errors/FieldDeniedError';
-import { ERROR_FIELD_INVALID } from '../errors/FieldError';
-import { ERROR_FIELD_INSTANCE } from '../errors/FieldInstanceError';
-import { ERROR_FIELD_LENGTH } from '../errors/FieldLengthError';
-import { ERROR_FIELD_MAX } from '../errors/FieldMaxError';
-import { ERROR_FIELD_MAX_LENGTH } from '../errors/FieldMaxLengthError';
-import { ERROR_FIELD_MAX_WORDS } from '../errors/FieldMaxWordsError';
-import { ERROR_FIELD_MIN } from '../errors/FieldMinError';
-import { ERROR_FIELD_MIN_LENGTH } from '../errors/FieldMinLengthError';
-import { ERROR_FIELD_MIN_WORDS } from '../errors/FieldMinWordsError';
-import { ERROR_FIELD_NULLABLE } from '../errors/FieldNullableError';
-import { ERROR_FIELD_PATTERN } from '../errors/FieldPatternError';
-import { ERROR_FIELD_REQUIRED } from '../errors/FieldRequiredError';
-import { ERROR_FIELD_TYPE } from '../errors/FieldTypeError';
-import { ERROR_FIELD_UNKNOWN } from '../errors/FieldUnknownError';
+import {
+  ERROR_FIELD_ALLOWED,
+  ERROR_FIELD_DENIED,
+  ERROR_FIELD_INSTANCE,
+  ERROR_FIELD_INVALID,
+  ERROR_FIELD_LENGTH,
+  ERROR_FIELD_MAX,
+  ERROR_FIELD_MAX_LENGTH,
+  ERROR_FIELD_MAX_WORDS,
+  ERROR_FIELD_MIN,
+  ERROR_FIELD_MIN_LENGTH,
+  ERROR_FIELD_MIN_WORDS,
+  ERROR_FIELD_NULLABLE,
+  ERROR_FIELD_PATTERN,
+  ERROR_FIELD_REQUIRED,
+  ERROR_FIELD_TYPE,
+  ERROR_FIELD_UNKNOWN,
+} from '../errors';
 
 const fr = {
   [ERROR_FIELD_ALLOWED]: '"{field}" contient une valeur qui n\'est pas autorisée ({allowed}).',

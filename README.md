@@ -196,13 +196,38 @@ For example, a `FieldRequiredError` looks like this:
 }
 ```
 
+If you need to detect the type of the error, it is recommended to check the `reason` attribute of the error against a constant, instead of comparing class instance.
+
+Here is the list of all errors types constants:
+
+```js
+import {
+  ERROR_FIELD_ALLOWED,
+  ERROR_FIELD_DENIED,
+  ERROR_FIELD_INSTANCE,
+  ERROR_FIELD_INVALID,
+  ERROR_FIELD_LENGTH,
+  ERROR_FIELD_MAX,
+  ERROR_FIELD_MAX_LENGTH,
+  ERROR_FIELD_MAX_WORDS,
+  ERROR_FIELD_MIN,
+  ERROR_FIELD_MIN_LENGTH,
+  ERROR_FIELD_MIN_WORDS,
+  ERROR_FIELD_NULLABLE,
+  ERROR_FIELD_PATTERN,
+  ERROR_FIELD_REQUIRED,
+  ERROR_FIELD_TYPE,
+  ERROR_FIELD_UNKNOWN,
+} from '@jalik/schema/errors';
+```
+
 ## Translating errors
 
 The following example shows how to return a translated error, however you would adapt this to fit your current i18n library.
 
 ```js
 import { getErrorMessage, setLocale } from '@jalik/schema/dist/locales';
-import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema/errors/FieldMinLengthError'
+import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema/errors'
 
 // Define french translations of error messages.
 setLocale('fr', {
@@ -217,13 +242,15 @@ const message = getErrorMessage(fieldRequiredError, 'fr');
 
 The errors are in english by default, so you don't have to set the english locale, only if you want to replace default error messages.
 
-The french locale is available.
+The **french** locale is available.
 
 ```js
 import fr from '@jalik/schema/dist/locales/fr'
 
 setLocale('fr', fr);
 ```
+
+**Contributions to translations are welcome.**
 
 ## Checking the type
 

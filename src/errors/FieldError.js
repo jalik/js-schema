@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-export const ERROR_FIELD_INVALID = 'field-invalid';
+import { ERROR_FIELD_INVALID } from '../errors';
 
 class FieldError extends Error {
   /**

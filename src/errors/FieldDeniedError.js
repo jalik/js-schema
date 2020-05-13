@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_DENIED } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_DENIED = 'field-denied-value';
 
 class FieldDeniedError extends FieldError {
   constructor(field, denied, path) {

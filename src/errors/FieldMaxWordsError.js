@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_MAX_WORDS } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_MAX_WORDS = 'field-max-words';
 
 class FieldMaxWordsError extends FieldError {
   constructor(field, maxWords, path) {

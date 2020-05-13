@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_MIN_LENGTH } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_MIN_LENGTH = 'field-min-length';
 
 class FieldMinLengthError extends FieldError {
   constructor(field, minLength, path) {

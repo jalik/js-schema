@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_MAX } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_MAX = 'field-max';
 
 class FieldMaxError extends FieldError {
   constructor(field, max, path) {

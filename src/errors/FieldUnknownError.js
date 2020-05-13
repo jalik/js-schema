@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_UNKNOWN } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_UNKNOWN = 'field-unknown';
 
 class FieldUnknownError extends FieldError {
   constructor(field, path) {

@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_MIN } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_MIN = 'field-min';
 
 class FieldMinError extends FieldError {
   constructor(field, min, path) {

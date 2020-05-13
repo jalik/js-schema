@@ -22,9 +22,8 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_PATTERN } from '../errors';
 import FieldError from './FieldError';
-
-export const ERROR_FIELD_PATTERN = 'field-pattern';
 
 class FieldPatternError extends FieldError {
   constructor(field, pattern, path) {

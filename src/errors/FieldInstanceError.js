@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+import { ERROR_FIELD_INSTANCE } from '../errors';
 import FieldError from './FieldError';
 
 export const ERROR_FIELD_INSTANCE = 'field-instance';
