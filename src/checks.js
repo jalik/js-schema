@@ -447,6 +447,65 @@ export function checkRequired(required, value, label, path) {
 }
 
 /**
+ * Checks type of value.
+ * @param {string} type
+ * @param {*} value
+ * @param {string} label
+ * @param {string} path
+ */
+export function checkType(type, value, label, path) {
+  if (typeof type === 'string') {
+    switch (type) {
+      case 'array':
+        if (!(value instanceof Array)) {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      case 'boolean':
+        if (typeof value !== 'boolean') {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      case 'function':
+        if (typeof value !== 'function') {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      case 'integer':
+        if (typeof value !== 'number' || Number.isNaN(value) || value !== Math.round(value)) {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      case 'number':
+        if (typeof value !== 'number' || Number.isNaN(value)) {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      case 'object':
+        // todo check if needed to throw if value is an Array
+        if (typeof value !== 'object' || value instanceof Array) {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      case 'string':
+        if (typeof value !== 'string') {
+          throw new FieldTypeError(label, type, path);
+        }
+        break;
+
+      default:
+        throw new Error(`unsupported type "${type}"`);
+    }
+  }
+}
+
+/**
  * Checks if the type of value is one of given types.
  * @param {string[]} types
  * @param {*} value

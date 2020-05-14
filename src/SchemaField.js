@@ -38,6 +38,7 @@ import {
   checkNullable,
   checkPattern,
   checkRequired,
+  checkType,
   checkTypeArray,
 } from './checks';
 import FieldError from './errors/FieldError';
@@ -388,92 +389,49 @@ class SchemaField {
     }
 
     // Check type
-    if (typeof props.type !== 'undefined') {
-      switch (props.type) {
-        case 'array':
-          if (!(newVal instanceof Array)) {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
+    if (typeof props.type === 'object' && props.type !== null) {
+      // Validate sub-schema.
+      if (typeof props.type.validate === 'function') {
+        if (!opts.rootOnly) {
+          props.type.validate(newVal, { ...opts, context, path });
+        }
+      } else if (typeof props.type === 'function') {
+        // Check if value is an instance of the function.
+        if (!(newVal instanceof props.type)) {
+          throw new FieldTypeError(label, props.type.name, path);
+        }
+      } else if (props.type instanceof Array) {
+        // todo handle different types
+        // Check that value is an array
+        if (!(newVal instanceof Array)) {
+          throw new FieldTypeError(label, 'array', path);
+        } else if (newVal.length === 0 && !isRequired) {
+          // Ignore empty array if field is not required
+          return newVal;
+        }
+        const arrayType = props.type[0];
 
-        case 'boolean':
-          if (typeof newVal !== 'boolean') {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
-
-        case 'function':
-          if (typeof newVal !== 'function') {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
-
-        case 'integer':
-          if (typeof newVal !== 'number' || Number.isNaN(newVal) || newVal !== Math.round(newVal)) {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
-
-        case 'number':
-          if (typeof newVal !== 'number' || Number.isNaN(newVal)) {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
-
-        case 'object':
-          if (typeof newVal !== 'object' || newVal instanceof Array) {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
-
-        case 'string':
-          if (typeof newVal !== 'string') {
-            throw new FieldTypeError(label, props.type, path);
-          }
-          break;
-
-        default:
-          // Field is a schema.
-          if (typeof props.type === 'object' && props.type !== null
-            && typeof props.type.validate === 'function') {
+        // Validate array items using a schema.
+        if (typeof arrayType === 'object' && arrayType !== null
+          && typeof arrayType.validate === 'function') {
+          for (let i = 0; i < newVal.length; i += 1) {
             if (!opts.rootOnly) {
-              props.type.validate(newVal, { ...opts, context, path });
+              arrayType.validate(newVal[i], {
+                ...opts,
+                context,
+                path: `${path}[${i}]`,
+              });
             }
-          } else if (props.type instanceof Array) {
-            // Check that value is an array
-            if (!(newVal instanceof Array)) {
-              throw new FieldTypeError(label, 'array', path);
-            } else if (newVal.length === 0 && !isRequired) {
-              // Ignore empty array if field is not required
-              return newVal;
-            }
-            const arrayType = props.type[0];
-
-            // Validate array items using a schema.
-            if (typeof arrayType === 'object' && arrayType !== null
-              && typeof arrayType.validate === 'function') {
-              for (let i = 0; i < newVal.length; i += 1) {
-                if (!opts.rootOnly) {
-                  arrayType.validate(newVal[i], {
-                    ...opts,
-                    context,
-                    path: `${path}[${i}]`,
-                  });
-                }
-              }
-            } else {
-              // Check array of types
-              checkTypeArray(props.type, newVal, label, path);
-            }
-          } else if (typeof props.type === 'function') {
-            // Check if value is an instance of the function
-            if (!(newVal instanceof props.type)) {
-              throw new FieldTypeError(label, props.type.name, path);
-            }
-          } else {
-            throw new FieldTypeError(label, props.type, path);
           }
+        } else {
+          // Check array of types
+          checkTypeArray(props.type, newVal, label, path);
+        }
+      } else {
+        throw new FieldTypeError(label, props.type, path);
       }
+    } else {
+      checkType(props.type, newVal, label, path);
     }
 
     // Check allowed values
