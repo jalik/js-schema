@@ -43,6 +43,7 @@ import {
 } from './checks';
 import FieldError from './errors/FieldError';
 import FieldTypeError from './errors/FieldTypeError';
+import ValidationError from './errors/ValidationError';
 import { computeValue } from './utils';
 
 /**
@@ -450,9 +451,27 @@ class SchemaField {
       if (isRequired && !(newVal instanceof Array)) {
         throw new FieldTypeError(label, 'array', path);
       }
+      const errors = {};
+
+      // Validate all values of the array.
       for (let i = 0; i < newVal.length; i += 1) {
         const field = new SchemaField(`[${i}]`, props.items);
-        field.validate(newVal[i], opts);
+        try {
+          field.validate(newVal[i], opts);
+        } catch (error) {
+          if (error instanceof FieldError) {
+            errors[error.path] = error;
+          } else if (error instanceof ValidationError) {
+            Object.keys(error.errors).forEach((fieldPath) => {
+              errors[fieldPath] = error.errors[fieldPath];
+            });
+          } else {
+            throw error;
+          }
+        }
+      }
+      if (Object.keys(errors).length > 0) {
+        throw new ValidationError(errors);
       }
     }
 
