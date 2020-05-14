@@ -1683,9 +1683,9 @@ describe('SchemaField', () => {
           });
 
           describe('with array', () => {
-            it('should throw FieldTypeError', () => {
+            it('should not throw FieldTypeError', () => {
               expect(() => { field.validate([]); })
-                .toThrow(FieldTypeError);
+                .not.toThrow(FieldTypeError);
             });
           });
 

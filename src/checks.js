@@ -490,8 +490,7 @@ export function checkType(type, value, label, path) {
         break;
 
       case 'object':
-        // todo check if needed to throw if value is an Array
-        if (typeof value !== 'object' || value instanceof Array) {
+        if (typeof value !== 'object') {
           throw new FieldTypeError(label, type, path);
         }
         break;
