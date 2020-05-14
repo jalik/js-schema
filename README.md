@@ -516,7 +516,7 @@ export const ExampleSchema = new Schema({
 
 Use `format` to check if a field value matches a specific known format.
 
-- Accepts `String`
+- Accepts `String` or `Function`
 - Throws `FieldFormatError`
 
 ```js

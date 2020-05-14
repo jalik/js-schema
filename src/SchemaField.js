@@ -483,7 +483,7 @@ class SchemaField {
     checkDenied(computeValue(props.denied, context), newVal, label, path);
 
     // Check string format
-    checkFormat(props.format, newVal, label, path);
+    checkFormat(computeValue(props.format, context), newVal, label, path);
 
     // Check length if value has the length attribute
     checkLength(computeValue(props.length, context), newVal, label, path);

@@ -811,6 +811,8 @@ describe('SchemaField', () => {
           });
         });
       });
+
+      // todo add tests with format: Function
     });
 
     describe('with max: (Number|Date|Function)', () => {

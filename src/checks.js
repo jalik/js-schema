@@ -194,8 +194,8 @@ export function checkFieldProperties(name, props) {
   }
 
   // Check format
-  if (typeof format !== 'undefined' && !contains(['string'], typeof format)) {
-    throw new TypeError(`${name}.format must be a string`);
+  if (typeof format !== 'undefined' && !contains(['string', 'function'], typeof format)) {
+    throw new TypeError(`${name}.format must be a string or function`);
   }
 
   // Check label
