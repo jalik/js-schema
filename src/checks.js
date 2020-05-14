@@ -322,7 +322,8 @@ export function checkFormat(format, value, label, path) {
  * @param {string} path
  */
 export function checkLength(length, value, label, path) {
-  if (typeof length === 'number' && typeof value.length === 'number' && value.length !== length) {
+  if (typeof length === 'number' && typeof value !== 'undefined'
+    && value !== null && typeof value.length === 'number' && value.length !== length) {
     throw new FieldLengthError(label, length, path);
   }
 }
@@ -348,7 +349,8 @@ export function checkMax(max, value, label, path) {
  * @param {string} path
  */
 export function checkMaxLength(maxLength, value, label, path) {
-  if (typeof maxLength === 'number' && value.length > maxLength) {
+  if (typeof maxLength === 'number' && typeof value !== 'undefined'
+    && value !== null && value.length > maxLength) {
     throw new FieldMaxLengthError(label, maxLength, path);
   }
 }
@@ -387,7 +389,8 @@ export function checkMin(min, value, label, path) {
  * @param {string} path
  */
 export function checkMinLength(minLength, value, label, path) {
-  if (typeof minLength === 'number' && value.length < minLength) {
+  if (typeof minLength === 'number' && typeof value !== 'undefined'
+    && value !== null && value.length < minLength) {
     throw new FieldMinLengthError(label, minLength, path);
   }
 }
