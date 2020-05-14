@@ -39,7 +39,6 @@ import {
   checkPattern,
   checkRequired,
   checkType,
-  checkTypeArray,
 } from './checks';
 import FieldError from './errors/FieldError';
 import FieldTypeError from './errors/FieldTypeError';
@@ -401,37 +400,55 @@ class SchemaField {
           throw new FieldTypeError(label, props.type.name, path);
         }
       } else if (props.type instanceof Array) {
-        // todo handle different types
-        // Check that value is an array
-        if (!(newVal instanceof Array)) {
-          throw new FieldTypeError(label, 'array', path);
-        } else if (newVal.length === 0 && !isRequired) {
-          // Ignore empty array if field is not required
-          return newVal;
-        }
-        const arrayType = props.type[0];
-
-        // Validate array items using a schema.
-        if (typeof arrayType === 'object' && arrayType !== null
-          && typeof arrayType.validate === 'function') {
-          for (let i = 0; i < newVal.length; i += 1) {
-            if (!opts.rootOnly) {
-              arrayType.validate(newVal[i], {
-                ...opts,
-                context,
-                path: `${path}[${i}]`,
-              });
-            }
-          }
-        } else {
-          // Check array of types
-          checkTypeArray(props.type, newVal, label, path);
-        }
+        // todo handle different types ['string', 'number']
+        // // Check that value is an array
+        // if (!(newVal instanceof Array)) {
+        //   throw new FieldTypeError(label, props.type, path);
+        // }
+        //
+        // // Loop all values in array.
+        // for (let i = 0; i < newVal.length; i += 1) {
+        //   let oneOf = false;
+        //
+        //   // Loop all types.
+        //   for (let j = 0; j < props.type.length; j += 1) {
+        //     const arrayType = props.type[j];
+        //     try {
+        //       if (typeof arrayType === 'object' && arrayType !== null
+        //         && typeof arrayType.validate === 'function') {
+        //         if (!opts.rootOnly) {
+        //           arrayType.validate(newVal[i], {
+        //             ...opts,
+        //             context,
+        //             path: `${path}[${i}]`,
+        //           });
+        //         }
+        //       } else {
+        //         checkType(props.type[j], newVal[i], label, path);
+        //         oneOf = true;
+        //       }
+        //     } catch (e) {
+        //     }
+        //   }
+        // }
       } else {
         throw new FieldTypeError(label, props.type, path);
       }
     } else {
       checkType(props.type, newVal, label, path);
+    }
+
+    // Check items
+    if (typeof props.items !== 'undefined') {
+      if (isRequired && !(newVal instanceof Array)) {
+        throw new FieldTypeError(label, 'array', path);
+      }
+
+      const field = new SchemaField(label, props.items);
+
+      for (let i = 0; i < newVal.length; i += 1) {
+        field.validate(newVal[i], { ...opts, path: `${path}[${i}]` });
+      }
     }
 
     // Check allowed values

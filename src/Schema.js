@@ -263,11 +263,13 @@ class Schema {
 
     if (typeof subPath === 'string' && subPath.length > 0) {
       const type = field.getType();
+      const props = field.getProperties();
 
       if (type instanceof Schema) {
         field = type.resolveField(subPath, true);
-      } else if (type instanceof Array && type[0] instanceof Schema) {
-        field = type[0].resolveField(subPath, true);
+      } else if (typeof props.items !== 'undefined'
+        && typeof props.items.type !== 'undefined' && props.items.type instanceof Schema) {
+        field = props.items.type.resolveField(subPath, true);
       } else {
         throw new Error(`Field type not supported for "${name}".`);
       }

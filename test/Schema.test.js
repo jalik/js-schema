@@ -176,16 +176,16 @@ describe('Schema', () => {
       number: { type: 'string' },
     });
     const ChildSchema = new Schema({
-      phones: { type: [PhoneSchema] },
+      phones: { type: 'array', items: { type: PhoneSchema } },
     });
     const ParentSchema = new Schema({
-      child: { type: ChildSchema },
+      child: { type: 'array', items: { type: ChildSchema } },
     });
     const EmailSchema = new Schema({
       address: { type: 'string' },
     });
     const UserSchema = new Schema({
-      emails: { type: [EmailSchema] },
+      emails: { type: 'array', items: { type: EmailSchema } },
     });
 
     it('should return field properties with dot syntax', () => {

@@ -56,7 +56,8 @@ import PersonSchema from './PersonSchema';
 
 const ParentSchema = PersonSchema.extend({
   children: {
-    type: [PersonSchema]
+    type: 'array',
+    items: { type: PersonSchema }
   },
   married: {
     type: 'boolean',
@@ -278,19 +279,19 @@ export const ExampleSchema = new Schema({
   // The field must matches UserSchema.
   example: { type: ExampleSchema },
   // The field must be an array of objects matching UserSchema.
-  examples: { type: [ExampleSchema] },
+  examples: { type: 'array', items: { type: ExampleSchema} },
   // The field must be an array of arrays.
-  arrayArray: { type: ['array'] },
+  arrayArray: { type: 'array', items: { type: 'array' } },
   // The field must be an array of booleans.
-  booleanArray: { type: ['boolean'] },
+  booleanArray: { type: 'array', items: { type: 'boolean' } },
   // The field must be an array of integers.
-  integerArray: { type: ['integer'] },
+  integerArray: { type: 'array', items: { type: 'integer' } },
   // The field must be an array of numbers.
-  numberArray: { type: ['number'] },
+  numberArray: { type: 'array', items: { type: 'number' } },
   // The field must be an array of objects.
-  objectArray: { type: ['object'] },
+  objectArray: { type: 'array', items: { type: 'object' } },
   // The field must be an array of strings.
-  stringArray: { type: ['string'] },
+  stringArray: { type: 'array', items: { type: 'string' } },
 });
 ```
 
@@ -459,12 +460,14 @@ export const ExampleSchema = new Schema({
   },
   // The array must contain only 0 and 1 as numbers.
   binaryNumbers: {
-    type: ['number'],
+    type: 'array',
+    items: { type: 'number' },
     allowed: [0, 1]
  },
   // The array must contain only hot colors.
   hotColors: {
-    type: ['string'],
+    type: 'array',
+    items: { type: 'string' },
     allowed: ['red', 'yellow', 'orange']
  },
 });
@@ -611,7 +614,8 @@ export const ExampleSchema = new Schema({
   // It can be useful in some case
   // where clean cannot be used to do what you want.
   numbers: {
-    type: ['number'],
+    type: 'array',
+    items: { type: 'number' },
     prepare: (numbers) => numbers.sort()
   },
 });
@@ -637,7 +641,8 @@ import Schema from '@jalik/schema';
 export const ExampleSchema = new Schema({
   // Every items in the list will be trimmed and lowercase.
   list: {
-    type: ['string'],
+    type: 'array',
+    items: { type: 'string' },
     clean: (list) => list.map((item) => item.trim().toLowerCase())
   },
 });

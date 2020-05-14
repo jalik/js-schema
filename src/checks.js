@@ -59,6 +59,7 @@ const fieldProperties = [
   'defaultValue',
   'denied',
   'format',
+  'items',
   'label',
   'length',
   'max',
@@ -138,6 +139,7 @@ export function checkFieldProperties(name, props) {
     clean,
     denied,
     format,
+    items,
     label,
     length,
     max,
@@ -196,6 +198,11 @@ export function checkFieldProperties(name, props) {
   // Check format
   if (typeof format !== 'undefined' && !contains(['string', 'function'], typeof format)) {
     throw new TypeError(`${name}.format must be a string or function`);
+  }
+
+  // Check items
+  if (typeof items !== 'undefined' && typeof items !== 'object') {
+    throw new TypeError(`${name}.items must be an object`);
   }
 
   // Check label
