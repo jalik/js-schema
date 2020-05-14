@@ -256,7 +256,7 @@ setLocale('fr', fr);
 
 Use `type` to check the type of the field value. It can be a basic type (array, boolean, number, object, string), or an advanced type like an instance of `Schema` or an object constructor like `Date`.
 
-- Accepts `"array"`, `"boolean"`, `"integer"`, `"number"`, `"object"`, `"string"`, `Date`, `instance of Schema`
+- Accepts `"array"`, `"boolean"`, `"integer"`, `"number"`, `"object"`, `"string"`, `Date`, or a `Schema`
 - Throws `FieldTypeError`
 
 ```js
@@ -299,7 +299,7 @@ export const ExampleSchema = new Schema({
 Use `required` to check if a field is `undefined`. Be advised that
 `required` will not throw an error if the field is `null`, use `nullable` if you want to check for `null` value.
 
-- Accepts `Boolean`, `Function`
+- Accepts `Boolean` or `Function`
 - Throws `FieldRequiredError`
 
 ```js
@@ -321,7 +321,7 @@ export const ExampleSchema = new Schema({
 
 Use `nullable` to check if a field value is `null`.
 
-- Accepts `Boolean`, `Function`
+- Accepts `Boolean` or `Function`
 - Throws `FieldNullableError`
 
 ```js
@@ -344,7 +344,7 @@ export const ExampleSchema = new Schema({
 
 Use `max` and `min` to check if a field value is below or above a limit.
 
-- Accepts `Number`, `Function`
+- Accepts `Number` or `Function`
 - Throws `FieldMaxError`, `FieldMinError`
 
 ```js
@@ -375,7 +375,7 @@ export const ExampleSchema = new Schema({
 Use `maxLength` and `minLength` to check the length of a field value.
 It works on any object with a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will work too.
 
-- Accepts `Number`, `Function`
+- Accepts `Number` or `Function`
 - Throws `FieldMaxLengthError`, `FieldMinLengthError`
 
 ```js
@@ -421,7 +421,7 @@ export const ExampleSchema = new Schema({
 
 Use `maxWords` and `minWords` to limit words count in a string.
 
-- Accepts `Number`, `Function`
+- Accepts `Number` or `Function`
 - Throws `FieldMaxWordsError`, `FieldMinWordsError`
 
 ```js
@@ -445,7 +445,7 @@ export const ExampleSchema = new Schema({
 
 Use `allowed` to check if a field value is allowed.
 
-- Accepts `Boolean`, `Function`
+- Accepts `Boolean` or `Function`
 - Throws `FieldAllowedError`
 
 ```js
@@ -474,7 +474,7 @@ export const ExampleSchema = new Schema({
 
 Use `denied` to check if a field value is denied.
 
-- Accepts `Boolean`, `Function`
+- Accepts `Boolean` or `Function`
 - Throws `FieldDeniedError`
 
 ```js
@@ -492,7 +492,7 @@ export const ExampleSchema = new Schema({
 
 Use `pattern` to check if a field value matches a regular expression.
 
-- Accepts `String`, `RegExp`, `Function`
+- Accepts `RegExp`, `String` or `Function`
 - Throws `FieldPatternError`
 
 ```js
@@ -647,6 +647,8 @@ export const ExampleSchema = new Schema({
 
 Use `defaultValue` to set the default value of a field. It will only be used if the value is `null` or `undefined` and the field required.
 
+- Accepts `Boolean`, `Number`, `String` or `Function`
+
 ```js
 import Schema from '@jalik/schema';
 
@@ -667,6 +669,8 @@ export const ExampleSchema = new Schema({
 ## Setting field's label
 
 Use `label` to set field's label. Note that the label will be used in errors, if the label is not set, the field's name will be used instead.
+
+- Accepts `String` or `Function`
 
 ```js
 import Schema from '@jalik/schema';
