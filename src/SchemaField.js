@@ -163,6 +163,22 @@ class SchemaField {
   }
 
   /**
+   * Returns field's format.
+   * @return {string}
+   */
+  getFormat() {
+    return this.properties.format;
+  }
+
+  /**
+   * Returns field's items.
+   * @return {Object}
+   */
+  getItems() {
+    return this.properties.items;
+  }
+
+  /**
    * Returns field's label.
    * @return {string}
    */

@@ -113,6 +113,38 @@ describe('SchemaField', () => {
     });
   });
 
+  describe('getFormat()', () => {
+    describe('with format: String', () => {
+      it('should return format', () => {
+        const field = new SchemaField('field', { format: 'date' });
+        expect(field.getFormat()).toEqual('date');
+      });
+    });
+
+    describe('with format: undefined', () => {
+      it('should return undefined', () => {
+        const field = new SchemaField('field', {});
+        expect(field.getFormat()).toBeUndefined();
+      });
+    });
+  });
+
+  describe('getItems()', () => {
+    describe('with items: Object', () => {
+      it('should return items', () => {
+        const field = new SchemaField('field', { items: {} });
+        expect(field.getItems()).toEqual({});
+      });
+    });
+
+    describe('with items: undefined', () => {
+      it('should return undefined', () => {
+        const field = new SchemaField('field', {});
+        expect(field.getItems()).toBeUndefined();
+      });
+    });
+  });
+
   describe('getLabel()', () => {
     describe('with label: String', () => {
       it('should return label', () => {
