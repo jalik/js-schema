@@ -331,21 +331,6 @@ class SchemaField {
    * @return {*}
    */
   validate(value, options = {}) {
-    const opts = {
-      clean: false,
-      rootOnly: false,
-      ...options,
-      // Sets validation context.
-      context: deepExtend({}, options.context, { [this.name]: value }),
-      // Sets validation path.
-      path: joinPath(options.path, this.name),
-    };
-
-    const { context, path } = opts;
-    const props = this.properties;
-    const label = computeValue(props.label, context);
-    const isRequired = computeValue(props.required, context);
-    const isArray = props.type === 'array' || props.type instanceof Array;
     let newVal;
 
     // Clone value.
@@ -360,6 +345,22 @@ class SchemaField {
     } else {
       newVal = value;
     }
+
+    const opts = {
+      clean: false,
+      rootOnly: false,
+      ...options,
+      // Sets validation context.
+      context: { ...options.context, [this.name]: newVal },
+      // Sets validation path.
+      path: joinPath(options.path, this.name),
+    };
+
+    const { context, path } = opts;
+    const props = this.properties;
+    const label = computeValue(props.label, context);
+    const isRequired = computeValue(props.required, context);
+    const isArray = props.type === 'array' || props.type instanceof Array;
 
     // Prepare value
     if (typeof props.prepare === 'function') {
