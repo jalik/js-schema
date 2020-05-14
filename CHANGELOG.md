@@ -21,6 +21,7 @@
 - [BREAK] Removes support for syntax `[min, max]` of option `length` in `SchemaField`
 
 **MODIFICATIONS**
+- [BREAK] Changes array interpretation for option `type` in `SchemaField`
 - [BREAK] Changes default value of option `nullable` to `false` in `SchemaField`
 - [BREAK] Changes default value of option `required` to `false` in `SchemaField`
 - [BREAK] Changes default value of options `clean` and `parse` to `false` in `Schema.validate()` and `SchemaField.validate()`

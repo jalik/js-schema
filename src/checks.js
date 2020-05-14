@@ -471,43 +471,36 @@ export function checkType(type, value, label, path) {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       case 'boolean':
         if (typeof value !== 'boolean') {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       case 'function':
         if (typeof value !== 'function') {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       case 'integer':
         if (typeof value !== 'number' || Number.isNaN(value) || value !== Math.round(value)) {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       case 'number':
         if (typeof value !== 'number' || Number.isNaN(value)) {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       case 'object':
         if (typeof value !== 'object') {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       case 'string':
         if (typeof value !== 'string') {
           throw new FieldTypeError(label, type, path);
         }
         break;
-
       default:
         throw new Error(`unsupported type "${type}"`);
     }
@@ -516,70 +509,31 @@ export function checkType(type, value, label, path) {
 
 /**
  * Checks if the type of value is one of given types.
- * @param {string[]} types
- * @param {*} value
+ * todo check if type is instance of schema
+ * @param {Array} types
+ * @param {Array} values
  * @param {string} label
  * @param {string} path
  */
-export function checkTypeArray(types, value, label, path) {
-  const type = types[0]; // todo check all types in the array, not only the first one
+export function checkTypeArray(types, values, label, path) {
+  if (types instanceof Array) {
+    if (!(values instanceof Array)) {
+      throw new FieldTypeError(label, types, path);
+    }
+    for (let i = 0; i < values.length; i += 1) {
+      let oneOf = false;
 
-  switch (type) {
-    case 'boolean':
-      for (let i = 0; i < value.length; i += 1) {
-        if (typeof value[i] !== 'boolean') {
-          throw new FieldTypeError(label, type, path);
+      for (let j = 0; j < types.length; j += 1) {
+        try {
+          checkType(types[j], values[i], label, path);
+          oneOf = true;
+        } catch (e) {
+          // do nothing
         }
       }
-      break;
-
-    case 'function':
-      for (let i = 0; i < value.length; i += 1) {
-        if (typeof value[i] !== 'function') {
-          throw new FieldTypeError(label, type, path);
-        }
+      if (!oneOf) {
+        throw new FieldTypeError(label, types, path);
       }
-      break;
-
-    case 'integer':
-      for (let i = 0; i < value.length; i += 1) {
-        if (typeof value[i] !== 'number' || Number.isNaN(value[i]) || value[i] !== Math.round(value[i])) {
-          throw new FieldTypeError(label, type, path);
-        }
-      }
-      break;
-
-    case 'number':
-      for (let i = 0; i < value.length; i += 1) {
-        if (typeof value[i] !== 'number') {
-          throw new FieldTypeError(label, type, path);
-        }
-      }
-      break;
-
-    case 'object':
-      for (let i = 0; i < value.length; i += 1) {
-        if (typeof value[i] !== 'object' || value[i] instanceof Array) {
-          throw new FieldTypeError(label, type, path);
-        }
-      }
-      break;
-
-    case 'string':
-      for (let i = 0; i < value.length; i += 1) {
-        if (typeof value[i] !== 'string') {
-          throw new FieldTypeError(label, type, path);
-        }
-      }
-      break;
-
-    default:
-      if (typeof type === 'object' && type) {
-        for (let i = 0; i < value.length; i += 1) {
-          if (!(value[i] instanceof type)) {
-            throw new FieldTypeError(label, type, path);
-          }
-        }
-      }
+    }
   }
 }

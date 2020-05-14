@@ -39,6 +39,7 @@ import {
   checkPattern,
   checkRequired,
   checkType,
+  checkTypeArray,
 } from './checks';
 import FieldError from './errors/FieldError';
 import FieldTypeError from './errors/FieldTypeError';
@@ -400,35 +401,18 @@ class SchemaField {
           throw new FieldTypeError(label, props.type.name, path);
         }
       } else if (props.type instanceof Array) {
-        // todo handle different types ['string', 'number']
-        // // Check that value is an array
-        // if (!(newVal instanceof Array)) {
-        //   throw new FieldTypeError(label, props.type, path);
-        // }
-        //
-        // // Loop all values in array.
-        // for (let i = 0; i < newVal.length; i += 1) {
-        //   let oneOf = false;
-        //
-        //   // Loop all types.
-        //   for (let j = 0; j < props.type.length; j += 1) {
-        //     const arrayType = props.type[j];
-        //     try {
-        //       if (typeof arrayType === 'object' && arrayType !== null
-        //         && typeof arrayType.validate === 'function') {
-        //         if (!opts.rootOnly) {
-        //           arrayType.validate(newVal[i], {
-        //             ...opts,
-        //             context,
-        //             path: `${path}[${i}]`,
-        //           });
-        //         }
-        //       } else {
-        //         checkType(props.type[j], newVal[i], label, path);
-        //         oneOf = true;
-        //       }
-        //     } catch (e) {
-        //     }
+        // Check different types (ex: ['string', 'number'])
+        checkTypeArray(props.type, newVal, label, path);
+
+        // todo check in array if there is a type that is instance of schema
+        // if (typeof arrayType === 'object' && arrayType !== null
+        //   && typeof arrayType.validate === 'function') {
+        //   if (!opts.rootOnly) {
+        //     arrayType.validate(newVal[i], {
+        //       ...opts,
+        //       context,
+        //       path: `${path}[${i}]`,
+        //     });
         //   }
         // }
       } else {

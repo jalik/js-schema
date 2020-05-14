@@ -1513,78 +1513,78 @@ describe('SchemaField', () => {
 
     describe('with type: (Array|String)', () => {
       describe('type: Array', () => {
-        // describe('type: ["boolean"]', () => {
-        //   const field = new SchemaField('field', { type: ['boolean'] });
-        //
-        //   describe('with boolean values', () => {
-        //     it('should not throw FieldTypeError', () => {
-        //       expect(() => { field.validate([true, false, false]); })
-        //         .not.toThrow(FieldTypeError);
-        //     });
-        //   });
-        //
-        //   describe('with mixed values', () => {
-        //     it('should throw FieldTypeError', () => {
-        //       expect(() => {
-        //         field.validate([true, 100, 'false']);
-        //       }).toThrow(FieldTypeError);
-        //     });
-        //   });
-        // });
-        //
-        // describe('type: ["number"]', () => {
-        //   const field = new SchemaField('field', { type: ['number'] });
-        //
-        //   describe('with number values', () => {
-        //     it('should not throw FieldTypeError', () => {
-        //       expect(() => { field.validate([0, 1, 2]); })
-        //         .not.toThrow(FieldTypeError);
-        //     });
-        //   });
-        //
-        //   describe('with mixed values', () => {
-        //     it('should throw FieldTypeError', () => {
-        //       expect(() => { field.validate([true, 100, 'false']); })
-        //         .toThrow(FieldTypeError);
-        //     });
-        //   });
-        // });
-        //
-        // describe('type: ["object"]', () => {
-        //   const field = new SchemaField('field', { type: ['object'] });
-        //
-        //   describe('with objects', () => {
-        //     it('should not throw FieldTypeError', () => {
-        //       expect(() => { field.validate([{}, {}]); })
-        //         .not.toThrow(FieldTypeError);
-        //     });
-        //   });
-        //
-        //   describe('with mixed values', () => {
-        //     it('should throw FieldTypeError', () => {
-        //       expect(() => { field.validate([{}, true, 100, 'false']); })
-        //         .toThrow(FieldTypeError);
-        //     });
-        //   });
-        // });
-        //
-        // describe('type: ["string"]', () => {
-        //   const field = new SchemaField('field', { type: ['string'] });
-        //
-        //   describe('with string values', () => {
-        //     it('should not throw FieldTypeError', () => {
-        //       const result = () => { field.validate(['a', 'b', 'c']); };
-        //       expect(result).not.toThrow(FieldTypeError);
-        //     });
-        //   });
-        //
-        //   describe('with mixed values', () => {
-        //     it('should throw FieldTypeError', () => {
-        //       expect(() => { field.validate([true, 100, 'false']); })
-        //         .toThrow(FieldTypeError);
-        //     });
-        //   });
-        // });
+        describe('type: ["boolean"]', () => {
+          const field = new SchemaField('field', { type: ['boolean'] });
+
+          describe('with boolean values', () => {
+            it('should not throw FieldTypeError', () => {
+              expect(() => { field.validate([true, false, false]); })
+                .not.toThrow(FieldTypeError);
+            });
+          });
+
+          describe('with mixed values', () => {
+            it('should throw FieldTypeError', () => {
+              expect(() => {
+                field.validate([true, 100, 'false']);
+              }).toThrow(FieldTypeError);
+            });
+          });
+        });
+
+        describe('type: ["number"]', () => {
+          const field = new SchemaField('field', { type: ['number'] });
+
+          describe('with number values', () => {
+            it('should not throw FieldTypeError', () => {
+              expect(() => { field.validate([0, 1, 2]); })
+                .not.toThrow(FieldTypeError);
+            });
+          });
+
+          describe('with mixed values', () => {
+            it('should throw FieldTypeError', () => {
+              expect(() => { field.validate([true, 100, 'false']); })
+                .toThrow(FieldTypeError);
+            });
+          });
+        });
+
+        describe('type: ["object"]', () => {
+          const field = new SchemaField('field', { type: ['object'] });
+
+          describe('with objects', () => {
+            it('should not throw FieldTypeError', () => {
+              expect(() => { field.validate([{}, {}]); })
+                .not.toThrow(FieldTypeError);
+            });
+          });
+
+          describe('with mixed values', () => {
+            it('should throw FieldTypeError', () => {
+              expect(() => { field.validate([{}, true, 100, 'false']); })
+                .toThrow(FieldTypeError);
+            });
+          });
+        });
+
+        describe('type: ["string"]', () => {
+          const field = new SchemaField('field', { type: ['string'] });
+
+          describe('with string values', () => {
+            it('should not throw FieldTypeError', () => {
+              const result = () => { field.validate(['a', 'b', 'c']); };
+              expect(result).not.toThrow(FieldTypeError);
+            });
+          });
+
+          describe('with mixed values', () => {
+            it('should throw FieldTypeError', () => {
+              expect(() => { field.validate([true, 100, 'false']); })
+                .toThrow(FieldTypeError);
+            });
+          });
+        });
       });
 
       describe('type: String', () => {
