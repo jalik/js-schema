@@ -45,8 +45,14 @@ import FieldError from './errors/FieldError';
 import FieldTypeError from './errors/FieldTypeError';
 import { computeValue } from './utils';
 
+/**
+ * Joins parts of a field path.
+ * @param {string} paths
+ * @return {string}
+ */
 export function joinPath(...paths) {
-  return paths.filter((path) => (typeof path === 'string' && path.length > 0)).join('.');
+  return paths.filter((path) => (typeof path === 'string' && path.length > 0)).join('.')
+    .replace('.[', '[');
 }
 
 class SchemaField {
@@ -427,11 +433,9 @@ class SchemaField {
       if (isRequired && !(newVal instanceof Array)) {
         throw new FieldTypeError(label, 'array', path);
       }
-
-      const field = new SchemaField(label, props.items);
-
       for (let i = 0; i < newVal.length; i += 1) {
-        field.validate(newVal[i], { ...opts, path: `${path}[${i}]` });
+        const field = new SchemaField(`[${i}]`, props.items);
+        field.validate(newVal[i], opts);
       }
     }
 
