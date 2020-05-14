@@ -416,17 +416,19 @@ describe('SchemaField', () => {
       describe('allowed: Array', () => {
         const field = new SchemaField('field', { allowed: ['off', 'on'] });
 
-        describe('with allowed values', () => {
-          it('should not throw FieldAllowedError', () => {
-            expect(() => { field.validate(['on']); })
-              .not.toThrow(FieldAllowedError);
+        describe('with Array', () => {
+          describe('with allowed values', () => {
+            it('should not throw FieldAllowedError', () => {
+              expect(() => { field.validate(['on']); })
+                .not.toThrow(FieldAllowedError);
+            });
           });
-        });
 
-        describe('without allowed values', () => {
-          it('should throw FieldAllowedError', () => {
-            expect(() => { field.validate(['yes']); })
-              .toThrow(FieldAllowedError);
+          describe('without allowed values', () => {
+            it('should throw FieldAllowedError', () => {
+              expect(() => { field.validate(['yes']); })
+                .toThrow(FieldAllowedError);
+            });
           });
         });
       });
