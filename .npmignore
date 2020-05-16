@@ -11,8 +11,14 @@
 babel.config.js
 gulpfile.js
 
+# Others
+TODO.md
+
 # npm packages
 node_modules/
 
 # Test files
 /test/
+
+# Source files
+/src/
