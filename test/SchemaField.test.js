@@ -38,6 +38,7 @@ import FieldNullableError from '../src/errors/FieldNullableError';
 import FieldPatternError from '../src/errors/FieldPatternError';
 import FieldRequiredError from '../src/errors/FieldRequiredError';
 import FieldTypeError from '../src/errors/FieldTypeError';
+import ValidationError from '../src/errors/ValidationError';
 import SchemaField from '../src/SchemaField';
 
 describe('SchemaField', () => {
@@ -687,7 +688,7 @@ describe('SchemaField', () => {
           it('should throw FieldTypeError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
-            }).toThrow(FieldTypeError);
+            }).toThrow(ValidationError);
           });
         });
       });
@@ -708,7 +709,7 @@ describe('SchemaField', () => {
           it('should throw FieldTypeError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
-            }).toThrow(FieldTypeError);
+            }).toThrow(ValidationError);
           });
         });
       });
@@ -729,7 +730,7 @@ describe('SchemaField', () => {
           it('should throw FieldTypeError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
-            }).toThrow(FieldTypeError);
+            }).toThrow(ValidationError);
           });
         });
       });
@@ -750,7 +751,7 @@ describe('SchemaField', () => {
           it('should throw FieldTypeError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
-            }).toThrow(FieldTypeError);
+            }).toThrow(ValidationError);
           });
         });
       });
