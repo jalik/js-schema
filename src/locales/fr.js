@@ -25,6 +25,7 @@
 import {
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
+  ERROR_FIELD_FORMAT,
   ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
   ERROR_FIELD_MAX,
@@ -43,6 +44,7 @@ import {
 const fr = {
   [ERROR_FIELD_ALLOWED]: '"{field}" contient une valeur qui n\'est pas autorisée ({allowed}).',
   [ERROR_FIELD_DENIED]: '"{field}" contient une valeur qui est interdite ({denied}).',
+  [ERROR_FIELD_FORMAT]: '"{field}" ne correspond pas au format attendu ({format}).',
   [ERROR_FIELD_INVALID]: '"{field}" n\'est pas valide.',
   [ERROR_FIELD_LENGTH]: '"{field}" doit avoir une taille égale à {length}.',
   [ERROR_FIELD_MAX]: '"{field}" doit être inférieur ou égal à {max}.',

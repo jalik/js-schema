@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.1
+- Fixes missing message of format error in french locale
+
 ## v2.0.0
 
 **DELETIONS**
