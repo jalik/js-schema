@@ -1,7 +1,8 @@
 # Changelog
 
 ## v2.0.1
-- Fixes missing message of format error in french locale
+- Fixes missing french message for ERROR_FIELD_FORMAT
+- Updates dependencies
 
 ## v2.0.0
 
