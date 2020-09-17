@@ -1,8 +1,11 @@
 # Changelog
 
+## v2.0.2
+- Upgrades dependencies
+
 ## v2.0.1
 - Fixes missing french message for ERROR_FIELD_FORMAT
-- Updates dependencies
+- Upgrades dependencies
 
 ## v2.0.0
 
@@ -83,32 +86,32 @@
 - Adds translation for french in `locales/fr.js`
 
 **UPDATES**
-- Update dependencies
+- Upgrades dependencies
 
 ## v1.3.5
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.3.4
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.3.3
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.3.1
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.3.0
 
 - Lib available in ES6+ syntax (see `src` folder) to enable auto-completion in IDEs
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.2.2
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.2.1
 
@@ -123,16 +126,16 @@
 
 ## v1.1.3
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.1.2
 
-- Updates dependencies
+- Upgrades dependencies
 - Removes unused devDependencies
 
 ## v1.1.1
 
-- Updates dependencies
+- Upgrades dependencies
 
 ## v1.1.0
 
@@ -214,11 +217,11 @@
 - Adds field option `defaultValue` to set default value, works only if field is required but has its value `undefined`
 - Renames method `SchemaField.dynamicValue()` to `SchemaField.computeValue()`
 - The method `SchemaField.validate()` now returns the processed value (ex: default value or cleaned value)
-- Updates documentation
+- Updates README.md
 
 ## v0.3.4
 
-- Updates documentation
+- Updates README.md
 
 ## v0.3.3
 
