@@ -101,7 +101,7 @@ class Schema {
       parse: false,
       removeUnknown: false,
     };
-    let errors = {};
+    let errors = null;
 
     try {
       this.validate(object, opts);

@@ -142,9 +142,6 @@ const validUser = {
   name: 'me',
 };
 
-// This will not throw an error.
-UserSchema.validate(validUser);
-
 // An invalid object
 const invalidUser = {
   age: 16,
@@ -152,8 +149,17 @@ const invalidUser = {
   phone: { code: 777, number: 10101001 }
 };
 
-// This will throw a ValidationError.
-UserSchema.validate(invalidUser);
+try {
+  // This will not throw an error.
+  UserSchema.validate(validUser);
+
+  // This will throw a ValidationError.
+  UserSchema.validate(invalidUser);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.log(error.errors);
+  }
+}
 ```
 
 The `ValidationError` object looks like this:
@@ -172,7 +178,9 @@ The `ValidationError` object looks like this:
 }
 ```
 
-Note that you can get the errors without throwing a `ValidationError`:
+Note that you can get errors without having to "try/catch", by using the `getErrors()` method.
+
+**If there are no errors, it will return `null`;**
 
 ```js
 const errors = UserSchema.getErrors({

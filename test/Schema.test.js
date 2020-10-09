@@ -94,8 +94,8 @@ describe('Schema', () => {
       const object = { number: 1, string: 'string' };
       const errors = BaseSchema.getErrors(object);
 
-      it('should return no errors', () => {
-        expect(errors).toStrictEqual({});
+      it('should return null', () => {
+        expect(errors).toBeNull();
       });
 
       it('should not throw an error', () => {
