@@ -513,7 +513,7 @@ export const ExampleSchema = new Schema({
   time: {
     type: 'string',
     // The time must be like 'HH:mm'
-    pattern: '^\d{1,2}:\d{1,2}$'
+    pattern: '^\\d{1,2}:\\d{1,2}$'
   },
   password: {
     type: 'string',
