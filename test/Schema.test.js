@@ -318,6 +318,10 @@ describe('Schema', () => {
       expect(() => { NewSchema.getField('string'); }).toThrow();
     });
 
+    it('should return a schema with non excluded fields', () => {
+      expect(() => { NewSchema.getField('number'); }).not.toThrow();
+    });
+
     it('should not modify parent schema', () => {
       expect(() => BaseSchema.getField('string')).not.toThrow();
     });

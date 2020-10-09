@@ -371,7 +371,7 @@ class Schema {
   without(fieldNames) {
     const fields = {};
 
-    Object.keys(fields).forEach((name) => {
+    Object.keys(this.fields).forEach((name) => {
       if (fieldNames.indexOf(name) === -1) {
         fields[name] = this.fields[name].getProperties();
       }
