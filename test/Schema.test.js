@@ -310,4 +310,16 @@ describe('Schema', () => {
       });
     });
   });
+
+  describe('without(fieldNames)', () => {
+    const NewSchema = BaseSchema.without(['string']);
+
+    it('should return a schema without excluded fields', () => {
+      expect(() => { NewSchema.getField('string'); }).toThrow();
+    });
+
+    it('should not modify parent schema', () => {
+      expect(() => BaseSchema.getField('string')).not.toThrow();
+    });
+  });
 });

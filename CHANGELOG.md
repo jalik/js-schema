@@ -1,5 +1,8 @@
 # Changelog
 
+## NEXT
+- Added method `without(fieldNames)` to `Schema`
+
 ## v2.0.2
 - Upgrades dependencies
 

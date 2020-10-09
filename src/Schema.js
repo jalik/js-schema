@@ -362,6 +362,22 @@ class Schema {
     }
     return clone;
   }
+
+  /**
+   * Returns a sub schema without some fields.
+   * @param {string[]} fieldNames
+   * @return {Schema}
+   */
+  without(fieldNames) {
+    const fields = {};
+
+    Object.keys(fields).forEach((name) => {
+      if (fieldNames.indexOf(name) === -1) {
+        fields[name] = this.fields[name].getProperties();
+      }
+    });
+    return new Schema(deepExtend({}, fields));
+  }
 }
 
 export default Schema;
