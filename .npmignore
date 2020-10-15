@@ -7,8 +7,7 @@
 .eslintrc.json
 .gitignore
 .travis.yml
-babel.config.json
-gulpfile.js
+babel.config.*
 
 # Others
 TODO.md
