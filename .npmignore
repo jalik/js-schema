@@ -9,14 +9,8 @@
 .travis.yml
 babel.config.*
 
-# Others
-TODO.md
-
 # npm packages
 node_modules/
 
 # Test files
 /test/
-
-# Source files
-/src/
