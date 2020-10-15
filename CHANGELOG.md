@@ -1,8 +1,9 @@
 # Changelog
 
-## NEXT
+## v3.0.0
 - [BREAK] Method `getErrors()` of `Schema` returns `null` instead of `{}` if no errors
 - Added method `without(fieldNames)` to `Schema`
+- Upgrades dependencies
 
 ## v2.0.2
 - Upgrades dependencies
