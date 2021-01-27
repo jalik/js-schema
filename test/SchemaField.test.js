@@ -928,6 +928,38 @@ describe('SchemaField', () => {
         });
       });
 
+      describe('format: "time"', () => {
+        const field = new SchemaField('field', { format: 'time' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('12:30:42-10:00'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of correct format containing second fraction', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('12:30:42.000-10:00'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of correct format containing Z offset', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('12:30:42Z'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('12:30:42'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
       describe('format: "uri"', () => {
         const field = new SchemaField('field', { format: 'uri' });
 
