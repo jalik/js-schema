@@ -272,6 +272,7 @@ export function checkFormat(format, value, label, path) {
         regexp = DateRegExp;
         break;
       case 'datetime':
+      case 'date-time':
         regexp = DateTimeRegExp;
         break;
       case 'email':

@@ -824,6 +824,24 @@ describe('SchemaField', () => {
         });
       });
 
+      describe('format: "date-time"', () => {
+        const field = new SchemaField('field', { format: 'date-time' });
+
+        describe('with string of correct format', () => {
+          it('should not throw FieldLengthError', () => {
+            expect(() => { field.validate('2020-05-13T10:00:00-10:00'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of incorrect format', () => {
+          it('should throw FieldFormatError', () => {
+            expect(() => { field.validate('2020-05-13 10:00:00'); })
+              .toThrow(FieldFormatError);
+          });
+        });
+      });
+
       describe('format: "email"', () => {
         const field = new SchemaField('field', { format: 'email' });
 
