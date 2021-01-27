@@ -659,14 +659,14 @@ describe('SchemaField', () => {
         });
 
         describe('with boolean values', () => {
-          it('should not throw FieldTypeError', () => {
+          it('should not throw ValidationError', () => {
             expect(() => { field.validate([true, false]); })
-              .not.toThrow(FieldTypeError);
+              .not.toThrow(ValidationError);
           });
         });
 
         describe('with mixed values', () => {
-          it('should throw FieldTypeError', () => {
+          it('should throw ValidationError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
             }).toThrow(ValidationError);
@@ -680,14 +680,14 @@ describe('SchemaField', () => {
         });
 
         describe('with number values', () => {
-          it('should not throw FieldTypeError', () => {
+          it('should not throw ValidationError', () => {
             expect(() => { field.validate([0, 1]); })
-              .not.toThrow(FieldTypeError);
+              .not.toThrow(ValidationError);
           });
         });
 
         describe('with mixed values', () => {
-          it('should throw FieldTypeError', () => {
+          it('should throw ValidationError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
             }).toThrow(ValidationError);
@@ -701,14 +701,14 @@ describe('SchemaField', () => {
         });
 
         describe('with objects', () => {
-          it('should not throw FieldTypeError', () => {
+          it('should not throw ValidationError', () => {
             expect(() => { field.validate([{}, []]); })
-              .not.toThrow(FieldTypeError);
+              .not.toThrow(ValidationError);
           });
         });
 
         describe('with mixed values', () => {
-          it('should throw FieldTypeError', () => {
+          it('should throw ValidationError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
             }).toThrow(ValidationError);
@@ -722,14 +722,14 @@ describe('SchemaField', () => {
         });
 
         describe('with string values', () => {
-          it('should not throw FieldTypeError', () => {
+          it('should not throw ValidationError', () => {
             expect(() => { field.validate(['a', 'b']); })
-              .not.toThrow(FieldTypeError);
+              .not.toThrow(ValidationError);
           });
         });
 
         describe('with mixed values', () => {
-          it('should throw FieldTypeError', () => {
+          it('should throw ValidationError', () => {
             expect(() => {
               field.validate([true, 100, 'false']);
             }).toThrow(ValidationError);
