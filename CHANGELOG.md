@@ -1,6 +1,7 @@
 # Changelog
 
-## Next release
+## v3.0.3
+- Fixed missing check of optional second fraction in `date-time` and `time` format
 - Added alias `date-time` for `datetime` format like in JSON Schema specification
 
 ## v3.0.2
