@@ -816,6 +816,20 @@ describe('SchemaField', () => {
           });
         });
 
+        describe('with string of correct format containing second fraction', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('2020-05-13T10:00:00.000-10:00'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string of correct format containing Z offset', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('2020-05-13T10:00:00Z'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
         describe('with string of incorrect format', () => {
           it('should throw FieldFormatError', () => {
             expect(() => { field.validate('2020-05-13 10:00:00'); })
