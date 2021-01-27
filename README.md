@@ -541,7 +541,7 @@ export const ExampleSchema = new Schema({
   },
   datetime: {
     type: 'string',
-    format: 'datetime'
+    format: 'date-time'
   },
   email: {
     type: 'string',
