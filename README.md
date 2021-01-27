@@ -254,6 +254,7 @@ The errors are in english by default, so you don't have to set the english local
 The **french** locale is available.
 
 ```js
+import { setLocale } from '@jalik/schema/dist/locale';
 import fr from '@jalik/schema/dist/locales/fr'
 
 setLocale('fr', fr);

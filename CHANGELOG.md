@@ -1,5 +1,8 @@
 # Changelog
 
+## Next release
+- Added alias `date-time` for `datetime` format like in JSON Schema specification
+
 ## v3.0.2
 - Upgraded dependencies
 
