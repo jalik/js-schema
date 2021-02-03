@@ -809,16 +809,30 @@ describe('SchemaField', () => {
       describe('format: "datetime"', () => {
         const field = new SchemaField('field', { format: 'datetime' });
 
-        describe('with string of correct format', () => {
+        describe('with string not containing fraction of seconds and timezone offset', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('2021-01-30T08:00:00'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string containing fraction of seconds and not timezone offset', () => {
+          it('should not throw FieldFormatError', () => {
+            expect(() => { field.validate('2020-05-13T10:00:00.000'); })
+              .not.toThrow(FieldFormatError);
+          });
+        });
+
+        describe('with string containing timezone offset and no fraction of seconds', () => {
           it('should not throw FieldFormatError', () => {
             expect(() => { field.validate('2020-05-13T10:00:00-10:00'); })
               .not.toThrow(FieldFormatError);
           });
         });
 
-        describe('with string of correct format containing second fraction', () => {
+        describe('with string containing timezone offset and fraction of seconds', () => {
           it('should not throw FieldFormatError', () => {
-            expect(() => { field.validate('2020-05-13T10:00:00.000-10:00'); })
+            expect(() => { field.validate('2020-05-13T23:59:59.999-10:00'); })
               .not.toThrow(FieldFormatError);
           });
         });
@@ -841,9 +855,9 @@ describe('SchemaField', () => {
       describe('format: "date-time"', () => {
         const field = new SchemaField('field', { format: 'date-time' });
 
-        describe('with string of correct format', () => {
+        describe('with string containing no timezone offset', () => {
           it('should not throw FieldFormatError', () => {
-            expect(() => { field.validate('2020-05-13T10:00:00-10:00'); })
+            expect(() => { field.validate('2021-01-30T08:00:00'); })
               .not.toThrow(FieldFormatError);
           });
         });
