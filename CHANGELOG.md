@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.4
+- Fixed checking of "date-time" format
+- Fixed removing of unknown fields in nested array items when passing `removeUnknown: true` to `Schema.validate()`
+
 ## v3.0.3
 - Fixed missing check of optional second fraction in `date-time` and `time` format
 - Added alias `date-time` for `datetime` format like in JSON Schema specification
