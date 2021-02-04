@@ -77,10 +77,10 @@ class Schema {
    */
   getErrors(object, options = {}) {
     const opts = {
-      ...options,
       clean: false,
       parse: false,
       removeUnknown: false,
+      ...options,
     };
     let errors = null;
 

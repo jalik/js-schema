@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.0.5
+- Fixed options passed to `Schema.getErrors()` being ignored
+
 ## v3.0.4
 - Fixed checking of "date-time" format
 - Fixed removing of unknown fields in nested array items when passing `removeUnknown: true` to `Schema.validate()`
