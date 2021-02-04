@@ -36,6 +36,10 @@ describe('Schema', () => {
     embedded: {
       type: StringSchema,
     },
+    embeddedArray: {
+      type: 'array',
+      items: { type: StringSchema },
+    },
     number: {
       type: 'number',
       required: true,
@@ -149,6 +153,12 @@ describe('Schema', () => {
       const object = { string: 'test', embedded: { string: 'test', unknown: true } };
       const result = { string: 'test', embedded: { string: 'test' } };
       expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result);
+    });
+
+    it('should remove nested unknown fields in arrays', () => {
+      const object = { embeddedArray: [{ string: 'test', unknown: true }] };
+      const result = { embeddedArray: [{ string: 'test' }] };
+      expect(result).toMatchObject(BaseSchema.removeUnknownFields(object));
     });
   });
 

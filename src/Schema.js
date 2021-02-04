@@ -154,10 +154,16 @@ class Schema {
     const clone = deepExtend({}, object);
 
     Object.keys(clone).forEach((name) => {
-      if (typeof this.fields[name] === 'undefined') {
+      const field = this.fields[name];
+
+      if (typeof field === 'undefined') {
         delete clone[name];
-      } else if (this.fields[name].getType() instanceof Schema) {
-        clone[name] = this.fields[name].getType().removeUnknownFields(clone[name]);
+      } else if (field.getType() instanceof Schema) {
+        clone[name] = field.getType().removeUnknownFields(clone[name]);
+      } else if (field.getItems() && field.getItems().type instanceof Schema) {
+        if (clone[name] instanceof Array) {
+          clone[name] = clone[name].map((item) => field.getItems().type.removeUnknownFields(item));
+        }
       }
     });
     return clone;
