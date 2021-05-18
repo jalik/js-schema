@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.0.6
+- Upgraded dependencies
+
 ## v3.0.5
 - Fixed options passed to `Schema.getErrors()` being ignored
 
