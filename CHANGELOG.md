@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.0.7
+- Fixed imports in README.md
+
 ## v3.0.6
 - Upgraded dependencies
 
