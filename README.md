@@ -9,8 +9,8 @@
 
 ## Introduction
 
-A schema describes all fields of an object, with various constraints.
-It can be used to:
+A schema describes all fields of an object, with various constraints. It can be used to:
+
 - validate an object
 - parse an object
 - clean an object
@@ -20,7 +20,7 @@ It can be used to:
 Let's start with the schema of a person, which could be understood by anyone.
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 const PersonSchema = new Schema({
   age: {
@@ -75,7 +75,7 @@ export default ParentSchema;
 ## Cloning a schema
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 const ProductSchema = new Schema({
   name: {
@@ -101,7 +101,7 @@ export const CSchema = ProductSchema.clone();
 You want to validate an object with a schema, for sure! This is why you're here.
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 const PhoneSchema = new Schema({
   code: {
@@ -192,7 +192,8 @@ const errors = UserSchema.getErrors({
 
 ## Handling errors
 
-If the schema fails to validate an object, it will throw a specific error (ex: `FieldLengthError`, `FieldTypeError`, `FieldRequiredError`...), which is helpful to handle errors display.
+If the schema fails to validate an object, it will throw a specific error (ex: `FieldLengthError`
+, `FieldTypeError`, `FieldRequiredError`...), which is helpful to handle errors display.
 
 For example, a `FieldRequiredError` looks like this:
 
@@ -205,7 +206,8 @@ For example, a `FieldRequiredError` looks like this:
 }
 ```
 
-If you need to detect the type of the error, it is recommended to check the `reason` attribute of the error against a constant, instead of comparing class instance.
+If you need to detect the type of the error, it is recommended to check the `reason` attribute of
+the error against a constant, instead of comparing class instance.
 
 Here is the list of all errors types constants:
 
@@ -232,15 +234,19 @@ import {
 
 ## Translating errors
 
-The following example shows how to return a translated error, however you would adapt this to fit your current i18n library.
+The following example shows how to return a translated error, however you would adapt this to fit
+your current i18n library.
 
 ```js
-import { getErrorMessage, setLocale } from '@jalik/schema/dist/locale';
+import {
+  getErrorMessage,
+  setLocale
+} from '@jalik/schema/dist/locale';
 import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema/errors'
 
 // Define french translations of error messages.
 setLocale('fr', {
-  [ERROR_FIELD_MIN_LENGTH] : 'Le champ {field} doit comporter au moins {minLength} caractères.'
+  [ERROR_FIELD_MIN_LENGTH]: 'Le champ {field} doit comporter au moins {minLength} caractères.'
   // other translations...
 });
 
@@ -249,7 +255,8 @@ const message = getErrorMessage(fieldRequiredError, 'fr');
 // will return "Le champ xxx doit comporter au moins nnn caractères."
 ```
 
-The errors are in english by default, so you don't have to set the english locale, only if you want to replace default error messages.
+The errors are in english by default, so you don't have to set the english locale, only if you want
+to replace default error messages.
 
 The **french** locale is available.
 
@@ -264,13 +271,16 @@ setLocale('fr', fr);
 
 ## Checking the type
 
-Use `type` to check the type of the field value. It can be a basic type (array, boolean, number, object, string), or an advanced type like an instance of `Schema` or an object constructor like `Date`.
+Use `type` to check the type of the field value. It can be a basic type (array, boolean, number,
+object, string), or an advanced type like an instance of `Schema` or an object constructor
+like `Date`.
 
-- Accepts `"array"`, `"boolean"`, `"integer"`, `"number"`, `"object"`, `"string"`, `Date`, or a `Schema`
+- Accepts `"array"`, `"boolean"`, `"integer"`, `"number"`, `"object"`, `"string"`, `Date`, or
+  a `Schema`
 - Throws `FieldTypeError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The field must be an array of any values.
@@ -288,7 +298,7 @@ export const ExampleSchema = new Schema({
   // The field must matches UserSchema.
   example: { type: ExampleSchema },
   // The field must be an array of objects matching UserSchema.
-  examples: { type: 'array', items: { type: ExampleSchema} },
+  examples: { type: 'array', items: { type: ExampleSchema } },
   // The field must be an array of arrays.
   arrayArray: { type: 'array', items: { type: 'array' } },
   // The field must be an array of booleans.
@@ -307,13 +317,14 @@ export const ExampleSchema = new Schema({
 ## Checking required values
 
 Use `required` to check if a field is `undefined`. Be advised that
-`required` will not throw an error if the field is `null`, use `nullable` if you want to check for `null` value.
+`required` will not throw an error if the field is `null`, use `nullable` if you want to check
+for `null` value.
 
 - Accepts `Boolean` or `Function`
 - Throws `FieldRequiredError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The field is optional.
@@ -335,7 +346,7 @@ Use `nullable` to check if a field value is `null`.
 - Throws `FieldNullableError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The field must be set with anything than null
@@ -358,7 +369,7 @@ Use `max` and `min` to check if a field value is below or above a limit.
 - Throws `FieldMaxError`, `FieldMinError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The date must be between the previous hour and the next hour.
@@ -382,14 +393,15 @@ export const ExampleSchema = new Schema({
 
 ## Checking the length
 
-Use `maxLength` and `minLength` to check the length of a field value.
-It works on any object with a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will work too.
+Use `maxLength` and `minLength` to check the length of a field value. It works on any object with
+a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will
+work too.
 
 - Accepts `Number` or `Function`
 - Throws `FieldMaxLengthError`, `FieldMinLengthError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The array must have exactly two values.
@@ -435,7 +447,7 @@ Use `maxWords` and `minWords` to limit words count in a string.
 - Throws `FieldMaxWordsError`, `FieldMinWordsError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The summary must not have more than 50 words.
@@ -459,7 +471,7 @@ Use `allowed` to check if a field value is allowed.
 - Throws `FieldAllowedError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The string must be 'yes' or 'no'.
@@ -472,13 +484,13 @@ export const ExampleSchema = new Schema({
     type: 'array',
     items: { type: 'number' },
     allowed: [0, 1]
- },
+  },
   // The array must contain only hot colors.
   hotColors: {
     type: 'array',
     items: { type: 'string' },
     allowed: ['red', 'yellow', 'orange']
- },
+  },
 });
 ```
 
@@ -490,7 +502,7 @@ Use `denied` to check if a field value is denied.
 - Throws `FieldDeniedError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   message: {
@@ -508,7 +520,7 @@ Use `pattern` to check if a field value matches a regular expression.
 - Throws `FieldPatternError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   time: {
@@ -532,7 +544,7 @@ Use `format` to check if a field value matches a specific known format.
 - Throws `FieldFormatError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   date: {
@@ -578,7 +590,7 @@ Use `check` to apply custom checks that are not possible with the schema.
 - Throws `FieldError`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   evenNumber: {
@@ -596,14 +608,13 @@ Use `parse` to parse string values before validation.
 - Accepts `Function`
 
 ```js
-import Schema from '@jalik/schema';
-import moment from 'moment';
+import { Schema } from '@jalik/schema';
+import DateTime from 'luxon';
 
 export const ExampleSchema = new Schema({
-  // The date is formatted to ISO8601 using moment.
   birthday: {
     type: 'string',
-    parse: (value) => moment(value, 'DD-MM-YYYY').format()
+    parse: (value) => DateTime.fromISO(value).toJSDate()
   },
 });
 ```
@@ -615,7 +626,7 @@ Use `prepare` to perform some operations before validation.
 - Accepts `Function`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // Execute the prepare function on field value
@@ -629,13 +640,22 @@ export const ExampleSchema = new Schema({
   },
 });
 
-const result = ExampleSchema.prepare({ numbers: [5,9,0,3,2,7] })
+const result = ExampleSchema.prepare({ numbers: [5, 9, 0, 3, 2, 7] })
 ```
 
 So `result` will be:
 
 ```json
-{ "numbers": [0,2,3,5,7,9] }
+{
+  "numbers": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9
+  ]
+}
 ```
 
 ## Cleaning values
@@ -645,7 +665,7 @@ Use `clean` to perform some cleaning on a value.
 - Accepts `Function`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // Every items in the list will be trimmed and lowercase.
@@ -659,18 +679,19 @@ export const ExampleSchema = new Schema({
 
 ## Setting default value
 
-Use `defaultValue` to set the default value of a field. It will only be used if the value is `null` or `undefined` and the field required.
+Use `defaultValue` to set the default value of a field. It will only be used if the value is `null`
+or `undefined` and the field required.
 
 - Accepts `Boolean`, `Number`, `String` or `Function`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   // The default value will be the current date at the execution time.
   createdAt: {
     type: Date,
-    defaultValue: () => new Date()  
+    defaultValue: () => new Date()
   },
   // The default priority is zero.
   priority: {
@@ -682,12 +703,13 @@ export const ExampleSchema = new Schema({
 
 ## Setting field's label
 
-Use `label` to set field's label. Note that the label will be used in errors, if the label is not set, the field's name will be used instead.
+Use `label` to set field's label. Note that the label will be used in errors, if the label is not
+set, the field's name will be used instead.
 
 - Accepts `String` or `Function`
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
   birthday: {
@@ -699,14 +721,16 @@ export const ExampleSchema = new Schema({
 
 ## Dynamic field properties
 
-Almost all field properties accept a function, it is useful to return a constraint based on some conditions. The function is called with a single argument representing the current context (data) being validated by the schema.
+Almost all field properties accept a function, it is useful to return a constraint based on some
+conditions. The function is called with a single argument representing the current context (data)
+being validated by the schema.
 
 ```js
-import Schema from '@jalik/schema';
+import { Schema } from '@jalik/schema';
 
-const isPublishing = function(context) {
-    // context refers to the data being validated
-    return context.status === 'published';
+const isPublishing = function (context) {
+  // context refers to the data being validated
+  return context.status === 'published';
 };
 
 const PostSchema = new Schema({
