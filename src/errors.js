@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2021 Karl STEIN
  */
 
 export const ERROR_FIELD_ALLOWED = 'field-allowed';
@@ -20,3 +20,25 @@ export const ERROR_FIELD_REQUIRED = 'field-required';
 export const ERROR_FIELD_TYPE = 'field-type';
 export const ERROR_FIELD_UNKNOWN = 'field-unknown';
 export const ERROR_VALIDATION = 'object-invalid';
+
+const errors = [
+  ERROR_FIELD_ALLOWED,
+  ERROR_FIELD_DENIED,
+  ERROR_FIELD_FORMAT,
+  ERROR_FIELD_INVALID,
+  ERROR_FIELD_LENGTH,
+  ERROR_FIELD_MAX,
+  ERROR_FIELD_MAX_LENGTH,
+  ERROR_FIELD_MAX_WORDS,
+  ERROR_FIELD_MIN,
+  ERROR_FIELD_MIN_LENGTH,
+  ERROR_FIELD_MIN_WORDS,
+  ERROR_FIELD_NULLABLE,
+  ERROR_FIELD_PATTERN,
+  ERROR_FIELD_REQUIRED,
+  ERROR_FIELD_TYPE,
+  ERROR_FIELD_UNKNOWN,
+  ERROR_VALIDATION,
+];
+
+export default errors;
