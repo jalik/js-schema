@@ -1,43 +1,55 @@
 # Changelog
 
 ## v3.0.7
+
 - Fixed imports in README.md
 
 ## v3.0.6
+
 - Upgraded dependencies
 
 ## v3.0.5
+
 - Fixed options passed to `Schema.getErrors()` being ignored
 
 ## v3.0.4
+
 - Fixed checking of "date-time" format
-- Fixed removing of unknown fields in nested array items when passing `removeUnknown: true` to `Schema.validate()`
+- Fixed removing of unknown fields in nested array items when passing `removeUnknown: true`
+  to `Schema.validate()`
 
 ## v3.0.3
+
 - Fixed missing check of optional second fraction in `date-time` and `time` format
 - Added alias `date-time` for `datetime` format like in JSON Schema specification
 
 ## v3.0.2
+
 - Upgraded dependencies
 
 ## v3.0.1
+
 - Upgraded dependencies
 
 ## v3.0.0
+
 - [BREAK] Method `getErrors()` of `Schema` returns `null` instead of `{}` if no errors
 - Added method `without(fieldNames)` to `Schema`
 - Upgraded dependencies
 
 ## v2.0.2
+
 - Upgraded dependencies
 
 ## v2.0.1
+
 - Fixed missing french message for ERROR_FIELD_FORMAT
 - Upgraded dependencies
 
 ## v2.0.0
 
 **DELETIONS**
+
 - [BREAK] Exports named function `contains()` in utils.js
 - [BREAK] Moves function `computeValue()` to utils.js
 - [BREAK] Removed attribute `context` on fields errors
@@ -56,11 +68,14 @@
 - [BREAK] Removed support for syntax `[min, max]` of option `length` in `SchemaField`
 
 **MODIFICATIONS**
+
 - [BREAK] Changed array interpretation for option `type` in `SchemaField`
 - [BREAK] Changed default value of option `nullable` to `false` in `SchemaField`
 - [BREAK] Changed default value of option `required` to `false` in `SchemaField`
-- [BREAK] Changed default value of options `clean` and `parse` to `false` in `Schema.validate()` and `SchemaField.validate()`
-- [BREAK] Changed parsing of `"boolean"` fields to return `true` only if value is `true` (case-insensitive)
+- [BREAK] Changed default value of options `clean` and `parse` to `false` in `Schema.validate()`
+  and `SchemaField.validate()`
+- [BREAK] Changed parsing of `"boolean"` fields to return `true` only if value is `true` (
+  case-insensitive)
 - [BREAK] Renamed error reason `field-bad-value` to `field-allowed`
 - [BREAK] Renamed error reason `field-max-value` to `field-max`
 - [BREAK] Renamed error reason `field-min-value` to `field-min`
@@ -86,15 +101,18 @@
 - Changed error messages
 
 **FIXES**
+
 - Return the cloned properties with `getProperties()` in `SchemaField`
 - Return the cloned object with `clean()` in `Schema`
 - Return the cloned object with `parse()` in `Schema`
 - Return the cloned object with `removeUnknownFields()` in `Schema`
 - Return the cloned object with `validate()` in `Schema`
-- Return the parsed value of type `"boolean"`, `"integer"` or `"number"` if `parse` option is missing in `SchemaField`
+- Return the parsed value of type `"boolean"`, `"integer"` or `"number"` if `parse` option is
+  missing in `SchemaField`
 - Throw an error when options `allowed` and `denied` are both defined in `SchemaField`
 
 **ADDITIONS**
+
 - Added attribute `errors` in `ValidationError`
 - Added attribute `path` in `FieldError`
 - Added errors classes in `errors/*.js` (ex: `errors/FieldRequiredError.js`)
@@ -102,7 +120,8 @@
 - Added function `getErrorMessage()` in locale.js
 - Added function `setLocale()` in locale.js
 - Added method `getErrors()` in `Schema`
-- Added option `format` with accepted values `date`, `datetime`, `email`, `hostname`, `ipv4`, `ipv6`, `time`, `uri` in `SchemaField`
+- Added option `format` with accepted values `date`, `datetime`, `email`, `hostname`, `ipv4`, `ipv6`
+  , `time`, `uri` in `SchemaField`
 - Added option `items` in `SchemaField` to set constraints of array items
 - Added option `rootOnly` in `SchemaField.validate()` to not check nested schemas
 - Added regexp `DateRegExp` in regex.js
@@ -114,6 +133,7 @@
 - Added translation for french in `locales/fr.js`
 
 **UPDATES**
+
 - Upgraded dependencies
 
 ## v1.3.5
@@ -214,7 +234,8 @@
 - Added method `SchemaField.throwFieldNullError()`
 - Uses return value of `SchemaField.validate()` to modify field value
 - Uses empty array `[]` as default value for `Array` fields defined as required and non-null
-- Throw missing field error only when a required field is `undefined` (does not depend on `nullable` option anymore)
+- Throw missing field error only when a required field is `undefined` (does not depend on `nullable`
+  option anymore)
 
 ## v0.4.1
 
@@ -242,9 +263,11 @@
 - Added method `SchemaField.isDecimal()`
 - Added method `SchemaField.isNullable()`
 - Added method `SchemaField.isRequired()`
-- Added field option `defaultValue` to set default value, works only if field is required but has its value `undefined`
+- Added field option `defaultValue` to set default value, works only if field is required but has
+  its value `undefined`
 - Renamed method `SchemaField.dynamicValue()` to `SchemaField.computeValue()`
-- The method `SchemaField.validate()` now returns the processed value (ex: default value or cleaned value)
+- The method `SchemaField.validate()` now returns the processed value (ex: default value or cleaned
+  value)
 - Updates README.md
 
 ## v0.3.4
@@ -258,7 +281,7 @@
 ## v0.3.2
 
 - Allows to use function for `decimal`, `label`, `nullable` and `required` constructor options in
- `SchemaField`
+  `SchemaField`
 - Changed error messages
 
 ## v0.3.1
@@ -286,7 +309,8 @@
 ## v0.2.7
 
 - Added `getField(name)` method
-- Uses field name as first parameter of `validateField(name, value)` method instead of field properties
+- Uses field name as first parameter of `validateField(name, value)` method instead of field
+  properties
 
 ## v0.2.6
 
