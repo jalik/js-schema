@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2021 Karl STEIN
  */
 
 import { ERROR_FIELD_FORMAT } from '../errors';
@@ -10,7 +10,7 @@ class FieldFormatError extends FieldError {
   constructor(field, format, path) {
     super(field, path, ERROR_FIELD_FORMAT);
     this.format = format;
-    this.message = `"${field}" does not matches format (${format}).`;
+    this.message = `The field does not matches format (${format}).`;
   }
 }
 

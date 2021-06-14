@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2021 Karl STEIN
  */
 
 import { ERROR_FIELD_TYPE } from '../errors';
@@ -10,7 +10,7 @@ class FieldTypeError extends FieldError {
   constructor(field, type, path) {
     super(field, path, ERROR_FIELD_TYPE);
     this.type = type;
-    this.message = `"${field}" is not of type "${type}".`;
+    this.message = `The field is not of type "${type}".`;
   }
 }
 

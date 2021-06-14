@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2021 Karl STEIN
  */
 
 import { ERROR_FIELD_INVALID } from '../errors';
@@ -15,7 +15,7 @@ class FieldError extends Error {
   constructor(field, path, reason = ERROR_FIELD_INVALID) {
     super();
     this.field = field;
-    this.message = `"${field}" is not valid.`;
+    this.message = 'The field is not valid.';
     this.path = path;
     this.reason = reason;
   }

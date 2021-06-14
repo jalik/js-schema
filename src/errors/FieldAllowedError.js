@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2021 Karl STEIN
  */
 
 import { ERROR_FIELD_ALLOWED } from '../errors';
@@ -10,7 +10,7 @@ class FieldAllowedError extends FieldError {
   constructor(field, allowed, path) {
     super(field, path, ERROR_FIELD_ALLOWED);
     this.allowed = allowed;
-    this.message = `"${field}" contains a value that is not allowed (${allowed}).`;
+    this.message = `The field must contain an allowed value (${allowed}).`;
   }
 }
 
