@@ -6,6 +6,7 @@
   "keywords": [
     "check",
     "clean",
+    "json",
     "object",
     "schema",
     "validation"
@@ -27,11 +28,11 @@
   "module": "./src/index.js",
   "sideEffects": false,
   "scripts": {
-    "build": "babel src -d dist",
-    "clean": "rimraf dist",
-    "dev": "babel --watch src -d dist",
-    "lint": "eslint --ext js,jsx .",
-    "lint-fix": "eslint --fix --ext js,jsx .",
+    "build": "babel ./src -d ./dist",
+    "clean": "rimraf ./dist",
+    "dev": "babel --watch ./src -d ./dist",
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
     "prepare": "npm run clean && npm run build && npm run lint",
     "prepublishOnly": "npm test",
     "test": "jest --passWithNoTests"
