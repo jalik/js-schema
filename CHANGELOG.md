@@ -1,5 +1,13 @@
 # Changelog
 
+## v3.0.8
+
+- Added exports of error constants and locale functions in index.js
+- Added locale "en" as a file to not rely on defaults ("en" still remains the default locale)
+- Changed the default error messages to not contain the field name
+- Fixed potential breaking "export from" syntax in main file (index.js)
+- Upgraded dependencies
+
 ## v3.0.7
 
 - Fixed imports in README.md

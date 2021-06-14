@@ -199,10 +199,10 @@ For example, a `FieldRequiredError` looks like this:
 
 ```json
 {
-  "reason": "field-required",
-  "message": "\"Phone Number\" is required",
   "field": "Phone Number",
-  "path": "phones[0].number"
+  "message": "The field is required",
+  "path": "phones[0].number",
+  "reason": "field-required"
 }
 ```
 
@@ -240,40 +240,53 @@ import { errors } from '@jalik/schema';
 
 ## Translating errors
 
-The following example shows how to return a translated error, however you would adapt this to fit
-your current i18n library.
+The first thing to do is to load the locales you need with `setLocale(locale, object)`.  
+This can be done when your app starts or right before displaying an error.  
+Errors are in **English** by default, you can customize them or use them as this.
+
+```js
+import { default as en } from '@jalik/schema/dist/locales/en';
+import { default as fr } from '@jalik/schema/dist/locales/fr';
+import { ERROR_FIELD_INVALID } from '@jalik/schema';
+
+// Load default error messages in english.
+setLocale('en', en);
+
+// Or customize error messages.
+setLocale('en', {
+  ...en,
+  [ERROR_FIELD_INVALID]: 'This field is not valid :('
+});
+
+// Load other locales if needed.
+setLocale('fr', fr);
+```
+
+Then somewhere in your application, when you want to display the error, use
+the `getErrorMessage(error, locale)` function.
 
 ```js
 import {
   getErrorMessage,
-  setLocale
+  Schema
 } from '@jalik/schema';
-import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema'
 
-// Define french translations of error messages.
-setLocale('fr', {
-  [ERROR_FIELD_MIN_LENGTH]: 'Le champ {field} doit comporter au moins {minLength} caractères.'
-  // other translations...
+const locale = 'fr';
+
+// Prepare a schema.
+const schema = new Schema({ age: { type: 'number' } });
+
+// Check errors.
+const errors = schema.getErrors({ age: '42' });
+
+// Display the translated error messages.
+Object.entries(errors).forEach(([path, error]) => {
+  const message = getErrorMessage(error, locale);
+  console.log(message);
 });
-
-// Get translated message from an FieldError.
-const message = getErrorMessage(fieldRequiredError, 'fr');
-// will return "Le champ xxx doit comporter au moins nnn caractères."
 ```
 
-The errors are in english by default, so you don't have to set the english locale, only if you want
-to replace default error messages.
-
-The **french** locale is available.
-
-```js
-import { setLocale } from '@jalik/schema';
-import fr from '@jalik/schema/dist/locales/fr'
-
-setLocale('fr', fr);
-```
-
-**Contributions to translations are welcome.**
+**Contributions to translations are welcome, just create a pull request with the new locale files.**
 
 ## Checking the type
 
