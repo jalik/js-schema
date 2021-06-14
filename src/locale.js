@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2021 Karl STEIN
  */
 
 const locales = {};
@@ -12,9 +12,12 @@ const locales = {};
  * @return {string}
  */
 export function getErrorMessage(error, locale) {
-  if (typeof locales[locale] !== 'undefined' && typeof locales[locale][error.reason] !== 'undefined') {
-    let message = locales[locale][error.reason];
+  const dict = locales[locale];
+  let message = dict != null && dict[error.reason] != null
+    ? dict[error.reason]
+    : null;
 
+  if (message) {
     // Replace context variables in message.
     Object.keys(error).forEach((key) => {
       message = message.replace(`{${key}}`, error[key]);
