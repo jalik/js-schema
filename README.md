@@ -229,7 +229,13 @@ import {
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNKNOWN,
-} from '@jalik/schema/errors';
+} from '@jalik/schema';
+```
+
+All errors are also available as an array:
+
+```js
+import { errors } from '@jalik/schema';
 ```
 
 ## Translating errors
@@ -241,8 +247,8 @@ your current i18n library.
 import {
   getErrorMessage,
   setLocale
-} from '@jalik/schema/dist/locale';
-import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema/errors'
+} from '@jalik/schema';
+import { ERROR_FIELD_MIN_LENGTH } from '@jalik/schema'
 
 // Define french translations of error messages.
 setLocale('fr', {
@@ -261,7 +267,7 @@ to replace default error messages.
 The **french** locale is available.
 
 ```js
-import { setLocale } from '@jalik/schema/dist/locale';
+import { setLocale } from '@jalik/schema';
 import fr from '@jalik/schema/dist/locales/fr'
 
 setLocale('fr', fr);
