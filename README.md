@@ -17,7 +17,7 @@ A schema describes all fields of an object, with various constraints. It can be 
 
 ## Creating a schema
 
-Let's start with the schema of a person, which could be understood by anyone.
+Let's start with the schema of a person, very simple.
 
 ```js
 import { Schema } from '@jalik/schema';
@@ -49,7 +49,7 @@ export default PersonSchema;
 
 ## Extending a schema (inheritance)
 
-If we want to create a new schema based on another, we can extend the base schema.
+To create a new schema based on another, we can extend the base schema.
 
 ```js
 import PersonSchema from './PersonSchema';
@@ -96,7 +96,7 @@ export const BSchema = ProductSchema.clone();
 export const CSchema = ProductSchema.clone();
 ```
 
-## Validating objects
+## Validating objects using a schema
 
 You want to validate an object with a schema, for sure! This is why you're here.
 
@@ -183,6 +183,7 @@ Note that you can get errors without having to "try/catch", by using the `getErr
 **If there are no errors, it will return `null`;**
 
 ```js
+// this example would return errors because phone.code and phone.number are not of type "string"
 const errors = UserSchema.getErrors({
   age: 16,
   gender: null,
@@ -288,7 +289,7 @@ Object.entries(errors).forEach(([path, error]) => {
 
 **Contributions to translations are welcome, just create a pull request with the new locale files.**
 
-## Checking the type
+## Checking field's type
 
 Use `type` to check the type of the field value. It can be a basic type (array, boolean, number,
 object, string), or an advanced type like an instance of `Schema` or an object constructor
@@ -380,7 +381,7 @@ export const ExampleSchema = new Schema({
 });
 ```
 
-## Checking the maximum and minimum values
+## Checking maximum and minimum values
 
 Use `max` and `min` to check if a field value is below or above a limit.
 
@@ -410,7 +411,7 @@ export const ExampleSchema = new Schema({
 });
 ```
 
-## Checking the length
+## Checking length
 
 Use `maxLength` and `minLength` to check the length of a field value. It works on any object with
 a `length` attribute (`String`, `Array`...), so if you have objects like `MyList.length`, it will
@@ -458,7 +459,7 @@ export const ExampleSchema = new Schema({
 });
 ```
 
-## Checking the number of words
+## Checking words count
 
 Use `maxWords` and `minWords` to limit words count in a string.
 
@@ -620,6 +621,24 @@ export const ExampleSchema = new Schema({
 });
 ```
 
+## Setting field's label
+
+Use `label` to set field's label, which will be used in errors, note that if the label is not set,
+the field's name will be used instead.
+
+- Accepts `String` or `Function`
+
+```js
+import { Schema } from '@jalik/schema';
+
+export const ExampleSchema = new Schema({
+  birthday: {
+    type: Date,
+    label: 'Date of Birth'
+  },
+});
+```
+
 ## Parsing values
 
 Use `parse` to parse string values before validation.
@@ -717,24 +736,6 @@ export const ExampleSchema = new Schema({
     type: 'number',
     defaultValue: 0
   }
-});
-```
-
-## Setting field's label
-
-Use `label` to set field's label. Note that the label will be used in errors, if the label is not
-set, the field's name will be used instead.
-
-- Accepts `String` or `Function`
-
-```js
-import { Schema } from '@jalik/schema';
-
-export const ExampleSchema = new Schema({
-  birthday: {
-    type: Date,
-    label: 'Date of Birth'
-  },
 });
 ```
 
