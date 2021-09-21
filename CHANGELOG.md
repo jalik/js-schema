@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.9
+
+- Upgraded dependencies
+
 ## v3.0.8
 
 - Added exports of error constants and locale functions in index.js
