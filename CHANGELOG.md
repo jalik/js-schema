@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.10
+
+- Upgraded dependencies
+
 ## v3.0.9
 
 - Upgraded dependencies
