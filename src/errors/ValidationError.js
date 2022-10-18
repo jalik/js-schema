@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2021 Karl STEIN
+ * Copyright (c) 2022 Karl STEIN
  */
 
 import { ERROR_VALIDATION } from '../errors';
@@ -13,7 +13,7 @@ class ValidationError extends Error {
    * @param {string} reason
    */
   constructor(
-    errors = {},
+    errors,
     message = 'Object is not valid',
     reason = ERROR_VALIDATION,
   ) {
