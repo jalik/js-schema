@@ -1693,6 +1693,11 @@ describe('SchemaField', () => {
               expect(() => { field.validate([]); })
                 .not.toThrow(FieldTypeError);
             });
+            it('should not throw FieldTypeError', () => {
+              const field1 = new SchemaField('field', { type: 'array', items: { type: 'number' } });
+              expect(() => { field1.validate([0, 1]); })
+                .not.toThrow();
+            });
           });
 
           describe('with boolean', () => {
