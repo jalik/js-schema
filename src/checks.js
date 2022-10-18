@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2022 Karl STEIN
  */
 
 import FieldAllowedError from './errors/FieldAllowedError';
@@ -27,7 +27,6 @@ import {
   TimeRegExp,
   UriRegExp,
 } from './regex';
-import { contains } from './utils';
 
 /**
  * Schema field properties
@@ -69,11 +68,11 @@ export function checkAllowed(allowed, value, label, path) {
   if (typeof allowed !== 'undefined') {
     if (value instanceof Array) {
       for (let i = 0; i < value.length; i += 1) {
-        if (!contains(allowed, value[i])) {
+        if (!allowed.includes(value[i])) {
           throw new FieldAllowedError(label, allowed, path);
         }
       }
-    } else if (!contains(allowed, value)) {
+    } else if (!allowed.includes(value)) {
       throw new FieldAllowedError(label, allowed, path);
     }
   }
@@ -90,11 +89,11 @@ export function checkDenied(denied, value, label, path) {
   if (typeof denied !== 'undefined') {
     if (value instanceof Array) {
       for (let i = 0; i < value.length; i += 1) {
-        if (contains(denied, value[i])) {
+        if (denied.includes(value[i])) {
           throw new FieldDeniedError(label, denied, path);
         }
       }
-    } else if (contains(denied, value)) {
+    } else if (denied.includes(value)) {
       throw new FieldDeniedError(label, denied, path);
     }
   }
@@ -108,7 +107,7 @@ export function checkDenied(denied, value, label, path) {
 export function checkFieldProperties(name, props) {
   // Check unknown properties.
   Object.keys(props).forEach((prop) => {
-    if (!contains(fieldProperties, prop)) {
+    if (!fieldProperties.includes(prop)) {
       // eslint-disable-next-line no-console
       console.warn(`Unknown schema field property "${name}.${prop}"`);
     }
@@ -143,10 +142,10 @@ export function checkFieldProperties(name, props) {
       const arrayType = type[0];
 
       // Check that array type is a function or class
-      if (!contains(['function', 'object', 'string'], typeof arrayType)) {
+      if (!['function', 'object', 'string'].includes(typeof arrayType)) {
         throw new TypeError(`${name}.type[] must contain a class or a function`);
       }
-    } else if (!contains(['function', 'object', 'string'], typeof type)) {
+    } else if (!['function', 'object', 'string'].includes(typeof type)) {
       throw new TypeError(`${name}.type = "${type}" is not a valid type`);
     }
   }
@@ -177,7 +176,7 @@ export function checkFieldProperties(name, props) {
   }
 
   // Check format
-  if (typeof format !== 'undefined' && !contains(['string', 'function'], typeof format)) {
+  if (typeof format !== 'undefined' && !['string', 'function'].includes(typeof format)) {
     throw new TypeError(`${name}.format must be a string or function`);
   }
 
@@ -187,47 +186,47 @@ export function checkFieldProperties(name, props) {
   }
 
   // Check label
-  if (typeof label !== 'undefined' && !contains(['function', 'string'], typeof label)) {
+  if (typeof label !== 'undefined' && !['function', 'string'].includes(typeof label)) {
     throw new TypeError(`${name}.label must be a string or function`);
   }
 
   // Check length
-  if (typeof length !== 'undefined' && !contains(['function', 'number'], typeof length)) {
+  if (typeof length !== 'undefined' && !['function', 'number'].includes(typeof length)) {
     throw new TypeError(`${name}.length must be a function or number`);
   }
 
   // Check max value
-  if (typeof max !== 'undefined' && !contains(['function', 'number', 'string'], typeof max) && !(max instanceof Date)) {
+  if (typeof max !== 'undefined' && !['function', 'number', 'string'].includes(typeof max) && !(max instanceof Date)) {
     throw new TypeError(`${name}.max must be a date, number, string or function`);
   }
 
   // Check max length
-  if (typeof maxLength !== 'undefined' && !contains(['function', 'number'], typeof maxLength)) {
+  if (typeof maxLength !== 'undefined' && !['function', 'number'].includes(typeof maxLength)) {
     throw new TypeError(`${name}.maxLength must be a number or function`);
   }
 
   // Check max words
-  if (typeof maxWords !== 'undefined' && !contains(['function', 'number'], typeof maxWords)) {
+  if (typeof maxWords !== 'undefined' && !['function', 'number'].includes(typeof maxWords)) {
     throw new TypeError(`${name}.maxWords must be a number or function`);
   }
 
   // Check min value
-  if (typeof min !== 'undefined' && !contains(['function', 'number', 'string'], typeof min) && !(min instanceof Date)) {
+  if (typeof min !== 'undefined' && !['function', 'number', 'string'].includes(typeof min) && !(min instanceof Date)) {
     throw new TypeError(`${name}.min must be a date, number, string or function`);
   }
 
   // Check min length
-  if (typeof minLength !== 'undefined' && !contains(['function', 'number'], typeof minLength)) {
+  if (typeof minLength !== 'undefined' && !['function', 'number'].includes(typeof minLength)) {
     throw new TypeError(`${name}.minLength must be a number or function`);
   }
 
   // Check min words
-  if (typeof minWords !== 'undefined' && !contains(['function', 'number'], typeof minWords)) {
+  if (typeof minWords !== 'undefined' && !['function', 'number'].includes(typeof minWords)) {
     throw new TypeError(`${name}.minWords must be a number or function`);
   }
 
   // Check if field is nullable
-  if (typeof nullable !== 'undefined' && !contains(['function', 'boolean'], typeof nullable)) {
+  if (typeof nullable !== 'undefined' && !['function', 'boolean'].includes(typeof nullable)) {
     throw new TypeError(`${name}.nullable must be a boolean or function`);
   }
 
@@ -242,13 +241,13 @@ export function checkFieldProperties(name, props) {
   }
 
   // Check pattern (regular expression)
-  if (!contains(['undefined', 'string', 'object', 'function'], typeof pattern)
+  if (!['undefined', 'string', 'object', 'function'].includes(typeof pattern)
     || (typeof pattern === 'object' && !(pattern instanceof RegExp))) {
     throw new TypeError(`${name}.pattern must be a string, a RegExp or function`);
   }
 
   // Check required
-  if (typeof required !== 'undefined' && !contains(['function', 'boolean'], typeof required)) {
+  if (typeof required !== 'undefined' && !['function', 'boolean'].includes(typeof required)) {
     throw new TypeError(`${name}.required must be a boolean or function`);
   }
 }
