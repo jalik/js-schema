@@ -1,8 +1,13 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2022 Karl STEIN
  */
 
+import {
+  describe,
+  expect,
+  it,
+} from '@jest/globals';
 import { ERROR_FIELD_REQUIRED } from '../src/errors';
 import FieldAllowedError from '../src/errors/FieldAllowedError';
 import FieldDeniedError from '../src/errors/FieldDeniedError';
