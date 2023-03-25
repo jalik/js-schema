@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2023 Karl STEIN
  */
 
 import deepExtend from '@jalik/deep-extend';
@@ -122,106 +122,119 @@ class SchemaField {
 
   /**
    * Returns field's allowed values.
+   * @param context
    * @return {[]|function}
    */
-  getAllowed() {
-    return this.properties.allowed;
+  getAllowed(context = undefined) {
+    return computeValue(this.properties.allowed, context);
   }
 
   /**
    * Returns field's default value.
+   * @param context
    * @return {*}
    */
-  getDefaultValue() {
-    return this.properties.defaultValue;
+  getDefaultValue(context = undefined) {
+    return computeValue(this.properties.defaultValue, context);
   }
 
   /**
    * Returns field's denied values.
+   * @param context
    * @return {[]|function}
    */
-  getDenied() {
-    return this.properties.denied;
+  getDenied(context = undefined) {
+    return computeValue(this.properties.denied, context);
   }
 
   /**
    * Returns field's format.
+   * @param context
    * @return {string}
    */
-  getFormat() {
-    return this.properties.format;
+  getFormat(context = undefined) {
+    return computeValue(this.properties.format, context);
   }
 
   /**
    * Returns field's items.
+   * @param context
    * @return {Object}
    */
-  getItems() {
-    return this.properties.items;
+  getItems(context = undefined) {
+    return computeValue(this.properties.items, context);
   }
 
   /**
    * Returns field's label.
+   * @param context
    * @return {string}
    */
-  getLabel() {
-    return this.properties.label;
+  getLabel(context = undefined) {
+    return computeValue(this.properties.label, context);
   }
 
   /**
    * Returns field's length.
+   * @param context
    * @return {number}
    */
-  getLength() {
-    return this.properties.length;
+  getLength(context = undefined) {
+    return computeValue(this.properties.length, context);
   }
 
   /**
    * Returns field's maximal value.
+   * @param context
    * @return {number}
    */
-  getMax() {
-    return this.properties.max;
+  getMax(context = undefined) {
+    return computeValue(this.properties.max, context);
   }
 
   /**
    * Returns field's maximal length.
+   * @param context
    * @return {number}
    */
-  getMaxLength() {
-    return this.properties.maxLength;
+  getMaxLength(context = undefined) {
+    return computeValue(this.properties.maxLength, context);
   }
 
   /**
    * Returns field's maximal words.
+   * @param context
    * @return {number}
    */
-  getMaxWords() {
-    return this.properties.maxWords;
+  getMaxWords(context = undefined) {
+    return computeValue(this.properties.maxWords, context);
   }
 
   /**
    * Returns field's minimal value.
+   * @param context
    * @return {number}
    */
-  getMin() {
-    return this.properties.min;
+  getMin(context = undefined) {
+    return computeValue(this.properties.min, context);
   }
 
   /**
    * Returns field's minimal length.
+   * @param context
    * @return {number}
    */
-  getMinLength() {
-    return this.properties.minLength;
+  getMinLength(context = undefined) {
+    return computeValue(this.properties.minLength, context);
   }
 
   /**
    * Returns field's minimal words.
+   * @param context
    * @return {number}
    */
-  getMinWords() {
-    return this.properties.minWords;
+  getMinWords(context = undefined) {
+    return computeValue(this.properties.minWords, context);
   }
 
   /**
@@ -234,10 +247,11 @@ class SchemaField {
 
   /**
    * Returns field's pattern (regular expression).
+   * @param context
    * @return {string|RegExp|*}
    */
-  getPattern() {
-    return this.properties.pattern;
+  getPattern(context = undefined) {
+    return computeValue(this.properties.pattern, context);
   }
 
   /**
@@ -250,26 +264,29 @@ class SchemaField {
 
   /**
    * Returns field's type.
+   * @param context
    * @return {[]|string|Schema}
    */
-  getType() {
-    return this.properties.type;
+  getType(context = undefined) {
+    return computeValue(this.properties.type, context);
   }
 
   /**
    * Checks if field is nullable.
+   * @param context
    * @return {boolean}
    */
-  isNullable() {
-    return this.properties.nullable === true;
+  isNullable(context = undefined) {
+    return computeValue(this.properties.nullable, context) === true;
   }
 
   /**
    * Checks if field is required
+   * @param context
    * @return {boolean}
    */
-  isRequired() {
-    return this.properties.required === true;
+  isRequired(context = undefined) {
+    return computeValue(this.properties.required, context) === true;
   }
 
   /**

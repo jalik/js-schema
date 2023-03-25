@@ -1,5 +1,8 @@
 # Changelog
 
+## NEXT
+- Allow passing context to field properties functions (ex: `field.isRequired(context)`)
+
 ## v3.0.10
 
 - Upgraded dependencies
