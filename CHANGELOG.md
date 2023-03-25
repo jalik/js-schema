@@ -2,6 +2,7 @@
 
 ## NEXT
 - Added `isValid()` to `Schema` instance
+- Added `isValid()` to `SchemaField` instance
 - Allow passing context to field properties functions (ex: `field.isRequired(context)`)
 
 ## v3.0.10

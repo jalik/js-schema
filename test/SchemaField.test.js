@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2022 Karl STEIN
+ * Copyright (c) 2023 Karl STEIN
  */
 
 import {
@@ -387,6 +387,21 @@ describe('SchemaField', () => {
       it('should return value using parse function', () => {
         expect(field.parse('2018-04-05'))
           .toMatchObject(new Date(2018, 3, 5));
+      });
+    });
+  });
+
+  describe('isValid()', () => {
+    const field = new SchemaField('number', { type: 'number' });
+
+    describe('with valid object', () => {
+      it('should return true', () => {
+        expect(field.isValid(1)).toEqual(true);
+      });
+    });
+    describe('with invalid object', () => {
+      it('should return false', () => {
+        expect(field.isValid('1')).toEqual(false);
       });
     });
   });

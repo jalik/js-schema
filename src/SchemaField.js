@@ -290,6 +290,21 @@ class SchemaField {
   }
 
   /**
+   * Checks if a value is valid.
+   * @param value
+   * @param options
+   * @return {boolean}
+   */
+  isValid(value, options) {
+    try {
+      this.validate(value, options);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  /**
    * Parses a value.
    * @param {*} value
    * @return {*}
