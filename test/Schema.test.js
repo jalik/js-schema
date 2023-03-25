@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2022 Karl STEIN
+ * Copyright (c) 2023 Karl STEIN
  */
 
 import {
@@ -209,6 +209,21 @@ describe('Schema', () => {
         ParentSchema.resolveField('child.phones[number]').getType();
         ParentSchema.resolveField('child.phones[0][number]').getType();
       }).not.toThrow();
+    });
+  });
+
+  describe('isValid()', () => {
+    describe('with valid object', () => {
+      it('should return true', () => {
+        const result = BaseSchema.isValid({ array: [], number: 1, string: '' });
+        expect(result).toEqual(true);
+      });
+    });
+    describe('with invalid object', () => {
+      it('should return false', () => {
+        const result = BaseSchema.isValid({});
+        expect(result).toEqual(false);
+      });
     });
   });
 

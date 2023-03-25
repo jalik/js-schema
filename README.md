@@ -111,7 +111,7 @@ const PhoneSchema = new Schema({
   number: {
     type: 'string',
     required: true,
-  }
+  },
 });
 
 const UserSchema = new Schema({
@@ -131,8 +131,8 @@ const UserSchema = new Schema({
     maxLength: 50,
   },
   phone: {
-    type: PhoneSchema
-  }
+    type: PhoneSchema,
+  },
 });
 
 // A valid object
@@ -146,7 +146,7 @@ const validUser = {
 const invalidUser = {
   age: 16,
   gender: null,
-  phone: { code: 777, number: 10101001 }
+  phone: { code: 777, number: 10101001 },
 };
 
 try {
@@ -159,6 +159,11 @@ try {
   if (error instanceof ValidationError) {
     console.log(error.errors);
   }
+}
+
+// It's also possible to check if a schema is valid without throwing error
+if (UserSchema.isValid(invalidUser)) {
+  console.error('user is not valid');
 }
 ```
 

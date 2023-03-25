@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2020 Karl STEIN
+ * Copyright (c) 2023 Karl STEIN
  */
 
 import deepExtend from '@jalik/deep-extend';
@@ -111,6 +111,21 @@ class Schema {
    */
   getFields() {
     return this.fields;
+  }
+
+  /**
+   * Checks if an object is valid.
+   * @param object
+   * @param options
+   * @return {boolean}
+   */
+  isValid(object, options) {
+    try {
+      this.validate(object, options);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
