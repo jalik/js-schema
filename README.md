@@ -256,16 +256,16 @@ import { default as fr } from '@jalik/schema/dist/locales/fr';
 import { ERROR_FIELD_INVALID } from '@jalik/schema';
 
 // Load default error messages in english.
-setLocale('en', en);
+setLocaleMessages('en', en);
 
 // Or customize error messages.
-setLocale('en', {
+setLocaleMessages('en', {
   ...en,
   [ERROR_FIELD_INVALID]: 'This field is not valid :('
 });
 
 // Load other locales if needed.
-setLocale('fr', fr);
+setLocaleMessages('fr', fr);
 ```
 
 Then somewhere in your application, when you want to display the error, use

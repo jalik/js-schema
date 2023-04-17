@@ -46,6 +46,6 @@ export function getLocales() {
  * @param locale
  * @param messages
  */
-export function setLocale(locale: string, messages: LocaleData): void {
+export function setLocaleMessages(locale: string, messages: LocaleData): void {
   locales[locale] = messages;
 }

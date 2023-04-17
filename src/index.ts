@@ -22,7 +22,7 @@ import errors, {
   ERROR_FIELD_UNKNOWN,
   ERROR_VALIDATION,
 } from './errors';
-import { getErrorMessage, setLocale } from './locale';
+import { getErrorMessage, setLocaleMessages } from './locale';
 import Schema from './Schema';
 import SchemaField from './SchemaField';
 
@@ -48,7 +48,5 @@ export {
   Schema,
   SchemaField,
   getErrorMessage,
-  setLocale,
+  setLocaleMessages,
 };
-
-export default Schema;
