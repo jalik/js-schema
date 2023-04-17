@@ -720,30 +720,6 @@ export const ExampleSchema = new Schema({
 });
 ```
 
-## Setting default value
-
-Use `defaultValue` to set the default value of a field. It will only be used if the value is `null`
-or `undefined` and the field required.
-
-- Accepts `Boolean`, `Number`, `String` or `Function`
-
-```js
-import { Schema } from '@jalik/schema';
-
-export const ExampleSchema = new Schema({
-  // The default value will be the current date at the execution time.
-  createdAt: {
-    type: Date,
-    defaultValue: () => new Date()
-  },
-  // The default priority is zero.
-  priority: {
-    type: 'number',
-    defaultValue: 0
-  }
-});
-```
-
 ## Dynamic field properties
 
 Almost all field properties accept a function, it is useful to return a constraint based on some

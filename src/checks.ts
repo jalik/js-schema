@@ -66,7 +66,6 @@ export interface FieldProperties<T> {
   allowed?: Computable<any[]>;
   check?(value: any, context?: Record<string, unknown>): boolean;
   clean?(value: any): any;
-  defaultValue?: Computable<any>;
   denied?: Computable<any[]>;
   format?: Computable<FieldFormat>;
   items?: FieldItems<T>;

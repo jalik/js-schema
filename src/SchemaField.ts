@@ -106,15 +106,6 @@ class SchemaField<T> {
   }
 
   /**
-   * Returns field's default value.
-   * @param context
-   * @return {*}
-   */
-  getDefaultValue(context?: Record<string, unknown>): any {
-    return computeValue(this.properties.defaultValue, context);
-  }
-
-  /**
    * Returns field's denied values.
    * @param context
    */
@@ -351,10 +342,6 @@ class SchemaField<T> {
 
     // Use default value
     if (isRequired && (typeof newVal === 'undefined' || newVal === null)) {
-      // Compute default value
-      if (typeof props.defaultValue !== 'undefined') {
-        newVal = computeValue(props.defaultValue, context);
-      }
       // Use empty array for required non-null array field
       if (isArray && (newVal === null || typeof newVal === 'undefined')) {
         newVal = [];
