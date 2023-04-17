@@ -62,7 +62,6 @@ const ParentSchema = PersonSchema.extend({
   married: {
     type: 'boolean',
     required: true,
-    nullable: true,
   },
   spouse: {
     type: PersonSchema
@@ -230,7 +229,6 @@ import {
   ERROR_FIELD_MIN,
   ERROR_FIELD_MIN_LENGTH,
   ERROR_FIELD_MIN_WORDS,
-  ERROR_FIELD_NULLABLE,
   ERROR_FIELD_PATTERN,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
@@ -341,9 +339,8 @@ export const ExampleSchema = new Schema({
 
 ## Checking required values
 
-Use `required` to check if a field is `undefined`. Be advised that
-`required` will not throw an error if the field is `null`, use `nullable` if you want to check
-for `null` value.
+Use `required` to check if a field is `null` or `undefined`.
+Important: Since v4.0.0, a `FieldRequired` error will be thrown for `null` values, which was not the case in previous versions (only with `undefined`)
 
 - Accepts `Boolean` or `Function`
 - Throws `FieldRequiredError`
@@ -352,36 +349,13 @@ for `null` value.
 import { Schema } from '@jalik/schema';
 
 export const ExampleSchema = new Schema({
-  // The field is optional.
+  // The field is optional (this is the default).
   optional: {
     required: false
   },
-  // The field must not be undefined.
+  // The field must be defined.
   required: {
     required: true
-  },
-});
-```
-
-## Checking nullable values
-
-Use `nullable` to check if a field value is `null`.
-
-- Accepts `Boolean` or `Function`
-- Throws `FieldNullableError`
-
-```js
-import { Schema } from '@jalik/schema';
-
-export const ExampleSchema = new Schema({
-  // The field must be set with anything than null
-  notNullable: {
-    required: true,
-    nullable: false,
-  },
-  // The field can be null or undefined
-  nullable: {
-    nullable: true
   },
 });
 ```
@@ -737,12 +711,10 @@ const isPublishing = function (context) {
 const PostSchema = new Schema({
   title: {
     type: 'string',
-    nullable: false,
     required: isPublishing
   },
   text: {
     type: 'string',
-    nullable: false,
     required: isPublishing
   },
   status: {

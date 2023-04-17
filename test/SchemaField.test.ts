@@ -16,7 +16,6 @@ import FieldMaxWordsError from '../src/errors/FieldMaxWordsError';
 import FieldMinError from '../src/errors/FieldMinError';
 import FieldMinLengthError from '../src/errors/FieldMinLengthError';
 import FieldMinWordsError from '../src/errors/FieldMinWordsError';
-import FieldNullableError from '../src/errors/FieldNullableError';
 import FieldPatternError from '../src/errors/FieldPatternError';
 import FieldRequiredError from '../src/errors/FieldRequiredError';
 import FieldTypeError from '../src/errors/FieldTypeError';
@@ -275,29 +274,6 @@ describe('SchemaField', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {});
         expect(field.getType()).toBeUndefined();
-      });
-    });
-  });
-
-  describe('isNullable()', () => {
-    describe('with nullable: true', () => {
-      it('should return true', () => {
-        const field = new SchemaField('field', { nullable: true });
-        expect(field.isNullable()).toBe(true);
-      });
-    });
-
-    describe('with nullable: false', () => {
-      it('should return false', () => {
-        const field = new SchemaField('field', { nullable: false });
-        expect(field.isNullable()).toBe(false);
-      });
-    });
-
-    describe('with nullable: undefined', () => {
-      it('should return false', () => {
-        const field = new SchemaField('field', {});
-        expect(field.isNullable()).toBe(false);
       });
     });
   });
@@ -1382,131 +1358,6 @@ describe('SchemaField', () => {
       });
     });
 
-    describe('with nullable: (Boolean|Function)', () => {
-      describe('nullable: true', () => {
-        const field = new SchemaField('field', { nullable: true });
-
-        describe('with undefined', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(undefined);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with null', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(null);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with empty string', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate('');
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with boolean', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(false);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with number', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(1337);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-      });
-
-      describe('nullable: false', () => {
-        const field = new SchemaField('field', { nullable: false });
-
-        describe('with undefined', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(undefined);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with null', () => {
-          it('should throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(null);
-            })
-              .toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with empty string', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate('');
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with boolean', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(false);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with number', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(1337);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-      });
-
-      describe('nullable: Function', () => {
-        const options = { context: { checked: false } };
-        const field = new SchemaField('field', {
-          nullable: (context) => context.checked === false,
-        });
-
-        describe('with undefined', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(undefined, options);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-
-        describe('with null', () => {
-          it('should not throw FieldNullableError', () => {
-            expect(() => {
-              field.validate(null, options);
-            })
-              .not.toThrow(FieldNullableError);
-          });
-        });
-      });
-    });
-
     describe('with pattern: (String|RegExp|Function)', () => {
       describe('pattern: String', () => {
         const field = new SchemaField('field', { pattern: '^[01]+$' });
@@ -1619,11 +1470,11 @@ describe('SchemaField', () => {
         });
 
         describe('with null', () => {
-          it('should not throw FieldRequiredError', () => {
+          it('should throw FieldRequiredError', () => {
             expect(() => {
               field.validate(null);
             })
-              .not.toThrow(FieldRequiredError);
+              .toThrow(FieldRequiredError);
           });
         });
 
@@ -1720,11 +1571,11 @@ describe('SchemaField', () => {
         });
 
         describe('with null', () => {
-          it('should not throw FieldRequiredError', () => {
+          it('should throw FieldRequiredError', () => {
             expect(() => {
               field.validate(null, options);
             })
-              .not.toThrow(FieldRequiredError);
+              .toThrow(FieldRequiredError);
           });
         });
       });

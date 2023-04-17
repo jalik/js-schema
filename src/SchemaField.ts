@@ -16,7 +16,6 @@ import {
   checkMin,
   checkMinLength,
   checkMinWords,
-  checkNullable,
   checkPattern,
   checkRequired,
   checkType,
@@ -224,14 +223,6 @@ class SchemaField<T> {
   }
 
   /**
-   * Checks if field is nullable.
-   * @param context
-   */
-  isNullable(context?: Record<string, unknown>): boolean {
-    return computeValue<boolean>(this.properties.nullable, context) || false;
-  }
-
-  /**
    * Checks if field is required
    * @param context
    */
@@ -347,9 +338,6 @@ class SchemaField<T> {
         newVal = [];
       }
     }
-
-    // Check null value
-    checkNullable(computeValue(props.nullable, context), newVal, label, path);
 
     // Check if value is missing
     checkRequired(isRequired, newVal, label, path);

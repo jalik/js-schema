@@ -20,7 +20,6 @@ describe('Schema', () => {
   const BaseSchema = new Schema({
     array: {
       type: ['number'],
-      nullable: false,
       required: true,
     },
     boolean: {

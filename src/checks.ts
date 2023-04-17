@@ -13,7 +13,6 @@ import FieldMaxWordsError from './errors/FieldMaxWordsError';
 import FieldMinError from './errors/FieldMinError';
 import FieldMinLengthError from './errors/FieldMinLengthError';
 import FieldMinWordsError from './errors/FieldMinWordsError';
-import FieldNullableError from './errors/FieldNullableError';
 import FieldPatternError from './errors/FieldPatternError';
 import FieldRequiredError from './errors/FieldRequiredError';
 import FieldTypeError from './errors/FieldTypeError';
@@ -77,7 +76,6 @@ export interface FieldProperties<T> {
   min?: Computable<FieldMinMax>;
   minLength?: Computable<number>;
   minWords?: Computable<number>;
-  nullable?: Computable<boolean>;
   parse?(value: any): any;
   pattern?: Computable<FieldPattern>;
   prepare?(value: any, context?: Record<string, unknown>): any;
@@ -104,7 +102,6 @@ const FIELD_PROPERTIES: string[] = [
   'minLength',
   'minWords',
   'name',
-  'nullable',
   'parse',
   'pattern',
   'prepare',
@@ -264,12 +261,6 @@ export function checkFieldProperties<T>(name: string, props: FieldProperties<T>)
   const { minWords } = props;
   if (!['undefined', 'function', 'number'].includes(typeof minWords)) {
     throw new TypeError(`${name}.minWords must be a number or function`);
-  }
-
-  // Check if field is nullable
-  const { nullable } = props;
-  if (!['undefined', 'function', 'boolean'].includes(typeof nullable)) {
-    throw new TypeError(`${name}.nullable must be a boolean or function`);
   }
 
   // Check custom parse function
@@ -434,19 +425,6 @@ export function checkMinWords(minWords: number, value: string, label: string, pa
 }
 
 /**
- * Checks if the value is null.
- * @param nullable
- * @param value
- * @param label
- * @param path
- */
-export function checkNullable(nullable: boolean, value: any, label: string, path: string): void {
-  if (!nullable && value === null) {
-    throw new FieldNullableError(label, path);
-  }
-}
-
-/**
  * Checks if the value matches the pattern.
  * @param pattern
  * @param value
@@ -469,7 +447,7 @@ export function checkPattern(pattern: FieldPattern, value: string, label: string
  * @param path
  */
 export function checkRequired(required: boolean, value: any, label: string, path: string): void {
-  if (required && typeof value === 'undefined') { // todo value == null
+  if (required && value == null) {
     throw new FieldRequiredError(label, path);
   }
 }
