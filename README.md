@@ -1,10 +1,10 @@
 # @jalik/schema
 
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/jalik/js-schema.svg)
-![GitHub](https://img.shields.io/github/license/jalik/js-schema.svg)
-![Last commit](https://img.shields.io/github/last-commit/jalik/js-schema.svg)
 ![Build Status](https://github.com/jalik/js-schema/actions/workflows/node.js.yml/badge.svg)
+![Last commit](https://img.shields.io/github/last-commit/jalik/js-schema.svg)
 [![GitHub issues](https://img.shields.io/github/issues/jalik/js-schema.svg)](https://github.com/jalik/js-schema/issues)
+![GitHub](https://img.shields.io/github/license/jalik/js-schema.svg)
 ![npm](https://img.shields.io/npm/dt/@jalik/schema.svg)
 
 ## Introduction
