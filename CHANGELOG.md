@@ -1,5 +1,13 @@
 # Changelog
 
+## v4.0.0 (2023-04-17)
+
+- **[BREAKING]** Removed `Schema` from default package export (still available with `import { Schema } from '@jalik/schema'`)
+- **[BREAKING]** Removed `defaultValue` option from `SchemaField` definition
+- **[BREAKING]** Removed `nullable` option from `SchemaField` definition
+- **[BREAKING]** Renamed `setLocale()` to `setLocaleMessages()`
+- **[BREAKING]** From now, setting `required: true` on a field will throw an error with `null` values
+
 ## v3.1.0
 
 - Added `isValid()` to `Schema` instance
