@@ -4,11 +4,10 @@
  */
 
 import deepExtend from '@jalik/deep-extend';
-import { FieldProperties } from './checks';
 import FieldError from './errors/FieldError';
 import FieldUnknownError from './errors/FieldUnknownError';
 import ValidationError, { FieldErrors } from './errors/ValidationError';
-import SchemaField from './SchemaField';
+import SchemaField, { FieldProperties } from './SchemaField';
 
 interface FieldsDefinition {
   [key: string]: FieldProperties<unknown>;

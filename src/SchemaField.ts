@@ -20,11 +20,11 @@ import {
   checkRequired,
   checkType,
   checkTypeArray,
+  Computable,
   FieldFormat,
   FieldItems,
   FieldMinMax,
   FieldPattern,
-  FieldProperties,
   FieldType,
 } from './checks';
 import FieldError from './errors/FieldError';
@@ -38,6 +38,28 @@ interface ValidateOptions {
   context?: Record<string, unknown>;
   path?: string;
   rootOnly?: boolean;
+}
+
+export interface FieldProperties<T> {
+  allowed?: Computable<any[]>;
+  check?(value: any, context?: Record<string, unknown>): boolean;
+  clean?(value: any): any;
+  denied?: Computable<any[]>;
+  format?: Computable<FieldFormat>;
+  items?: FieldItems<T>;
+  label?: Computable<string>;
+  length?: Computable<number>;
+  max?: Computable<FieldMinMax>;
+  maxLength?: Computable<number>;
+  maxWords?: Computable<number>;
+  min?: Computable<FieldMinMax>;
+  minLength?: Computable<number>;
+  minWords?: Computable<number>;
+  parse?(value: any): any;
+  pattern?: Computable<FieldPattern>;
+  prepare?(value: any, context?: Record<string, unknown>): any;
+  required?: Computable<boolean>;
+  type?: Computable<FieldType<T>>;
 }
 
 class SchemaField<T> {

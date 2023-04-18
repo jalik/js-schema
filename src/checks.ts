@@ -27,6 +27,7 @@ import {
   UriRegExp,
 } from './regex';
 import Schema from './Schema';
+import { FieldProperties } from './SchemaField';
 
 export type FieldFormat =
   'date'
@@ -60,28 +61,6 @@ export type FieldType<T> =
   | T;
 
 export type Computable<T> = T | ((context: Record<string, unknown>) => T)
-
-export interface FieldProperties<T> {
-  allowed?: Computable<any[]>;
-  check?(value: any, context?: Record<string, unknown>): boolean;
-  clean?(value: any): any;
-  denied?: Computable<any[]>;
-  format?: Computable<FieldFormat>;
-  items?: FieldItems<T>;
-  label?: Computable<string>;
-  length?: Computable<number>;
-  max?: Computable<FieldMinMax>;
-  maxLength?: Computable<number>;
-  maxWords?: Computable<number>;
-  min?: Computable<FieldMinMax>;
-  minLength?: Computable<number>;
-  minWords?: Computable<number>;
-  parse?(value: any): any;
-  pattern?: Computable<FieldPattern>;
-  prepare?(value: any, context?: Record<string, unknown>): any;
-  required?: Computable<boolean>;
-  type?: Computable<FieldType<T>>;
-}
 
 /**
  * Schema field properties

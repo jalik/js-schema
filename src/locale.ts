@@ -24,21 +24,13 @@ export function getErrorMessage(error: FieldError, locale: string): string {
 
     if (message != null) {
       // Replace context variables in message.
-      Object.keys(error).forEach((key: string): void => {
-        message = message.replace(
-          `{${key}}`,
-          // @ts-ignore
-          error[key],
-        );
+      Object.entries(error).forEach(([key, value]): void => {
+        message = message.replace(`{${key}}`, value);
       });
       return message;
     }
   }
   return error.message;
-}
-
-export function getLocales() {
-
 }
 
 /**
