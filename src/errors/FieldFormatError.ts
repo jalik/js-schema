@@ -12,7 +12,7 @@ class FieldFormatError extends FieldError {
   constructor(field: string, format: string, path: string) {
     super(field, path, ERROR_FIELD_FORMAT);
     this.format = format;
-    this.message = `The field does not matches format (${format}).`;
+    this.message = `The field does not match format (${format}).`;
   }
 }
 

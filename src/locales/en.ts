@@ -23,8 +23,8 @@ import {
 
 const en = {
   [ERROR_FIELD_ALLOWED]: 'The field must contain an allowed value ({allowed}).',
-  [ERROR_FIELD_DENIED]: 'The field contains a value that is denied ({denied}).',
-  [ERROR_FIELD_FORMAT]: 'The field does not matches format ({format}).',
+  [ERROR_FIELD_DENIED]: 'The field contains a denied value ({denied}).',
+  [ERROR_FIELD_FORMAT]: 'The field does not match format ({format}).',
   [ERROR_FIELD_INVALID]: 'The field is not valid.',
   [ERROR_FIELD_LENGTH]: 'The field must have a length of {length}.',
   [ERROR_FIELD_MAX]: 'The field must be lesser than or equal to {max}.',
@@ -35,7 +35,7 @@ const en = {
   [ERROR_FIELD_MIN_WORDS]: 'The field must contain at least {minWords} words.',
   [ERROR_FIELD_PATTERN]: 'The field does not match the pattern "{pattern}".',
   [ERROR_FIELD_REQUIRED]: 'The field is required.',
-  [ERROR_FIELD_TYPE]: 'The field is not of type "{type}".',
+  [ERROR_FIELD_TYPE]: 'The field type is not valid.',
   [ERROR_FIELD_UNKNOWN]: 'The field is unknown.',
 };
 

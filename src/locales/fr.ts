@@ -35,7 +35,7 @@ const fr = {
   [ERROR_FIELD_MIN_WORDS]: 'Le champ doit comporter au moins {minWords} mots.',
   [ERROR_FIELD_PATTERN]: 'Le champ ne correspond pas au motif "{pattern}".',
   [ERROR_FIELD_REQUIRED]: 'Le champ est obligatoire.',
-  [ERROR_FIELD_TYPE]: 'Le champ n\'est pas du type "{type}".',
+  [ERROR_FIELD_TYPE]: 'Le type du champ n\'est pas valide.',
   [ERROR_FIELD_UNKNOWN]: 'Le champ est inconnu.',
 };
 

@@ -12,7 +12,7 @@ class FieldDeniedError extends FieldError {
   constructor(field: string, denied: any[], path: string) {
     super(field, path, ERROR_FIELD_DENIED);
     this.denied = denied;
-    this.message = `The field contains a value that is denied (${denied}).`;
+    this.message = `The field contains a denied value (${denied}).`;
   }
 }
 

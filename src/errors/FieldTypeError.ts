@@ -12,7 +12,7 @@ class FieldTypeError extends FieldError {
   constructor(field: string, type: string, path: string) {
     super(field, path, ERROR_FIELD_TYPE);
     this.type = type;
-    this.message = `The field is not of type "${type}".`;
+    this.message = `The field type is not valid.`;
   }
 }
 
