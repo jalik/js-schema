@@ -7,13 +7,20 @@
 ![GitHub](https://img.shields.io/github/license/jalik/js-schema.svg)
 ![npm](https://img.shields.io/npm/dt/@jalik/schema.svg)
 
-## Introduction
+## Features
 
-A schema describes all fields of an object, with various constraints. It can be used to:
+- Define object structure and constraints
+- Several constraints available
+  - type, required, length, min, max, minWords, maxWords, allowed, denied, pattern, format
+- Custom check using a function
+- Full object validation
+- Object field validation
+- Specific errors are thrown for each field
+- Similar to the JSON Schema specification
 
-- validate an object
-- parse an object
-- clean an object
+## Sandbox
+
+Play with the lib here: https://codesandbox.io/s/jalik-schema-demo-5o4fnk?file=/src/index.js
 
 ## Creating a schema
 
