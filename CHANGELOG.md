@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.1 (2023-05-01)
+
+- Upgraded dependencies
+
 ## v4.0.0 (2023-04-17)
 
 - **[BREAKING]** Removed `Schema` from default package export (still available with `import { Schema } from '@jalik/schema'`)
