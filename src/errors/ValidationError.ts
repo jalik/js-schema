@@ -3,26 +3,27 @@
  * Copyright (c) 2023 Karl STEIN
  */
 
-import { ERROR_VALIDATION } from '../errors';
-import FieldError from './FieldError';
+import { ERROR_VALIDATION } from '../errors'
+import FieldError from './FieldError'
 
 export interface FieldErrors {
   [key: string]: FieldError;
 }
 
 class ValidationError extends Error {
-  public errors: FieldErrors;
-  public reason: string;
+  public errors: FieldErrors
 
-  constructor(
+  public reason: string
+
+  constructor (
     errors: FieldErrors,
     message = 'Object is not valid',
-    reason: string = ERROR_VALIDATION,
+    reason: string = ERROR_VALIDATION
   ) {
-    super(message);
-    this.errors = errors;
-    this.reason = reason;
+    super(message)
+    this.errors = errors
+    this.reason = reason
   }
 }
 
-export default ValidationError;
+export default ValidationError

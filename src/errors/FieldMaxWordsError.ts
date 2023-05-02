@@ -3,17 +3,17 @@
  * Copyright (c) 2023 Karl STEIN
  */
 
-import { ERROR_FIELD_MAX_WORDS } from '../errors';
-import FieldError from './FieldError';
+import { ERROR_FIELD_MAX_WORDS } from '../errors'
+import FieldError from './FieldError'
 
 class FieldMaxWordsError extends FieldError {
-  public maxWords: number;
+  public maxWords: number
 
-  constructor(field: string, maxWords: number, path: string) {
-    super(field, path, ERROR_FIELD_MAX_WORDS);
-    this.maxWords = maxWords;
-    this.message = `The field must not contain more than ${maxWords} words.`;
+  constructor (field: string, maxWords: number, path: string) {
+    super(field, path, ERROR_FIELD_MAX_WORDS)
+    this.maxWords = maxWords
+    this.message = `The field must not contain more than ${maxWords} words.`
   }
 }
 
-export default FieldMaxWordsError;
+export default FieldMaxWordsError

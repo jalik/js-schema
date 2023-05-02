@@ -3,19 +3,19 @@
  * Copyright (c) 2023 Karl STEIN
  */
 
-import FieldAllowedError from './errors/FieldAllowedError';
-import FieldDeniedError from './errors/FieldDeniedError';
-import FieldFormatError from './errors/FieldFormatError';
-import FieldLengthError from './errors/FieldLengthError';
-import FieldMaxError from './errors/FieldMaxError';
-import FieldMaxLengthError from './errors/FieldMaxLengthError';
-import FieldMaxWordsError from './errors/FieldMaxWordsError';
-import FieldMinError from './errors/FieldMinError';
-import FieldMinLengthError from './errors/FieldMinLengthError';
-import FieldMinWordsError from './errors/FieldMinWordsError';
-import FieldPatternError from './errors/FieldPatternError';
-import FieldRequiredError from './errors/FieldRequiredError';
-import FieldTypeError from './errors/FieldTypeError';
+import FieldAllowedError from './errors/FieldAllowedError'
+import FieldDeniedError from './errors/FieldDeniedError'
+import FieldFormatError from './errors/FieldFormatError'
+import FieldLengthError from './errors/FieldLengthError'
+import FieldMaxError from './errors/FieldMaxError'
+import FieldMaxLengthError from './errors/FieldMaxLengthError'
+import FieldMaxWordsError from './errors/FieldMaxWordsError'
+import FieldMinError from './errors/FieldMinError'
+import FieldMinLengthError from './errors/FieldMinLengthError'
+import FieldMinWordsError from './errors/FieldMinWordsError'
+import FieldPatternError from './errors/FieldPatternError'
+import FieldRequiredError from './errors/FieldRequiredError'
+import FieldTypeError from './errors/FieldTypeError'
 import {
   DateRegExp,
   DateTimeRegExp,
@@ -24,10 +24,10 @@ import {
   IPv4RegExp,
   IPv6RegExp,
   TimeRegExp,
-  UriRegExp,
-} from './regex';
-import Schema from './Schema';
-import { FieldProperties } from './SchemaField';
+  UriRegExp
+} from './regex'
+import Schema from './Schema'
+import { FieldProperties } from './SchemaField'
 
 export type FieldFormat =
   'date'
@@ -39,10 +39,6 @@ export type FieldFormat =
   | 'ipv6'
   | 'time'
   | 'uri';
-
-export type FieldItems<T> = {
-  type?: FieldType<T>
-}
 
 export type FieldMinMax = number | Date
 
@@ -59,6 +55,10 @@ export type FieldType<T> =
   | Schema
   | Array<'array' | 'boolean' | 'function' | 'integer' | 'number' | 'object' | 'string' | Schema>
   | T;
+
+export type FieldItems<T> = {
+  type?: FieldType<T>
+}
 
 export type Computable<T> = T | ((context: Record<string, unknown>) => T)
 
@@ -85,8 +85,8 @@ const FIELD_PROPERTIES: string[] = [
   'pattern',
   'prepare',
   'required',
-  'type',
-];
+  'type'
+]
 
 /**
  * Checks if value is allowed.
@@ -95,15 +95,15 @@ const FIELD_PROPERTIES: string[] = [
  * @param label
  * @param path
  */
-export function checkAllowed(allowed: any[], value: any, label: string, path: string): void {
+export function checkAllowed (allowed: any[], value: any, label: string, path: string): void {
   if (value instanceof Array) {
     for (let i = 0; i < value.length; i += 1) {
       if (!allowed.includes(value[i])) {
-        throw new FieldAllowedError(label, allowed, path);
+        throw new FieldAllowedError(label, allowed, path)
       }
     }
   } else if (!allowed.includes(value)) {
-    throw new FieldAllowedError(label, allowed, path);
+    throw new FieldAllowedError(label, allowed, path)
   }
 }
 
@@ -114,15 +114,15 @@ export function checkAllowed(allowed: any[], value: any, label: string, path: st
  * @param label
  * @param path
  */
-export function checkDenied(denied: any[], value: any, label: string, path: string): void {
+export function checkDenied (denied: any[], value: any, label: string, path: string): void {
   if (value instanceof Array) {
     for (let i = 0; i < value.length; i += 1) {
       if (denied.includes(value[i])) {
-        throw new FieldDeniedError(label, denied, path);
+        throw new FieldDeniedError(label, denied, path)
       }
     }
   } else if (denied.includes(value)) {
-    throw new FieldDeniedError(label, denied, path);
+    throw new FieldDeniedError(label, denied, path)
   }
 }
 
@@ -131,139 +131,142 @@ export function checkDenied(denied: any[], value: any, label: string, path: stri
  * @param name
  * @param props
  */
-export function checkFieldProperties<T>(name: string, props: FieldProperties<T>): void {
+export function checkFieldProperties<T> (name: string, props: FieldProperties<T>): void {
   // Check unknown properties.
   Object.keys(props).forEach((prop) => {
     if (!FIELD_PROPERTIES.includes(prop)) {
       // eslint-disable-next-line no-console
-      console.warn(`Unknown schema field property "${name}.${prop}"`);
+      console.warn(`Unknown schema field property "${name}.${prop}"`)
     }
-  });
+  })
 
   // Check field type
-  const { type } = props;
+  const { type } = props
   if (typeof type !== 'undefined' && type !== null) {
     if (type instanceof Array) {
-      const arrayType = type[0];
+      const arrayType = type[0]
 
       // Check that array type is a function or class
       if (!['function', 'object', 'string'].includes(typeof arrayType)) {
-        throw new TypeError(`${name}.type[] must contain a class or a function`);
+        throw new TypeError(`${name}.type[] must contain a class or a function`)
       }
     } else if (!['function', 'object', 'string'].includes(typeof type)) {
-      throw new TypeError(`${name}.type = "${type}" is not a valid type`);
+      throw new TypeError(`${name}.type = "${type}" is not a valid type`)
     }
   }
 
   // Check conflicting options.
-  const { allowed, denied } = props;
+  const {
+    allowed,
+    denied
+  } = props
   if (allowed && denied) {
-    throw new TypeError('allowed and denied cannot be defined together');
+    throw new TypeError('allowed and denied cannot be defined together')
   }
 
   // Check allowed values
   if (typeof allowed !== 'undefined' && !(allowed instanceof Array) && typeof allowed !== 'function') {
-    throw new TypeError(`${name}.allowed must be an array or function`);
+    throw new TypeError(`${name}.allowed must be an array or function`)
   }
 
   // Check custom check function
-  const { check } = props;
+  const { check } = props
   if (typeof check !== 'undefined' && typeof check !== 'function') {
-    throw new TypeError(`${name}.check must be a function`);
+    throw new TypeError(`${name}.check must be a function`)
   }
 
   // Check custom clean function
-  const { clean } = props;
+  const { clean } = props
   if (typeof clean !== 'undefined' && typeof clean !== 'function') {
-    throw new TypeError(`${name}.clean must be a function`);
+    throw new TypeError(`${name}.clean must be a function`)
   }
 
   // Check denied values
   if (typeof denied !== 'undefined' && !(denied instanceof Array) && typeof denied !== 'function') {
-    throw new TypeError(`${name}.denied must be an array or function`);
+    throw new TypeError(`${name}.denied must be an array or function`)
   }
 
   // Check format
-  const { format } = props;
+  const { format } = props
   if (!['undefined', 'string', 'function'].includes(typeof format)) {
-    throw new TypeError(`${name}.format must be a string or function`);
+    throw new TypeError(`${name}.format must be a string or function`)
   }
 
   // Check items
-  const { items } = props;
+  const { items } = props
   if (typeof items !== 'undefined' && typeof items !== 'object') {
-    throw new TypeError(`${name}.items must be an object`);
+    throw new TypeError(`${name}.items must be an object`)
   }
 
   // Check label
-  const { label } = props;
+  const { label } = props
   if (!['undefined', 'function', 'string'].includes(typeof label)) {
-    throw new TypeError(`${name}.label must be a string or function`);
+    throw new TypeError(`${name}.label must be a string or function`)
   }
 
   // Check length
   if (!['undefined', 'function', 'number'].includes(typeof length)) {
-    throw new TypeError(`${name}.length must be a function or number`);
+    throw new TypeError(`${name}.length must be a function or number`)
   }
 
   // Check max value
-  const { max } = props;
+  const { max } = props
   if (!['undefined', 'function', 'number', 'string'].includes(typeof max) && !(max instanceof Date)) {
-    throw new TypeError(`${name}.max must be a date, number, string or function`);
+    throw new TypeError(`${name}.max must be a date, number, string or function`)
   }
 
   // Check max length
-  const { maxLength } = props;
+  const { maxLength } = props
   if (!['undefined', 'function', 'number'].includes(typeof maxLength)) {
-    throw new TypeError(`${name}.maxLength must be a number or function`);
+    throw new TypeError(`${name}.maxLength must be a number or function`)
   }
 
   // Check max words
-  const { maxWords } = props;
+  const { maxWords } = props
   if (!['undefined', 'function', 'number'].includes(typeof maxWords)) {
-    throw new TypeError(`${name}.maxWords must be a number or function`);
+    throw new TypeError(`${name}.maxWords must be a number or function`)
   }
 
   // Check min value
-  const { min } = props;
+  const { min } = props
   if (!['undefined', 'function', 'number', 'string'].includes(typeof min) && !(min instanceof Date)) {
-    throw new TypeError(`${name}.min must be a date, number, string or function`);
+    throw new TypeError(`${name}.min must be a date, number, string or function`)
   }
 
   // Check min length
-  const { minLength } = props;
+  const { minLength } = props
   if (!['undefined', 'function', 'number'].includes(typeof minLength)) {
-    throw new TypeError(`${name}.minLength must be a number or function`);
+    throw new TypeError(`${name}.minLength must be a number or function`)
   }
 
   // Check min words
-  const { minWords } = props;
+  const { minWords } = props
   if (!['undefined', 'function', 'number'].includes(typeof minWords)) {
-    throw new TypeError(`${name}.minWords must be a number or function`);
+    throw new TypeError(`${name}.minWords must be a number or function`)
   }
 
   // Check custom parse function
-  const { parse } = props;
+  const { parse } = props
   if (typeof parse !== 'undefined' && typeof parse !== 'function') {
-    throw new TypeError(`${name}.parse must be a function`);
+    throw new TypeError(`${name}.parse must be a function`)
   }
 
   // Check custom prepare function
-  const { prepare } = props;
+  const { prepare } = props
   if (typeof prepare !== 'undefined' && typeof prepare !== 'function') {
-    throw new TypeError(`${name}.prepare must be a function`);
+    throw new TypeError(`${name}.prepare must be a function`)
   }
 
   // Check pattern (regular expression)
-  const { pattern } = props;
+  const { pattern } = props
   if (!['undefined', 'string', 'object', 'function'].includes(typeof pattern) && !(pattern instanceof RegExp)) {
-    throw new TypeError(`${name}.pattern must be a string, a RegExp or function`);
+    throw new TypeError(`${name}.pattern must be a string, a RegExp or function`)
   }
 
   // Check required
-  const { required } = props;
+  const { required } = props
   if (!['undefined', 'function', 'boolean'].includes(typeof required)) {
-    throw new TypeError(`${name}.required must be a boolean or function`);
+    throw new TypeError(`${name}.required must be a boolean or function`)
   }
 }
 
@@ -274,41 +277,41 @@ export function checkFieldProperties<T>(name: string, props: FieldProperties<T>)
  * @param label
  * @param path
  */
-export function checkFormat(format: FieldFormat, value: string, label: string, path: string) {
-  let regexp;
+export function checkFormat (format: FieldFormat, value: string, label: string, path: string) {
+  let regexp
 
   switch (format) {
     case 'date':
-      regexp = DateRegExp;
-      break;
+      regexp = DateRegExp
+      break
     case 'datetime':
     case 'date-time':
-      regexp = DateTimeRegExp;
-      break;
+      regexp = DateTimeRegExp
+      break
     case 'email':
-      regexp = EmailRegExp;
-      break;
+      regexp = EmailRegExp
+      break
     case 'hostname':
-      regexp = HostnameRegExp;
-      break;
+      regexp = HostnameRegExp
+      break
     case 'ipv4':
-      regexp = IPv4RegExp;
-      break;
+      regexp = IPv4RegExp
+      break
     case 'ipv6':
-      regexp = IPv6RegExp;
-      break;
+      regexp = IPv6RegExp
+      break
     case 'time':
-      regexp = TimeRegExp;
-      break;
+      regexp = TimeRegExp
+      break
     case 'uri':
-      regexp = UriRegExp;
-      break;
+      regexp = UriRegExp
+      break
     default:
-      throw new Error(`"${format}" is not a valid format`);
+      throw new Error(`"${format}" is not a valid format`)
   }
 
   if (!regexp.test(value)) {
-    throw new FieldFormatError(label, format, path);
+    throw new FieldFormatError(label, format, path)
   }
 }
 
@@ -319,9 +322,11 @@ export function checkFormat(format: FieldFormat, value: string, label: string, p
  * @param label
  * @param path
  */
-export function checkLength(length: number, value: { length: number }, label: string, path: string): void {
+export function checkLength (length: number, value: {
+  length: number
+}, label: string, path: string): void {
   if (value.length !== length) {
-    throw new FieldLengthError(label, length, path);
+    throw new FieldLengthError(label, length, path)
   }
 }
 
@@ -332,9 +337,9 @@ export function checkLength(length: number, value: { length: number }, label: st
  * @param label
  * @param path
  */
-export function checkMax(max: FieldMinMax, value: number | Date, label: string, path: string): void {
+export function checkMax (max: FieldMinMax, value: number | Date, label: string, path: string): void {
   if (value > max) {
-    throw new FieldMaxError(label, max, path);
+    throw new FieldMaxError(label, max, path)
   }
 }
 
@@ -345,9 +350,11 @@ export function checkMax(max: FieldMinMax, value: number | Date, label: string, 
  * @param label
  * @param path
  */
-export function checkMaxLength(maxLength: number, value: { length: number }, label: string, path: string): void {
+export function checkMaxLength (maxLength: number, value: {
+  length: number
+}, label: string, path: string): void {
   if (value.length > maxLength) {
-    throw new FieldMaxLengthError(label, maxLength, path);
+    throw new FieldMaxLengthError(label, maxLength, path)
   }
 }
 
@@ -358,9 +365,9 @@ export function checkMaxLength(maxLength: number, value: { length: number }, lab
  * @param label
  * @param path
  */
-export function checkMaxWords(maxWords: number, value: string, label: string, path: string): void {
+export function checkMaxWords (maxWords: number, value: string, label: string, path: string): void {
   if (value.split(' ').length > maxWords) {
-    throw new FieldMaxWordsError(label, maxWords, path);
+    throw new FieldMaxWordsError(label, maxWords, path)
   }
 }
 
@@ -371,9 +378,9 @@ export function checkMaxWords(maxWords: number, value: string, label: string, pa
  * @param label
  * @param path
  */
-export function checkMin(min: FieldMinMax, value: number | Date, label: string, path: string): void {
+export function checkMin (min: FieldMinMax, value: number | Date, label: string, path: string): void {
   if (typeof min !== 'undefined' && value < min) {
-    throw new FieldMinError(label, min, path);
+    throw new FieldMinError(label, min, path)
   }
 }
 
@@ -384,9 +391,11 @@ export function checkMin(min: FieldMinMax, value: number | Date, label: string, 
  * @param label
  * @param path
  */
-export function checkMinLength(minLength: number, value: { length: number }, label: string, path: string): void {
+export function checkMinLength (minLength: number, value: {
+  length: number
+}, label: string, path: string): void {
   if (value.length < minLength) {
-    throw new FieldMinLengthError(label, minLength, path);
+    throw new FieldMinLengthError(label, minLength, path)
   }
 }
 
@@ -397,9 +406,9 @@ export function checkMinLength(minLength: number, value: { length: number }, lab
  * @param label
  * @param path
  */
-export function checkMinWords(minWords: number, value: string, label: string, path: string): void {
+export function checkMinWords (minWords: number, value: string, label: string, path: string): void {
   if (value.split(' ').length < minWords) {
-    throw new FieldMinWordsError(label, minWords, path);
+    throw new FieldMinWordsError(label, minWords, path)
   }
 }
 
@@ -410,11 +419,11 @@ export function checkMinWords(minWords: number, value: string, label: string, pa
  * @param label
  * @param path
  */
-export function checkPattern(pattern: FieldPattern, value: string, label: string, path: string): void {
-  const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
+export function checkPattern (pattern: FieldPattern, value: string, label: string, path: string): void {
+  const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern
 
   if (!regex.test(value)) {
-    throw new FieldPatternError(label, regex, path);
+    throw new FieldPatternError(label, regex, path)
   }
 }
 
@@ -425,9 +434,9 @@ export function checkPattern(pattern: FieldPattern, value: string, label: string
  * @param label
  * @param path
  */
-export function checkRequired(required: boolean, value: any, label: string, path: string): void {
+export function checkRequired (required: boolean, value: any, label: string, path: string): void {
   if (required && value == null) {
-    throw new FieldRequiredError(label, path);
+    throw new FieldRequiredError(label, path)
   }
 }
 
@@ -438,51 +447,51 @@ export function checkRequired(required: boolean, value: any, label: string, path
  * @param label
  * @param path
  */
-export function checkType<T>(
+export function checkType<T> (
   type: FieldType<T>,
   value: any[] | boolean | number | object | string | ((...args: any[]) => void),
   label: string,
-  path: string,
+  path: string
 ): void {
   if (typeof type === 'string') {
     switch (type) {
       case 'array':
         if (!(value instanceof Array)) {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       case 'boolean':
         if (typeof value !== 'boolean') {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       case 'function':
         if (typeof value !== 'function') {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       case 'integer':
         if (typeof value !== 'number' || Number.isNaN(value) || value !== Math.round(value)) {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       case 'number':
         if (typeof value !== 'number' || Number.isNaN(value)) {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       case 'object':
         if (typeof value !== 'object') {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       case 'string':
         if (typeof value !== 'string') {
-          throw new FieldTypeError(label, type, path);
+          throw new FieldTypeError(label, type, path)
         }
-        break;
+        break
       default:
-        throw new Error(`unsupported type "${type}"`);
+        throw new Error(`unsupported type "${type}"`)
     }
   }
 }
@@ -495,25 +504,25 @@ export function checkType<T>(
  * @param label
  * @param path
  */
-export function checkTypeArray<T>(
+export function checkTypeArray<T> (
   types: Array<FieldType<T>>,
   values: Array<any[] | boolean | number | object | string | ((...args: any[]) => void)>,
   label: string,
-  path: string,
+  path: string
 ): void {
   for (let i = 0; i < values.length; i += 1) {
-    let oneOf = false;
+    let oneOf = false
 
     for (let j = 0; j < types.length; j += 1) {
       try {
-        checkType(types[j], values[i], label, path);
-        oneOf = true;
+        checkType(types[j], values[i], label, path)
+        oneOf = true
       } catch (e) {
         // do nothing
       }
     }
     if (!oneOf) {
-      throw new FieldTypeError(label, types.toString(), path);
+      throw new FieldTypeError(label, types.toString(), path)
     }
   }
 }

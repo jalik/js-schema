@@ -19,11 +19,11 @@ import errors, {
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNKNOWN,
-  ERROR_VALIDATION,
-} from './errors';
-import { getErrorMessage, setLocaleMessages } from './locale';
-import Schema from './Schema';
-import SchemaField from './SchemaField';
+  ERROR_VALIDATION
+} from './errors'
+import { getErrorMessage, setLocaleMessages } from './locale'
+import Schema from './Schema'
+import SchemaField from './SchemaField'
 
 export {
   ERROR_FIELD_ALLOWED,
@@ -46,5 +46,5 @@ export {
   Schema,
   SchemaField,
   getErrorMessage,
-  setLocaleMessages,
-};
+  setLocaleMessages
+}

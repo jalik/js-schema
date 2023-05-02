@@ -18,8 +18,8 @@ import {
   ERROR_FIELD_PATTERN,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
-  ERROR_FIELD_UNKNOWN,
-} from '../errors';
+  ERROR_FIELD_UNKNOWN
+} from '../errors'
 
 const en = {
   [ERROR_FIELD_ALLOWED]: 'The field must contain an allowed value ({allowed}).',
@@ -36,7 +36,7 @@ const en = {
   [ERROR_FIELD_PATTERN]: 'The field does not match the pattern "{pattern}".',
   [ERROR_FIELD_REQUIRED]: 'The field is required.',
   [ERROR_FIELD_TYPE]: 'The field type is not valid.',
-  [ERROR_FIELD_UNKNOWN]: 'The field is unknown.',
-};
+  [ERROR_FIELD_UNKNOWN]: 'The field is unknown.'
+}
 
-export default en;
+export default en

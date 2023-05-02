@@ -3,17 +3,17 @@
  * Copyright (c) 2023 Karl STEIN
  */
 
-import { ERROR_FIELD_LENGTH } from '../errors';
-import FieldError from './FieldError';
+import { ERROR_FIELD_LENGTH } from '../errors'
+import FieldError from './FieldError'
 
 class FieldLengthError extends FieldError {
-  public length: number;
+  public length: number
 
-  constructor(field: string, length: number, path: string) {
-    super(field, path, ERROR_FIELD_LENGTH);
-    this.length = length;
-    this.message = `The field must have a length of ${length}.`;
+  constructor (field: string, length: number, path: string) {
+    super(field, path, ERROR_FIELD_LENGTH)
+    this.length = length
+    this.message = `The field must have a length of ${length}.`
   }
 }
 
-export default FieldLengthError;
+export default FieldLengthError
