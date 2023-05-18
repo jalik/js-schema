@@ -1,6 +1,6 @@
 {
   "name": "@jalik/schema",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "A utility to validate complex objects using schemas",
   "license": "MIT",
   "keywords": [
