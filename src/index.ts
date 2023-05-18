@@ -22,6 +22,7 @@ import errors, {
   ERROR_VALIDATION
 } from './errors'
 import { getErrorMessage, setLocaleMessages } from './locale'
+import FieldError from './errors/FieldError'
 import Schema from './Schema'
 import SchemaField from './SchemaField'
 
@@ -43,6 +44,7 @@ export {
   ERROR_FIELD_UNKNOWN,
   ERROR_VALIDATION,
   errors,
+  FieldError,
   Schema,
   SchemaField,
   getErrorMessage,
