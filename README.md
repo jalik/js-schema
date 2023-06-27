@@ -758,7 +758,3 @@ History of releases is in the [changelog](./CHANGELOG.md).
 ## License
 
 The code is released under the [MIT License](http://www.opensource.org/licenses/MIT).
-
-If you find this lib useful and would like to support my work, donations are welcome :)
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=R7XM4Q3TNE47L)
