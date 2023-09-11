@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.0.3 (2023-09-11)
+
+- Throw `FieldResolutionError` when path is not valid
+
 ## v4.0.2 (2023-05-18)
 
 - Added `FieldError` to exports
