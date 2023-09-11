@@ -8,6 +8,7 @@ import FieldError from './errors/FieldError'
 import FieldUnknownError from './errors/FieldUnknownError'
 import ValidationError, { FieldErrors } from './errors/ValidationError'
 import SchemaField, { FieldProperties } from './SchemaField'
+import FieldResolutionError from './errors/FieldResolutionError'
 
 // todo allow type inference (autocomplete schema fields from fields definition)
 interface FieldsDefinition {
@@ -268,7 +269,7 @@ class Schema {
     }
 
     if (typeof this.fields[name] === 'undefined') {
-      throw new Error(`Field "${name}" does not exist`)
+      throw new FieldResolutionError(path)
     }
 
     let field: SchemaField<unknown> = this.fields[name]
@@ -280,10 +281,11 @@ class Schema {
       if (type instanceof Schema) {
         field = type.resolveField(subPath, true)
       } else if (typeof props.items !== 'undefined' &&
-        typeof props.items.type !== 'undefined' && props.items.type instanceof Schema) {
+        typeof props.items.type !== 'undefined' &&
+        props.items.type instanceof Schema) {
         field = props.items.type.resolveField(subPath, true)
       } else {
-        throw new Error(`Field type not supported for "${name}".`)
+        throw new FieldResolutionError(path)
       }
     }
     return field

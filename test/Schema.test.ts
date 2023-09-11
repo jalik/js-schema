@@ -8,6 +8,7 @@ import FieldRequiredError from '../src/errors/FieldRequiredError'
 import FieldUnknownError from '../src/errors/FieldUnknownError'
 import ValidationError from '../src/errors/ValidationError'
 import Schema from '../src/Schema'
+import FieldResolutionError from '../src/errors/FieldResolutionError'
 
 describe('Schema', () => {
   const StringSchema = new Schema({
@@ -69,7 +70,7 @@ describe('Schema', () => {
     })
 
     it('should not modify parent schema', () => {
-      expect(() => BaseSchema.getField('extended')).toThrow()
+      expect(() => BaseSchema.getField('extended')).toThrow(FieldResolutionError)
     })
   })
 
@@ -94,8 +95,9 @@ describe('Schema', () => {
       const errors = BaseSchema.getErrors(object)
 
       it('should return errors', () => {
-        expect(errors.number).toBeInstanceOf(FieldRequiredError)
-        expect(errors.string).toBeInstanceOf(FieldRequiredError)
+        expect(errors).toBeDefined()
+        expect(errors?.number).toBeInstanceOf(FieldRequiredError)
+        expect(errors?.string).toBeInstanceOf(FieldRequiredError)
       })
 
       it('should not throw an error', () => {
@@ -231,6 +233,17 @@ describe('Schema', () => {
         ParentSchema.resolveField('child.phones[0][number]').getType()
       }).not.toThrow()
     })
+
+    describe('with invalid path', () => {
+      it('should throw a FieldResolutionError', () => {
+        expect(() => {
+          ParentSchema.resolveField('child.unknown')
+        }).toThrow(FieldResolutionError)
+        expect(() => {
+          ParentSchema.resolveField('child.phones[0].unknown')
+        }).toThrow(FieldResolutionError)
+      })
+    })
   })
 
   describe('isValid()', () => {
@@ -255,12 +268,13 @@ describe('Schema', () => {
   describe('validate(object, options)', () => {
     describe('with invalid object', () => {
       it('should throw a ValidationError with errors details', () => {
-        let error
+        let error = null
         try {
           BaseSchema.validate({ embedded: {} })
-        } catch (e) {
+        } catch (e: any) {
           error = e
         }
+        expect(error).toBeDefined()
         expect(error.errors).not.toBeUndefined()
         expect(error.errors.number).toBeInstanceOf(FieldRequiredError)
         expect(error.errors.string).toBeInstanceOf(FieldRequiredError)
@@ -392,7 +406,7 @@ describe('Schema', () => {
     it('should return a schema without excluded fields', () => {
       expect(() => {
         NewSchema.getField('string')
-      }).toThrow()
+      }).toThrow(FieldResolutionError)
     })
 
     it('should return a schema with non excluded fields', () => {
