@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.0.4 (2023-09-11)
+
+- Fixed "required field" error on nested attributes of an optional object when using option `removeUnknown: true`
+- Upgraded dependencies
+
 ## v4.0.3 (2023-09-11)
 
 - Throw `FieldResolutionError` when path is not valid
