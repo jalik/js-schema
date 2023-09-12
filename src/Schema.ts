@@ -180,6 +180,9 @@ class Schema {
    * @param object
    */
   removeUnknownFields<T> (object: Record<string, unknown>): T {
+    if (object == null) {
+      return object
+    }
     const clone = deepExtend({}, object)
 
     Object.keys(clone).forEach((name: string): void => {

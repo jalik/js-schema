@@ -398,6 +398,56 @@ describe('Schema', () => {
         // todo check nested unknown fields
       })
     })
+
+    describe('with optional nested Schema containing required attributes', () => {
+      const AddressSchema = new Schema({
+        street: {
+          type: 'string',
+          required: true
+        }
+      })
+      const PlaceSchema = new Schema({
+        address: {
+          type: AddressSchema
+        }
+      })
+
+      describe('with nested object', () => {
+        describe('containing required attributes', () => {
+          it('should not throw an error', () => {
+            expect(() => {
+              PlaceSchema.validate({ address: { street: 'Paradise St.' } })
+            }).not.toThrow()
+          })
+        })
+        describe('not containing required attributes', () => {
+          it('should throw an error', () => {
+            expect(() => {
+              PlaceSchema.validate({ address: { street: null } })
+            }).toThrow()
+            expect(() => {
+              PlaceSchema.validate({ address: {} })
+            }).toThrow()
+          })
+        })
+      })
+
+      describe('with nested object = null', () => {
+        it('should not throw an error', () => {
+          expect(() => {
+            PlaceSchema.validate({ address: null }, { removeUnknown: true })
+          }).not.toThrow()
+        })
+      })
+
+      describe('without nested object', () => {
+        it('should not throw an error', () => {
+          expect(() => {
+            PlaceSchema.validate({})
+          }).not.toThrow()
+        })
+      })
+    })
   })
 
   describe('without(fieldNames)', () => {
