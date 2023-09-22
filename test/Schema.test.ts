@@ -268,13 +268,13 @@ describe('Schema', () => {
   describe('validate(object, options)', () => {
     describe('with invalid object', () => {
       it('should throw a ValidationError with errors details', () => {
-        let error = null
+        let error: any
         try {
           BaseSchema.validate({ embedded: {} })
-        } catch (e: any) {
+        } catch (e) {
           error = e
         }
-        expect(error).toBeDefined()
+        expect(error).toBeInstanceOf(ValidationError)
         expect(error.errors).not.toBeUndefined()
         expect(error.errors.number).toBeInstanceOf(FieldRequiredError)
         expect(error.errors.string).toBeInstanceOf(FieldRequiredError)
@@ -344,7 +344,7 @@ describe('Schema', () => {
           }
           expect(() => {
             StringSchema.validate(obj, { ignoreUnknown: true })
-          }).not.toThrow(FieldUnknownError)
+          }).not.toThrow()
         })
         // todo check nested unknown fields
       })
