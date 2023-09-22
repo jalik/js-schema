@@ -11,6 +11,7 @@ class FieldMaxWordsError extends FieldError {
 
   constructor (field: string, maxWords: number, path: string) {
     super(field, path, ERROR_FIELD_MAX_WORDS)
+    Object.setPrototypeOf(this, FieldMaxWordsError.prototype)
     this.maxWords = maxWords
     this.message = `The field must not contain more than ${maxWords} words.`
   }

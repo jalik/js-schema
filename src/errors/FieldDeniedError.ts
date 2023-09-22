@@ -11,6 +11,7 @@ class FieldDeniedError extends FieldError {
 
   constructor (field: string, denied: any[], path: string) {
     super(field, path, ERROR_FIELD_DENIED)
+    Object.setPrototypeOf(this, FieldDeniedError.prototype)
     this.denied = denied
     this.message = `The field contains a denied value (${denied}).`
   }

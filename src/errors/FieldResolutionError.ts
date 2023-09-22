@@ -8,6 +8,7 @@ class FieldResolutionError extends Error {
 
   constructor (path: string) {
     super(`Cannot resolve "${path}".`)
+    Object.setPrototypeOf(this, FieldResolutionError.prototype)
     this.path = path
   }
 }

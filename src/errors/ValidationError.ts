@@ -21,6 +21,7 @@ class ValidationError extends Error {
     reason: string = ERROR_VALIDATION
   ) {
     super(message)
+    Object.setPrototypeOf(this, ValidationError.prototype)
     this.errors = errors
     this.reason = reason
   }

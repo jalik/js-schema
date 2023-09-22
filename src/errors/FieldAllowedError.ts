@@ -11,6 +11,7 @@ class FieldAllowedError extends FieldError {
 
   constructor (field: string, allowed: any[], path: string) {
     super(field, path, ERROR_FIELD_ALLOWED)
+    Object.setPrototypeOf(this, FieldAllowedError.prototype)
     this.allowed = allowed
     this.message = `The field must contain an allowed value (${allowed}).`
   }

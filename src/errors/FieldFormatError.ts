@@ -11,6 +11,7 @@ class FieldFormatError extends FieldError {
 
   constructor (field: string, format: string, path: string) {
     super(field, path, ERROR_FIELD_FORMAT)
+    Object.setPrototypeOf(this, FieldFormatError.prototype)
     this.format = format
     this.message = `The field does not match format (${format}).`
   }

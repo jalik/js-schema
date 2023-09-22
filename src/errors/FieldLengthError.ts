@@ -11,6 +11,7 @@ class FieldLengthError extends FieldError {
 
   constructor (field: string, length: number, path: string) {
     super(field, path, ERROR_FIELD_LENGTH)
+    Object.setPrototypeOf(this, FieldLengthError.prototype)
     this.length = length
     this.message = `The field must have a length of ${length}.`
   }

@@ -9,6 +9,7 @@ import FieldError from './FieldError'
 class FieldUnknownError extends FieldError {
   constructor (field: string, path: string) {
     super(field, path, ERROR_FIELD_UNKNOWN)
+    Object.setPrototypeOf(this, FieldUnknownError.prototype)
     this.message = 'The field is unknown.'
   }
 }

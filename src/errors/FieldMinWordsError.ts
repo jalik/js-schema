@@ -11,6 +11,7 @@ class FieldMinWordsError extends FieldError {
 
   constructor (field: string, minWords: number, path: string) {
     super(field, path, ERROR_FIELD_MIN_WORDS)
+    Object.setPrototypeOf(this, FieldMinWordsError.prototype)
     this.minWords = minWords
     this.message = `The field must contain at least ${minWords} words.`
   }

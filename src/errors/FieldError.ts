@@ -14,6 +14,7 @@ class FieldError extends Error {
 
   constructor (field: string, path: string, reason: string = ERROR_FIELD_INVALID) {
     super('The field is not valid.')
+    Object.setPrototypeOf(this, FieldError.prototype)
     this.field = field
     this.path = path
     this.reason = reason
