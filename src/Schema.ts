@@ -366,6 +366,8 @@ class Schema {
             Object.entries(error.errors).forEach(([path, fieldError]): void => {
               errors[path] = fieldError
             })
+          } else {
+            throw error
           }
         }
       }
