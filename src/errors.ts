@@ -17,6 +17,7 @@ export const ERROR_FIELD_MIN_WORDS = 'field-min-words'
 export const ERROR_FIELD_PATTERN = 'field-pattern'
 export const ERROR_FIELD_REQUIRED = 'field-required'
 export const ERROR_FIELD_TYPE = 'field-type'
+export const ERROR_FIELD_UNIQUE_ITEMS = 'field-unique-items'
 export const ERROR_FIELD_UNKNOWN = 'field-unknown'
 export const ERROR_VALIDATION = 'object-invalid'
 
@@ -35,6 +36,7 @@ const errors: string[] = [
   ERROR_FIELD_PATTERN,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
+  ERROR_FIELD_UNIQUE_ITEMS,
   ERROR_FIELD_UNKNOWN,
   ERROR_VALIDATION
 ]

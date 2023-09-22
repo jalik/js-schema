@@ -18,6 +18,7 @@ import {
   ERROR_FIELD_PATTERN,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
+  ERROR_FIELD_UNIQUE_ITEMS,
   ERROR_FIELD_UNKNOWN
 } from '../errors'
 
@@ -36,6 +37,7 @@ const fr = {
   [ERROR_FIELD_PATTERN]: 'Le champ ne correspond pas au motif "{pattern}".',
   [ERROR_FIELD_REQUIRED]: 'Le champ est obligatoire.',
   [ERROR_FIELD_TYPE]: 'Le type du champ n\'est pas valide.',
+  [ERROR_FIELD_UNIQUE_ITEMS]: 'Le champ doit contenir des valeurs uniques.',
   [ERROR_FIELD_UNKNOWN]: 'Le champ est inconnu.'
 }
 

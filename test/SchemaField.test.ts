@@ -21,6 +21,7 @@ import FieldRequiredError from '../src/errors/FieldRequiredError'
 import FieldTypeError from '../src/errors/FieldTypeError'
 import ValidationError from '../src/errors/ValidationError'
 import SchemaField from '../src/SchemaField'
+import FieldUniqueItemsError from '../src/errors/FieldUniqueItemsError'
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {
@@ -2016,6 +2017,74 @@ describe('SchemaField', () => {
               stringField.validate({})
             })
               .toThrow(FieldTypeError)
+          })
+        })
+      })
+    })
+
+    describe('with uniqueItems', () => {
+      describe('uniqueItems: true', () => {
+        const uniqueItemsField = new SchemaField('field', {
+          uniqueItems: true
+        })
+
+        describe('with unique items', () => {
+          it('should not throw FieldError', () => {
+            expect(() => {
+              uniqueItemsField.validate([1, 2, 3])
+            })
+              .not.toThrow()
+          })
+        })
+
+        describe('with duplicate items', () => {
+          it('should throw FieldError', () => {
+            expect(() => {
+              uniqueItemsField.validate([1, 2, 2])
+            }).toThrow(FieldUniqueItemsError)
+          })
+        })
+
+        describe('with non array value', () => {
+          it('should not throw Error', () => {
+            expect(() => {
+              uniqueItemsField.validate(123)
+            }).not.toThrow()
+            expect(() => {
+              uniqueItemsField.validate('test')
+            }).not.toThrow()
+            expect(() => {
+              uniqueItemsField.validate(true)
+            }).not.toThrow()
+            expect(() => {
+              uniqueItemsField.validate({})
+            }).not.toThrow()
+            expect(() => {
+              uniqueItemsField.validate(null)
+            }).not.toThrow()
+          })
+        })
+      })
+
+      describe('uniqueItems: false', () => {
+        const uniqueItemsField = new SchemaField('field', {
+          uniqueItems: false
+        })
+
+        describe('with unique items', () => {
+          it('should not throw FieldError', () => {
+            expect(() => {
+              uniqueItemsField.validate([1, 2, 3])
+            })
+              .not.toThrow()
+          })
+        })
+
+        describe('with duplicate items', () => {
+          it('should not throw FieldError', () => {
+            expect(() => {
+              uniqueItemsField.validate([1, 2, 2])
+            }).not.toThrow()
           })
         })
       })

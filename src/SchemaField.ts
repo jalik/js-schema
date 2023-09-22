@@ -20,6 +20,7 @@ import {
   checkRequired,
   checkType,
   checkTypeArray,
+  checkUniqueItems,
   Computable,
   FieldFormat,
   FieldItems,
@@ -67,6 +68,7 @@ export interface FieldProperties<T> {
 
   required?: Computable<boolean>;
   type?: Computable<FieldType<T>>;
+  uniqueItems?: Computable<boolean>
 }
 
 class SchemaField<T> {
@@ -435,6 +437,11 @@ class SchemaField<T> {
       if (Object.keys(errors).length > 0) {
         throw new ValidationError(errors)
       }
+    }
+
+    // Check that items are unique
+    if (props.uniqueItems != null && newVal instanceof Array && computeValue(props.uniqueItems, context)) {
+      checkUniqueItems(newVal, label, path)
     }
 
     // Check allowed values

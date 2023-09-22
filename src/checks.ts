@@ -16,6 +16,7 @@ import FieldMinWordsError from './errors/FieldMinWordsError'
 import FieldPatternError from './errors/FieldPatternError'
 import FieldRequiredError from './errors/FieldRequiredError'
 import FieldTypeError from './errors/FieldTypeError'
+import FieldUniqueItemsError from './errors/FieldUniqueItemsError'
 import {
   DateRegExp,
   DateTimeRegExp,
@@ -524,5 +525,22 @@ export function checkTypeArray<T> (
     if (!oneOf) {
       throw new FieldTypeError(label, types.toString(), path)
     }
+  }
+}
+
+/**
+ * Checks if items are unique.
+ * @param items
+ * @param label
+ * @param path
+ */
+export function checkUniqueItems (items: any[], label: string, path: string) {
+  const dict = new Map()
+
+  for (let i = 0; i < items.length; i += 1) {
+    if (dict.has(items[i])) {
+      throw new FieldUniqueItemsError(label, path)
+    }
+    dict.set(items[i], true)
   }
 }
