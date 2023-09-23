@@ -1,8 +1,18 @@
 # Changelog
 
+## v4.1.0 (2023-09-22)
+
+- Added option `multipleOf: number` to schema fields
+- Added option `uniqueItems: boolean` to schema fields
+- Added options `minItems: number` and `maxItems: number` to schema fields
+- Fixed missing error throw when validation of a schema throws an unhandled error
+- Fixed `instanceof FieldError` not working and other related bugs due to TypeScript compilation (
+  see https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work)
+
 ## v4.0.4 (2023-09-11)
 
-- Fixed "required field" error on nested attributes of an optional object when using option `removeUnknown: true`
+- Fixed "required field" error on nested attributes of an optional object when using
+  option `removeUnknown: true`
 - Upgraded dependencies
 
 ## v4.0.3 (2023-09-11)
@@ -19,11 +29,13 @@
 
 ## v4.0.0 (2023-04-17)
 
-- **[BREAKING]** Removed `Schema` from default package export (still available with `import { Schema } from '@jalik/schema'`)
+- **[BREAKING]** Removed `Schema` from default package export (still available
+  with `import { Schema } from '@jalik/schema'`)
 - **[BREAKING]** Removed `defaultValue` option from `SchemaField` definition
 - **[BREAKING]** Removed `nullable` option from `SchemaField` definition
 - **[BREAKING]** Renamed `setLocale()` to `setLocaleMessages()`
-- **[BREAKING]** From now, setting `required: true` on a field will throw an error with `null` values
+- **[BREAKING]** From now, setting `required: true` on a field will throw an error with `null`
+  values
 
 ## v3.1.0
 
