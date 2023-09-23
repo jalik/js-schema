@@ -11,7 +11,7 @@
 
 - Define object structure and constraints
 - Several constraints available
-  - type, required, length, min, max, minWords, maxWords, allowed, denied, pattern, format
+    - type, required, length, min, max, minWords, maxWords, allowed, denied, pattern, format
 - Custom check using a function
 - Full object validation
 - Object field validation
@@ -347,7 +347,8 @@ export const ExampleSchema = new Schema({
 ## Checking required values
 
 Use `required` to check if a field is `null` or `undefined`.
-Important: Since v4.0.0, a `FieldRequired` error will be thrown for `null` values, which was not the case in previous versions (only with `undefined`)
+Important: Since v4.0.0, a `FieldRequired` error will be thrown for `null` values, which was not the
+case in previous versions (only with `undefined`)
 
 - Accepts `Boolean` or `Function`
 - Throws `FieldRequiredError`
@@ -395,6 +396,26 @@ export const ExampleSchema = new Schema({
     min: 0
   }
 });
+```
+
+## Checking multiple of a number
+
+Use `multipleOf` to accept only value that is a multiple of a number.
+
+```js
+import { Schema } from '@jalik/schema'
+
+const schema = new Schema({
+  channels: {
+    type: 'number',
+    multipleOf: 2
+  }
+})
+
+// This is valid
+schema.validate({
+  channels: 8
+})
 ```
 
 ## Checking length
@@ -467,6 +488,59 @@ export const ExampleSchema = new Schema({
     minWords: 10
   },
 });
+```
+
+## Checking minimum/maximum items
+
+Use `minItems` and `maxItems` to limit the number of items in an array.
+
+```js
+import { Schema } from '@jalik/schema'
+
+const schema = new Schema({
+  emails: {
+    type: 'array',
+    minItems: 1,
+    maxItems: 2,
+    items: {
+      type: 'string'
+    }
+  }
+})
+
+// This is valid
+schema.validate({
+  emails: [
+    'primary@mail.com',
+    'secondary@mail.com',
+  ]
+})
+```
+
+## Checking uniqueness of items
+
+Use `uniqueItems` to force having unique items in an array.
+
+```js
+import { Schema } from '@jalik/schema'
+
+const schema = new Schema({
+  emails: {
+    type: 'array',
+    uniqueItems: true,
+    items: {
+      type: 'string'
+    }
+  }
+})
+
+// This is valid
+schema.validate({
+  emails: [
+    'primary@mail.com',
+    'secondary@mail.com',
+  ]
+})
 ```
 
 ## Checking allowed values
