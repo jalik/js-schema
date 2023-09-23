@@ -23,6 +23,8 @@ import ValidationError from '../src/errors/ValidationError'
 import SchemaField from '../src/SchemaField'
 import FieldUniqueItemsError from '../src/errors/FieldUniqueItemsError'
 import FieldMultipleOfError from '../src/errors/FieldMultipleOfError'
+import FieldMinItemsError from '../src/errors/FieldMinItemsError'
+import FieldMaxItemsError from '../src/errors/FieldMaxItemsError'
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {
@@ -1037,6 +1039,39 @@ describe('SchemaField', () => {
       // todo add tests with max: Function
     })
 
+    describe('with maxItems', () => {
+      describe('maxItems: 1', () => {
+        const field = new SchemaField('field', {
+          maxItems: 1
+        })
+
+        describe('with null value', () => {
+          it('should not throw Error', () => {
+            expect(() => {
+              field.validate(null)
+            }).not.toThrow()
+          })
+        })
+        describe('with items <= maxItems', () => {
+          it('should not throw Error', () => {
+            expect(() => {
+              field.validate([])
+            }).not.toThrow()
+            expect(() => {
+              field.validate([1])
+            }).not.toThrow()
+          })
+        })
+        describe('with items > maxItems', () => {
+          it('should throw FieldMaxItemsError', () => {
+            expect(() => {
+              field.validate([1, 2])
+            }).toThrow(FieldMaxItemsError)
+          })
+        })
+      })
+    })
+
     describe('with maxLength', () => {
       describe('maxLength: Number', () => {
         const field = new SchemaField('field', { maxLength: 5 })
@@ -1234,6 +1269,39 @@ describe('SchemaField', () => {
       })
 
       // todo add tests with min: Function
+    })
+
+    describe('with minItems', () => {
+      describe('minItems: 1', () => {
+        const field = new SchemaField('field', {
+          minItems: 1
+        })
+
+        describe('with null value', () => {
+          it('should not throw Error', () => {
+            expect(() => {
+              field.validate(null)
+            }).not.toThrow()
+          })
+        })
+        describe('with items >= minItems', () => {
+          it('should not throw Error', () => {
+            expect(() => {
+              field.validate([1])
+            }).not.toThrow()
+            expect(() => {
+              field.validate([1, 2])
+            }).not.toThrow()
+          })
+        })
+        describe('with items < minItems', () => {
+          it('should throw FielMinItemsError', () => {
+            expect(() => {
+              field.validate([])
+            }).toThrow(FieldMinItemsError)
+          })
+        })
+      })
     })
 
     describe('with minLength', () => {

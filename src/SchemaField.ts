@@ -11,9 +11,11 @@ import {
   checkFormat,
   checkLength,
   checkMax,
+  checkMaxItems,
   checkMaxLength,
   checkMaxWords,
   checkMin,
+  checkMinItems,
   checkMinLength,
   checkMinWords,
   checkMultipleOf,
@@ -55,9 +57,11 @@ export interface FieldProperties<T> {
   label?: Computable<string>;
   length?: Computable<number>;
   max?: Computable<FieldMinMax>;
+  maxItems?: Computable<number>;
   maxLength?: Computable<number>;
   maxWords?: Computable<number>;
   min?: Computable<FieldMinMax>;
+  minItems?: Computable<number>;
   minLength?: Computable<number>;
   minWords?: Computable<number>;
   multipleOf?: Computable<number>;
@@ -464,6 +468,16 @@ class SchemaField<T> {
     // Check length if value has the length attribute
     if (props.length != null) {
       checkLength(computeValue<number>(props.length, context), newVal, label, path)
+    }
+
+    // Check max items
+    if (props.maxItems != null && newVal != null) {
+      checkMaxItems(computeValue<number>(props.maxItems, context), newVal, label, path)
+    }
+
+    // Check min items
+    if (props.minItems != null && newVal != null) {
+      checkMinItems(computeValue<number>(props.minItems, context), newVal, label, path)
     }
 
     // Check maximal length

@@ -30,6 +30,8 @@ import {
 } from './regex'
 import Schema from './Schema'
 import { FieldProperties } from './SchemaField'
+import FieldMinItemsError from './errors/FieldMinItemsError'
+import FieldMaxItemsError from './errors/FieldMaxItemsError'
 
 export type FieldFormat =
   'date'
@@ -77,9 +79,11 @@ const FIELD_PROPERTIES: string[] = [
   'label',
   'length',
   'max',
+  'maxItems',
   'maxLength',
   'maxWords',
   'min',
+  'minItems',
   'minLength',
   'minWords',
   'name',
@@ -346,6 +350,19 @@ export function checkMax (max: FieldMinMax, value: number | Date, label: string,
 }
 
 /**
+ * Checks if the array contains at most a number of items.
+ * @param maxItems
+ * @param value
+ * @param label
+ * @param path
+ */
+export function checkMaxItems (maxItems: number, value: any[], label: string, path: string): void {
+  if (value.length > maxItems) {
+    throw new FieldMaxItemsError(label, maxItems, path)
+  }
+}
+
+/**
  * Checks if the length of the value is lesser than or equal to max.
  * @param maxLength
  * @param value
@@ -383,6 +400,19 @@ export function checkMaxWords (maxWords: number, value: string, label: string, p
 export function checkMin (min: FieldMinMax, value: number | Date, label: string, path: string): void {
   if (typeof min !== 'undefined' && value < min) {
     throw new FieldMinError(label, min, path)
+  }
+}
+
+/**
+ * Checks if the array contains at least a number of items.
+ * @param minItems
+ * @param value
+ * @param label
+ * @param path
+ */
+export function checkMinItems (minItems: number, value: any[], label: string, path: string): void {
+  if (value.length < minItems) {
+    throw new FieldMinItemsError(label, minItems, path)
   }
 }
 
