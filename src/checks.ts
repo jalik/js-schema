@@ -86,12 +86,14 @@ const FIELD_PROPERTIES: string[] = [
   'minItems',
   'minLength',
   'minWords',
+  'multipleOf',
   'name',
   'parse',
   'pattern',
   'prepare',
   'required',
-  'type'
+  'type',
+  'uniqueItems'
 ]
 
 /**
