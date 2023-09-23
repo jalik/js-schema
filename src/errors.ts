@@ -14,6 +14,7 @@ export const ERROR_FIELD_MAX_WORDS = 'field-max-words'
 export const ERROR_FIELD_MIN = 'field-min'
 export const ERROR_FIELD_MIN_LENGTH = 'field-min-length'
 export const ERROR_FIELD_MIN_WORDS = 'field-min-words'
+export const ERROR_FIELD_MULTIPLE_OF = 'field-multiple-of'
 export const ERROR_FIELD_PATTERN = 'field-pattern'
 export const ERROR_FIELD_REQUIRED = 'field-required'
 export const ERROR_FIELD_TYPE = 'field-type'
@@ -33,6 +34,7 @@ const errors: string[] = [
   ERROR_FIELD_MIN,
   ERROR_FIELD_MIN_LENGTH,
   ERROR_FIELD_MIN_WORDS,
+  ERROR_FIELD_MULTIPLE_OF,
   ERROR_FIELD_PATTERN,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,

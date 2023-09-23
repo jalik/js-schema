@@ -22,6 +22,7 @@ import FieldTypeError from '../src/errors/FieldTypeError'
 import ValidationError from '../src/errors/ValidationError'
 import SchemaField from '../src/SchemaField'
 import FieldUniqueItemsError from '../src/errors/FieldUniqueItemsError'
+import FieldMultipleOfError from '../src/errors/FieldMultipleOfError'
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {
@@ -1356,6 +1357,56 @@ describe('SchemaField', () => {
             expect(() => {
               field.validate('0 0 0 0 0 0')
             }).not.toThrow()
+          })
+        })
+      })
+    })
+
+    describe('with multipleOf', () => {
+      describe('multipleOf: 2', () => {
+        const field = new SchemaField('field', {
+          multipleOf: 2
+        })
+
+        describe('with zero', () => {
+          it('should not throw an Error', () => {
+            expect(() => {
+              field.validate(0)
+            }).not.toThrow()
+          })
+        })
+
+        describe('with a value that is a multiple', () => {
+          it('should not throw an Error', () => {
+            expect(() => {
+              field.validate(2)
+            }).not.toThrow()
+            expect(() => {
+              field.validate(4)
+            }).not.toThrow()
+            expect(() => {
+              field.validate(6)
+            }).not.toThrow()
+            expect(() => {
+              field.validate(8)
+            }).not.toThrow()
+          })
+        })
+
+        describe('with a value that is not a multiple', () => {
+          it('should throw a FieldMultipleOfError', () => {
+            expect(() => {
+              field.validate(1)
+            }).toThrow(FieldMultipleOfError)
+            expect(() => {
+              field.validate(3)
+            }).toThrow(FieldMultipleOfError)
+            expect(() => {
+              field.validate(5)
+            }).toThrow(FieldMultipleOfError)
+            expect(() => {
+              field.validate(7)
+            }).toThrow(FieldMultipleOfError)
           })
         })
       })

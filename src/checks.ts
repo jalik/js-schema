@@ -13,6 +13,7 @@ import FieldMaxWordsError from './errors/FieldMaxWordsError'
 import FieldMinError from './errors/FieldMinError'
 import FieldMinLengthError from './errors/FieldMinLengthError'
 import FieldMinWordsError from './errors/FieldMinWordsError'
+import FieldMultipleOfError from './errors/FieldMultipleOfError'
 import FieldPatternError from './errors/FieldPatternError'
 import FieldRequiredError from './errors/FieldRequiredError'
 import FieldTypeError from './errors/FieldTypeError'
@@ -410,6 +411,19 @@ export function checkMinLength (minLength: number, value: {
 export function checkMinWords (minWords: number, value: string, label: string, path: string): void {
   if (value.split(' ').length < minWords) {
     throw new FieldMinWordsError(label, minWords, path)
+  }
+}
+
+/**
+ * Checks if the value is a multiple of a number.
+ * @param multipleOf
+ * @param value
+ * @param label
+ * @param path
+ */
+export function checkMultipleOf (multipleOf: number, value: number, label: string, path: string) {
+  if (value % multipleOf !== 0) {
+    throw new FieldMultipleOfError(label, multipleOf, path)
   }
 }
 

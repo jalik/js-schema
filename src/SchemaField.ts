@@ -16,6 +16,7 @@ import {
   checkMin,
   checkMinLength,
   checkMinWords,
+  checkMultipleOf,
   checkPattern,
   checkRequired,
   checkType,
@@ -59,6 +60,7 @@ export interface FieldProperties<T> {
   min?: Computable<FieldMinMax>;
   minLength?: Computable<number>;
   minWords?: Computable<number>;
+  multipleOf?: Computable<number>;
 
   parse? (value: any): any;
 
@@ -492,6 +494,11 @@ class SchemaField<T> {
     // Check minimal value
     if (props.min != null) {
       checkMin(computeValue<FieldMinMax>(props.min, context), newVal, label, path)
+    }
+
+    // Check if value is a multiple of a number.
+    if (props.multipleOf != null) {
+      checkMultipleOf(computeValue<number>(props.multipleOf, context), newVal, label, path)
     }
 
     // Test regular expression
