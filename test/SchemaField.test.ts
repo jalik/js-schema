@@ -2043,6 +2043,16 @@ describe('SchemaField', () => {
           type: 'object'
         })
 
+        // todo v5: throw error
+        // describe('with null', () => {
+        //   it('should throw FieldTypeError', () => {
+        //     expect(() => {
+        //       objectField.validate(null)
+        //     })
+        //       .toThrow(FieldTypeError)
+        //   })
+        // })
+
         describe('with object', () => {
           it('should not throw FieldTypeError', () => {
             expect(() => {
@@ -2057,6 +2067,7 @@ describe('SchemaField', () => {
             expect(() => {
               objectField.validate([])
             })
+              // todo v5: throw error
               .not.toThrow()
           })
         })
