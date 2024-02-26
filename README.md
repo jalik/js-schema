@@ -17,10 +17,20 @@
 - Object field validation
 - Specific errors are thrown for each field
 - Similar to the JSON Schema specification
+- TypeScript declarations ♥
 
 ## Sandbox
 
 Play with the lib here: https://codesandbox.io/s/jalik-schema-demo-5o4fnk?file=/src/index.js
+
+## Installing
+
+```shell
+npm i -P @jalik/schema
+```
+```shell
+yarn add @jalik/schema
+```
 
 ## Creating a schema
 
