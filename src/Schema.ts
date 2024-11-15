@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import deepExtend from '@jalik/deep-extend'
@@ -143,6 +143,21 @@ class Schema {
     } catch (error) {
       return false
     }
+  }
+
+  /**
+   * Returns a sub schema without some fields.
+   * @param fieldNames
+   */
+  omit (fieldNames: string[]): Schema {
+    const fields: FieldsDefinition = {}
+
+    Object.keys(this.fields).forEach((name: string): void => {
+      if (fieldNames.indexOf(name) === -1) {
+        fields[name] = this.fields[name].getProperties()
+      }
+    })
+    return new Schema(deepExtend({}, fields))
   }
 
   /**
@@ -382,17 +397,11 @@ class Schema {
 
   /**
    * Returns a sub schema without some fields.
+   * @deprecated use `omit()` instead
    * @param fieldNames
    */
   without (fieldNames: string[]): Schema {
-    const fields: FieldsDefinition = {}
-
-    Object.keys(this.fields).forEach((name: string): void => {
-      if (fieldNames.indexOf(name) === -1) {
-        fields[name] = this.fields[name].getProperties()
-      }
-    })
-    return new Schema(deepExtend({}, fields))
+    return this.omit(fieldNames)
   }
 }
 

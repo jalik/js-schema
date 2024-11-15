@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { describe, expect, it } from '@jest/globals'
@@ -450,8 +450,8 @@ describe('Schema', () => {
     })
   })
 
-  describe('without(fieldNames)', () => {
-    const NewSchema = BaseSchema.without(['string'])
+  describe('omit(fieldNames)', () => {
+    const NewSchema = BaseSchema.omit(['string'])
 
     it('should return a schema without excluded fields', () => {
       expect(() => {
