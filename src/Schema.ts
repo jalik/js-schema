@@ -176,6 +176,19 @@ class Schema {
   }
 
   /**
+   * Returns a copy of the schema where all fields are not required.
+   */
+  partial () {
+    const fields: FieldsDefinition = {}
+
+    Object.keys(this.fields).forEach((name: string): void => {
+      fields[name] = this.fields[name].getProperties()
+      fields[name].required = false
+    })
+    return new Schema(deepExtend({}, fields))
+  }
+
+  /**
    * Returns a sub schema from selected fields.
    * @param fieldNames
    */

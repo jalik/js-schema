@@ -469,4 +469,26 @@ describe('Schema', () => {
       expect(() => BaseSchema.getField('string')).not.toThrow()
     })
   })
+
+  describe('partial()', () => {
+    const NewSchema = new Schema({
+      a: {
+        type: 'string',
+        required: true
+      },
+      b: {
+        type: 'string',
+        required: true
+      }
+    }).partial()
+
+    it('should return a schema without required fields', () => {
+      expect(NewSchema.getField('a').isRequired()).toBeFalsy()
+      expect(NewSchema.getField('b').isRequired()).toBeFalsy()
+    })
+
+    it('should not modify parent schema', () => {
+      expect(() => NewSchema.getField('a').isRequired()).toBeTruthy()
+    })
+  })
 })
