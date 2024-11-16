@@ -471,7 +471,7 @@ describe('Schema', () => {
   })
 
   describe('partial()', () => {
-    const NewSchema = new Schema({
+    const schema = new Schema({
       a: {
         type: 'string',
         required: true
@@ -480,15 +480,39 @@ describe('Schema', () => {
         type: 'string',
         required: true
       }
-    }).partial()
+    })
+    const partial = schema.partial()
 
     it('should return a schema without required fields', () => {
-      expect(NewSchema.getField('a').isRequired()).toBeFalsy()
-      expect(NewSchema.getField('b').isRequired()).toBeFalsy()
+      expect(partial.getField('a').isRequired()).toBeFalsy()
+      expect(partial.getField('b').isRequired()).toBeFalsy()
     })
 
     it('should not modify parent schema', () => {
-      expect(() => NewSchema.getField('a').isRequired()).toBeTruthy()
+      expect(schema.getField('a').isRequired()).toBe(true)
+    })
+  })
+
+  describe('required()', () => {
+    const schema = new Schema({
+      a: {
+        type: 'string',
+        required: false
+      },
+      b: {
+        type: 'string'
+      }
+    })
+    const required = schema.required()
+
+    it('should return a schema with all fields required', () => {
+      expect(required.getField('a').isRequired()).toBe(true)
+      expect(required.getField('b').isRequired()).toBe(true)
+    })
+
+    it('should not modify parent schema', () => {
+      expect(schema.getField('a').isRequired()).toBeFalsy()
+      expect(schema.getField('a').isRequired()).toBeFalsy()
     })
   })
 })

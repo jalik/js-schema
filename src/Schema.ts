@@ -182,8 +182,21 @@ class Schema {
     const fields: FieldsDefinition = {}
 
     Object.keys(this.fields).forEach((name: string): void => {
-      fields[name] = this.fields[name].getProperties()
+      fields[name] = deepExtend({}, this.fields[name].getProperties())
       fields[name].required = false
+    })
+    return new Schema(deepExtend({}, fields))
+  }
+
+  /**
+   * Returns a copy of the schema where all fields are required.
+   */
+  required () {
+    const fields: FieldsDefinition = {}
+
+    Object.keys(this.fields).forEach((name: string): void => {
+      fields[name] = deepExtend({}, this.fields[name].getProperties())
+      fields[name].required = true
     })
     return new Schema(deepExtend({}, fields))
   }
