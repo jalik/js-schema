@@ -140,7 +140,7 @@ class Schema {
     try {
       this.validate(object, options)
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   }

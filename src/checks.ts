@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import FieldAllowedError from './errors/FieldAllowedError'
@@ -564,7 +564,7 @@ export function checkTypeArray<T> (
       try {
         checkType(types[j], values[i], label, path)
         oneOf = true
-      } catch (e) {
+      } catch {
         // do nothing
       }
     }

@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import deepExtend from '@jalik/deep-extend'
@@ -277,7 +277,7 @@ class SchemaField<T> {
     try {
       this.validate(value, options)
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   }
