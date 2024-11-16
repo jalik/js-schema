@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.2.0 (2024-11-15)
+
+- deprecate: `schema.without()`, use `schema.omit()` instead
+- feat: add `schema.partial()` to return a new schema with all fields optional
+- feat: add `schema.required()` to return a new schema with all fields required
+
 ## v4.1.0 (2023-09-22)
 
 - Added option `multipleOf: number` to schema fields
