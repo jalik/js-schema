@@ -27,7 +27,7 @@ describe('Schema', () => {
       type: 'boolean'
     },
     date: {
-      type: Date,
+      type: 'function',
       parse (value) {
         const [year, month, day] = value.split('-')
         return new Date(year, parseInt(month, 10) - 1, day)
@@ -62,15 +62,23 @@ describe('Schema', () => {
   })
 
   describe('extend(schema)', () => {
-    const ExtendedSchema = BaseSchema.extend({ extended: {} })
+    const NewSchema = new Schema({
+      a: { type: 'string' }
+    })
+    const ExtendedSchema = NewSchema.extend({
+      b: { type: 'string' }
+    })
 
     it('should create an extended version of the schema', () => {
-      expect(typeof ExtendedSchema.getField('array')).not.toBeUndefined()
-      expect(typeof ExtendedSchema.getField('extended')).not.toBeUndefined()
+      expect(ExtendedSchema.getField('a')).toBeDefined()
+      expect(ExtendedSchema.getField('b')).toBeDefined()
     })
 
     it('should not modify parent schema', () => {
-      expect(() => BaseSchema.getField('extended')).toThrow(FieldResolutionError)
+      expect(BaseSchema.getField(
+        // @ts-expect-error key not defined
+        'b'
+      )).toBeUndefined()
     })
   })
 
@@ -115,7 +123,10 @@ describe('Schema', () => {
 
     describe('with invalid field name', () => {
       it('should throw an error', () => {
-        expect(() => BaseSchema.getField('unknown').getType()).toThrow()
+        expect(() => BaseSchema.getField(
+          // @ts-expect-error key not defined
+          'unknown'
+        ).getType()).toThrow()
       })
     })
   })
@@ -152,7 +163,9 @@ describe('Schema', () => {
         string: 'test',
         unknown: true
       }
-      const result = { string: object.string }
+      const result = {
+        string: object.string
+      }
       expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result)
     })
 
@@ -178,8 +191,10 @@ describe('Schema', () => {
           unknown: true
         }]
       }
-      const result = { embeddedArray: [{ string: 'test' }] }
-      expect(result).toMatchObject(BaseSchema.removeUnknownFields(object))
+      const result = {
+        embeddedArray: [{ string: 'test' }]
+      }
+      expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result)
     })
   })
 
@@ -451,18 +466,25 @@ describe('Schema', () => {
   })
 
   describe('omit(fieldNames)', () => {
-    const NewSchema = BaseSchema.omit(['string'])
+    const NewSchema = new Schema({
+      a: { type: 'string' },
+      b: { type: 'boolean' },
+      c: { type: 'number' }
+    }).omit(['a', 'b'])
 
     it('should return a schema without excluded fields', () => {
-      expect(() => {
-        NewSchema.getField('string')
-      }).toThrow(FieldResolutionError)
+      expect(NewSchema.getField(
+        // @ts-expect-error key not defined
+        'a'
+      )).toBeUndefined()
+      expect(NewSchema.getField(
+        // @ts-expect-error key not defined
+        'b'
+      )).toBeUndefined()
     })
 
     it('should return a schema with non excluded fields', () => {
-      expect(() => {
-        NewSchema.getField('number')
-      }).not.toThrow()
+      expect(NewSchema.getField('c')).toBeDefined()
     })
 
     it('should not modify parent schema', () => {

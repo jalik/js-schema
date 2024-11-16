@@ -10,14 +10,27 @@ import ValidationError, { FieldErrors } from './errors/ValidationError'
 import SchemaField, { FieldProperties } from './SchemaField'
 import FieldResolutionError from './errors/FieldResolutionError'
 
-// todo allow type inference (autocomplete schema fields from fields definition)
-interface FieldsDefinition {
-  [key: string]: FieldProperties<unknown>;
+type Fields<K extends string | number | symbol = string> = Record<K, FieldProperties>
+
+type SchemaFields<F extends Fields> = { [K in keyof F]: SchemaField<F[K]> }
+
+/**
+ * Makes fields partial. (required: false)
+ */
+export type PartialFields<F extends Fields> = {
+  [K in keyof F]: Omit<F[K], 'required'> & { required: false }
+}
+
+/**
+ * Makes fields mandatory. (required: true)
+ */
+export type RequiredFields<F extends Fields> = {
+  [K in keyof F]: Omit<F[K], 'required'> & { required: true }
 }
 
 interface ValidateOptions {
   clean?: boolean;
-  context?: Record<string, unknown>,
+  context?: Record<string, unknown>;
   ignoreMissing?: boolean;
   ignoreUnknown?: boolean;
   parse?: boolean;
@@ -25,20 +38,19 @@ interface ValidateOptions {
   removeUnknown?: boolean;
 }
 
-class Schema {
-  public fields: { [key: string]: SchemaField<unknown> }
+class Schema<F extends Fields = Fields> {
+  public fields: SchemaFields<F> = {} as any
 
-  constructor (fields: FieldsDefinition) {
-    this.fields = {}
-
+  constructor (fields: F) {
     // Set fields.
-    Object.keys(fields).forEach((name: string): void => {
-      this.fields[name] = new SchemaField(name, fields[name])
+    Object.keys(fields).forEach((name: keyof F): void => {
+      this.fields[name] = new SchemaField(String(name), fields[name])
     })
   }
 
   /**
    * Returns a clean copy of the object.
+   * todo move to util functions
    * @param object
    * @param options
    */
@@ -66,21 +78,26 @@ class Schema {
   /**
    * Returns a clone of the schema.
    */
-  clone (): Schema {
-    return this.pick(Object.keys(this.fields))
+  clone (): Schema<F> {
+    const fields: Fields = {}
+
+    Object.keys(this.fields).forEach((name) => {
+      fields[name] = this.fields[name].getProperties()
+    })
+    return new Schema(deepExtend({}, fields))
   }
 
   /**
    * Returns a new schema based on current schema.
-   * @param fields
+   * @param newFields
    */
-  extend (fields: FieldsDefinition): Schema {
-    const fieldsDefinition: FieldsDefinition = {}
+  extend<NF extends Fields> (newFields: NF): Schema<F & NF> {
+    const fields: Fields = {}
 
-    Object.keys(this.fields).forEach((name: string): void => {
-      fieldsDefinition[name] = this.fields[name].getProperties()
+    Object.keys(this.fields).forEach((name) => {
+      fields[name] = this.fields[name].getProperties()
     })
-    return new Schema(deepExtend({}, fieldsDefinition, fields))
+    return new Schema(deepExtend({}, fields, newFields))
   }
 
   /**
@@ -120,14 +137,14 @@ class Schema {
    * Returns a field.
    * @param name
    */
-  getField (name: string): SchemaField<unknown> {
-    return this.resolveField(name)
+  getField<N extends keyof F> (name: N): SchemaFields<F>[N] {
+    return this.fields[name]
   }
 
   /**
    * Returns all fields.
    */
-  getFields (): { [key: string]: SchemaField<unknown> } {
+  getFields (): SchemaFields<F> {
     return this.fields
   }
 
@@ -149,11 +166,11 @@ class Schema {
    * Returns a sub schema without some fields.
    * @param fieldNames
    */
-  omit (fieldNames: string[]): Schema {
-    const fields: FieldsDefinition = {}
+  omit<K extends keyof F> (fieldNames: K[]): Schema<Omit<F, K>> {
+    const fields: Fields = {}
 
-    Object.keys(this.fields).forEach((name: string): void => {
-      if (fieldNames.indexOf(name) === -1) {
+    Object.keys(this.fields).forEach((name) => {
+      if (!fieldNames.includes(name as K)) {
         fields[name] = this.fields[name].getProperties()
       }
     })
@@ -178,25 +195,12 @@ class Schema {
   /**
    * Returns a copy of the schema where all fields are not required.
    */
-  partial () {
-    const fields: FieldsDefinition = {}
+  partial (): Schema<PartialFields<F>> {
+    const fields: Fields = {}
 
-    Object.keys(this.fields).forEach((name: string): void => {
+    Object.keys(this.fields).forEach((name) => {
       fields[name] = deepExtend({}, this.fields[name].getProperties())
       fields[name].required = false
-    })
-    return new Schema(deepExtend({}, fields))
-  }
-
-  /**
-   * Returns a copy of the schema where all fields are required.
-   */
-  required () {
-    const fields: FieldsDefinition = {}
-
-    Object.keys(this.fields).forEach((name: string): void => {
-      fields[name] = deepExtend({}, this.fields[name].getProperties())
-      fields[name].required = true
     })
     return new Schema(deepExtend({}, fields))
   }
@@ -205,12 +209,12 @@ class Schema {
    * Returns a sub schema from selected fields.
    * @param fieldNames
    */
-  pick (fieldNames: string[]): Schema {
-    const fields: FieldsDefinition = {}
+  pick<K extends keyof F> (fieldNames: K[]): Schema<Pick<F, K>> {
+    const fields: Fields = {}
 
-    fieldNames.forEach((name: string): void => {
+    fieldNames.forEach((name) => {
       if (typeof this.fields[name] !== 'undefined') {
-        fields[name] = this.fields[name].getProperties()
+        fields[String(name)] = this.fields[name].getProperties()
       }
     })
     return new Schema(deepExtend({}, fields))
@@ -220,14 +224,14 @@ class Schema {
    * Returns a copy of the object without unknown fields.
    * @param object
    */
-  removeUnknownFields<T> (object: Record<string, unknown>): T {
+  removeUnknownFields (object: Record<string, unknown>): Schema<F> {
     if (object == null) {
       return object
     }
     const clone = deepExtend({}, object)
 
     Object.keys(clone).forEach((name: string): void => {
-      const field: SchemaField<unknown> = this.fields[name]
+      const field = this.fields[name]
 
       if (typeof field === 'undefined') {
         delete clone[name]
@@ -235,8 +239,8 @@ class Schema {
         clone[name] = (field.getType() as Schema).removeUnknownFields(clone[name])
       } else if (field.getItems()?.type instanceof Schema) {
         if (clone[name] instanceof Array) {
-          clone[name] = clone[name].map((item: any) => (
-            (field.getItems().type as Schema).removeUnknownFields(item)
+          clone[name] = clone[name].map((item) => (
+            (field.getItems()?.type as Schema).removeUnknownFields(item)
           ))
         }
       }
@@ -245,14 +249,27 @@ class Schema {
   }
 
   /**
+   * Returns a copy of the schema where all fields are required.
+   */
+  required (): Schema<RequiredFields<F>> {
+    const fields = {} as Fields
+
+    Object.keys(this.fields).forEach((name: string): void => {
+      fields[name] = deepExtend({}, this.fields[name].getProperties())
+      fields[name].required = true
+    })
+    return new Schema(deepExtend({}, fields))
+  }
+
+  /**
    * Builds an object from a string (ex: [colors][0][code]).
    * @param path (ex: address[country][code])
    * @param syntaxChecked
-   * @throws {SyntaxError|TypeError}
    */
-  resolveField (path: string, syntaxChecked = false): SchemaField<unknown> {
+  resolveField<T extends SchemaField<FieldProperties>> (path: keyof F | string, syntaxChecked = false): T {
+    const p = path.toString()
     // Removes array indexes from path because we want to resolve field and not data.
-    const realPath = path.replace(/\[\d+]/g, '')
+    const realPath = p.replace(/\[\d+]/g, '')
 
     const bracketIndex = realPath.indexOf('[')
     const bracketEnd = realPath.indexOf(']')
@@ -262,15 +279,15 @@ class Schema {
     if (!syntaxChecked) {
       // Check for extra space.
       if (realPath.indexOf(' ') !== -1) {
-        throw new SyntaxError(`path "${path}" is not valid`)
+        throw new SyntaxError(`path "${p}" is not valid`)
       }
       // Check if key is not defined (ex: []).
       if (realPath.indexOf('[]') !== -1) {
-        throw new SyntaxError(`missing array index or object attribute in "${path}"`)
+        throw new SyntaxError(`missing array index or object attribute in "${p}"`)
       }
       // Check for missing object attribute.
       if (dotIndex + 1 === realPath.length) {
-        throw new SyntaxError(`missing object attribute in "${path}"`)
+        throw new SyntaxError(`missing object attribute in "${p}"`)
       }
 
       const closingBrackets = realPath.split(']').length
@@ -278,15 +295,15 @@ class Schema {
 
       // Check for missing opening bracket.
       if (openingBrackets < closingBrackets) {
-        throw new SyntaxError(`missing opening bracket "[" in "${path}"`)
+        throw new SyntaxError(`missing opening bracket "[" in "${p}"`)
       }
       // Check for missing closing bracket.
       if (closingBrackets < openingBrackets) {
-        throw new SyntaxError(`missing closing bracket "]" in "${path}"`)
+        throw new SyntaxError(`missing closing bracket "]" in "${p}"`)
       }
     }
 
-    let name = realPath
+    let name: keyof F = realPath
     let subPath
 
     // Resolve dot "." path.
@@ -313,26 +330,29 @@ class Schema {
     }
 
     if (typeof this.fields[name] === 'undefined') {
-      throw new FieldResolutionError(path)
+      throw new FieldResolutionError(p)
     }
 
-    let field: SchemaField<unknown> = this.fields[name]
+    const field = this.fields[name]
 
+    // Get nested field
     if (typeof subPath === 'string' && subPath.length > 0) {
       const type = field.getType()
       const props = field.getProperties()
 
       if (type instanceof Schema) {
-        field = type.resolveField(subPath, true)
-      } else if (typeof props.items !== 'undefined' &&
+        return type.resolveField(subPath, true)
+      }
+      if (typeof props.items !== 'undefined' &&
         typeof props.items.type !== 'undefined' &&
         props.items.type instanceof Schema) {
-        field = props.items.type.resolveField(subPath, true)
-      } else {
-        throw new FieldResolutionError(path)
+        return props.items.type.resolveField(subPath, true)
       }
+    } else if (name in this.fields) {
+      // @ts-ignore fixme TS error
+      return field
     }
-    return field
+    throw new FieldResolutionError(p)
   }
 
   /**
@@ -419,15 +439,6 @@ class Schema {
       throw new ValidationError(errors)
     }
     return clone
-  }
-
-  /**
-   * Returns a sub schema without some fields.
-   * @deprecated use `omit()` instead
-   * @param fieldNames
-   */
-  without (fieldNames: string[]): Schema {
-    return this.omit(fieldNames)
   }
 }
 

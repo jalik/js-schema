@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { describe, expect, it } from '@jest/globals'
@@ -345,7 +345,7 @@ describe('SchemaField', () => {
       })
 
       it('should return value using parse function', () => {
-        expect(field.parse<Date>('2018-04-05').getTime())
+        expect(field.parse<Date>('2018-04-05')?.getTime())
           .toBe(new Date(2018, 3, 5).getTime())
       })
     })
@@ -429,30 +429,6 @@ describe('SchemaField', () => {
           })
         })
       })
-
-      describe('allowed: Function', () => {
-        const field = new SchemaField('field', {
-          allowed: () => (['off', 'on'])
-        })
-
-        describe('with allowed values', () => {
-          it('should not throw FieldAllowedError', () => {
-            expect(() => {
-              field.validate(['on'])
-            })
-              .not.toThrow()
-          })
-        })
-
-        describe('without allowed values', () => {
-          it('should throw FieldAllowedError', () => {
-            expect(() => {
-              field.validate(['yes'])
-            })
-              .toThrow(FieldAllowedError)
-          })
-        })
-      })
     })
 
     describe('with check', () => {
@@ -484,30 +460,6 @@ describe('SchemaField', () => {
     describe('with denied', () => {
       describe('denied: Array', () => {
         const field = new SchemaField('field', { denied: ['off', 'on'] })
-
-        describe('with denied values', () => {
-          it('should throw FieldDeniedError', () => {
-            expect(() => {
-              field.validate(['on'])
-            })
-              .toThrow(FieldDeniedError)
-          })
-        })
-
-        describe('without denied values', () => {
-          it('should not throw FieldDeniedError', () => {
-            expect(() => {
-              field.validate(['yes'])
-            })
-              .not.toThrow()
-          })
-        })
-      })
-
-      describe('denied: Function', () => {
-        const field = new SchemaField('field', {
-          denied: () => (['off', 'on'])
-        })
 
         describe('with denied values', () => {
           it('should throw FieldDeniedError', () => {
@@ -1398,36 +1350,6 @@ describe('SchemaField', () => {
           })
         })
       })
-
-      describe('minWords: Function', () => {
-        const field = new SchemaField('field', {
-          minWords: () => 5
-        })
-
-        describe('with length lower than minWords', () => {
-          it('should throw FieldMinWordsError', () => {
-            expect(() => {
-              field.validate('')
-            }).toThrow(FieldMinWordsError)
-          })
-        })
-
-        describe('with length equal to minWords', () => {
-          it('should not throw FieldMinWordsError', () => {
-            expect(() => {
-              field.validate('0 0 0 0 0')
-            }).not.toThrow()
-          })
-        })
-
-        describe('with length higher than minWords', () => {
-          it('should throw FieldMinWordsError', () => {
-            expect(() => {
-              field.validate('0 0 0 0 0 0')
-            }).not.toThrow()
-          })
-        })
-      })
     })
 
     describe('with multipleOf', () => {
@@ -1546,40 +1468,6 @@ describe('SchemaField', () => {
           })
         })
       })
-
-      describe('pattern: Function', () => {
-        const options = { context: { basic: true } }
-        const patternField = new SchemaField('field', {
-          pattern: (context) => (context.basic ? /^[a-z0-9]+$/ : /^[a-z0-9_-]+$/)
-        })
-
-        describe('with incorrect value', () => {
-          it('should throw FieldPatternError', () => {
-            expect(() => {
-              patternField.validate('abc_123', options)
-            })
-              .toThrow(FieldPatternError)
-          })
-        })
-
-        describe('with correct value', () => {
-          it('should not throw FieldPatternError', () => {
-            expect(() => {
-              patternField.validate('abc123', options)
-            })
-              .not.toThrow()
-          })
-        })
-
-        describe('with undefined', () => {
-          it('should not throw FieldPatternError', () => {
-            expect(() => {
-              patternField.validate(undefined, options)
-            })
-              .not.toThrow()
-          })
-        })
-      })
     })
 
     describe('with required', () => {
@@ -1681,31 +1569,6 @@ describe('SchemaField', () => {
               optionalField.validate(1337)
             })
               .not.toThrow()
-          })
-        })
-      })
-
-      describe('required: Function', () => {
-        const options = { context: { checked: true } }
-        const requiredField = new SchemaField('field', {
-          required: (context) => context.checked === true
-        })
-
-        describe('with undefined', () => {
-          it('should throw FieldRequiredError', () => {
-            expect(() => {
-              requiredField.validate(undefined, options)
-            })
-              .toThrow(FieldRequiredError)
-          })
-        })
-
-        describe('with null', () => {
-          it('should throw FieldRequiredError', () => {
-            expect(() => {
-              requiredField.validate(null, options)
-            })
-              .toThrow(FieldRequiredError)
           })
         })
       })

@@ -37,31 +37,33 @@ export type FieldFormat =
   'date'
   | 'datetime'
   | 'date-time'
+  // todo add 'duration'
   | 'email'
   | 'hostname'
   | 'ipv4'
   | 'ipv6'
   | 'time'
-  | 'uri';
+  | 'uri'
+// todo add 'uuid'
 
 export type FieldMinMax = number | Date
 
 export type FieldPattern = string | RegExp
 
-export type FieldType<T> =
+export type FieldType =
   'array'
   | 'boolean'
-  | 'function'
+  | 'function' // todo remove in v5
   | 'integer'
   | 'number'
   | 'object'
   | 'string'
   | Schema
+  // todo remove in v5
   | Array<'array' | 'boolean' | 'function' | 'integer' | 'number' | 'object' | 'string' | Schema>
-  | T;
 
-export type FieldItems<T> = {
-  type?: FieldType<T>
+export type FieldItems = {
+  type?: FieldType
 }
 
 export type Computable<T> = T | ((context: Record<string, unknown>) => T)
@@ -69,11 +71,12 @@ export type Computable<T> = T | ((context: Record<string, unknown>) => T)
 /**
  * Schema field properties
  */
-const FIELD_PROPERTIES: string[] = [
+const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
   'allowed',
   'check',
   'clean',
   'denied',
+  // todo add 'enum',
   'format',
   'items',
   'label',
@@ -87,7 +90,6 @@ const FIELD_PROPERTIES: string[] = [
   'minLength',
   'minWords',
   'multipleOf',
-  'name',
   'parse',
   'pattern',
   'prepare',
@@ -139,10 +141,11 @@ export function checkDenied (denied: any[], value: any, label: string, path: str
  * @param name
  * @param props
  */
-export function checkFieldProperties<T> (name: string, props: FieldProperties<T>): void {
+export function checkFieldProperties (name: string, props: FieldProperties): void {
   // Check unknown properties.
-  Object.keys(props).forEach((prop) => {
-    if (!FIELD_PROPERTIES.includes(prop)) {
+  const keys = Object.keys(props)
+  keys.forEach((prop) => {
+    if (!FIELD_PROPERTIES.includes(prop as keyof FieldProperties)) {
       // eslint-disable-next-line no-console
       console.warn(`Unknown schema field property "${name}.${prop}"`)
     }
@@ -494,8 +497,8 @@ export function checkRequired (required: boolean, value: any, label: string, pat
  * @param label
  * @param path
  */
-export function checkType<T> (
-  type: FieldType<T>,
+export function checkType (
+  type: FieldType,
   value: any[] | boolean | number | object | string | ((...args: any[]) => void),
   label: string,
   path: string
@@ -551,8 +554,8 @@ export function checkType<T> (
  * @param label
  * @param path
  */
-export function checkTypeArray<T> (
-  types: Array<FieldType<T>>,
+export function checkTypeArray (
+  types: Array<FieldType>,
   values: Array<any[] | boolean | number | object | string | ((...args: any[]) => void)>,
   label: string,
   path: string
