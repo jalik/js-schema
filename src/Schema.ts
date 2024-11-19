@@ -9,6 +9,7 @@ import FieldUnknownError from './errors/FieldUnknownError'
 import ValidationError, { FieldErrors } from './errors/ValidationError'
 import SchemaField, { FieldProperties } from './SchemaField'
 import FieldResolutionError from './errors/FieldResolutionError'
+import { parse, removeUnknownFields } from './utils'
 
 type Fields<K extends string | number | symbol = string> = Record<K, FieldProperties>
 
@@ -46,33 +47,6 @@ class Schema<F extends Fields = Fields> {
     Object.keys(fields).forEach((name: keyof F): void => {
       this.fields[name] = new SchemaField(String(name), fields[name])
     })
-  }
-
-  /**
-   * Returns a clean copy of the object.
-   * todo move to util functions
-   * @param object
-   * @param options
-   */
-  clean<T> (
-    object: Record<string, unknown>,
-    options?: { removeUnknown?: boolean }
-  ): T {
-    const opts = {
-      removeUnknown: true,
-      ...options
-    }
-
-    const clone = deepExtend({}, object)
-
-    Object.keys(clone).forEach((name: string): void => {
-      if (typeof this.fields[name] !== 'undefined') {
-        clone[name] = this.fields[name].clean(clone[name])
-      } else if (opts.removeUnknown) {
-        delete clone[name]
-      }
-    })
-    return clone
   }
 
   /**
@@ -178,21 +152,6 @@ class Schema<F extends Fields = Fields> {
   }
 
   /**
-   * Returns a copy of the object with all fields parsed.
-   * @param object
-   */
-  parse<T> (object: Record<string, unknown>): T {
-    const clone = deepExtend({}, object)
-
-    Object.keys(clone).forEach((name: string): void => {
-      if (this.fields[name] != null) {
-        clone[name] = this.fields[name].parse(clone[name])
-      }
-    })
-    return clone
-  }
-
-  /**
    * Returns a copy of the schema where all fields are not required.
    */
   partial (): Schema<PartialFields<F>> {
@@ -218,34 +177,6 @@ class Schema<F extends Fields = Fields> {
       }
     })
     return new Schema(deepExtend({}, fields))
-  }
-
-  /**
-   * Returns a copy of the object without unknown fields.
-   * @param object
-   */
-  removeUnknownFields (object: Record<string, unknown>): Schema<F> {
-    if (object == null) {
-      return object
-    }
-    const clone = deepExtend({}, object)
-
-    Object.keys(clone).forEach((name: string): void => {
-      const field = this.fields[name]
-
-      if (typeof field === 'undefined') {
-        delete clone[name]
-      } else if (field.getType() instanceof Schema) {
-        clone[name] = (field.getType() as Schema).removeUnknownFields(clone[name])
-      } else if (field.getItems()?.type instanceof Schema) {
-        if (clone[name] instanceof Array) {
-          clone[name] = clone[name].map((item) => (
-            (field.getItems()?.type as Schema).removeUnknownFields(item)
-          ))
-        }
-      }
-    })
-    return clone
   }
 
   /**
@@ -398,14 +329,14 @@ class Schema<F extends Fields = Fields> {
 
     // Removes or throws unknown fields.
     if (opts.removeUnknown) {
-      clone = this.removeUnknownFields(clone)
+      clone = removeUnknownFields(clone, this)
     } else if (!opts.ignoreUnknown) {
       this.throwUnknownFields(clone, opts.path || '') // fixme path is empty
     }
 
     // Parses values.
     if (opts.parse) {
-      clone = this.parse(clone)
+      clone = parse(clone, this)
     }
 
     // Sets validation context.

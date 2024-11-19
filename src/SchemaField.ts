@@ -36,7 +36,7 @@ import FieldError from './errors/FieldError'
 import FieldTypeError from './errors/FieldTypeError'
 import ValidationError, { FieldErrors } from './errors/ValidationError'
 import Schema from './Schema'
-import { computeValue, joinPath } from './utils'
+import { clean, computeValue, joinPath, parse } from './utils'
 
 type ValidateOptions = {
   clean?: boolean;
@@ -111,10 +111,11 @@ class SchemaField<P extends FieldProperties> {
 
   /**
    * Cleans a value.
+   * todo move to util functions
    * @param value
    * @param options
    */
-  clean (value?: any, options = {}): string | undefined {
+  clean (value: any, options = {}): string | undefined {
     if (value == null) {
       return value
     }
@@ -133,7 +134,7 @@ class SchemaField<P extends FieldProperties> {
       if (value instanceof Array) {
         newValue = value.map((key: number) => this.clean(value[key]))
       } else if (props.type instanceof Schema) {
-        newValue = props.type.clean(value, options)
+        newValue = clean(value, props.type, options)
       }
     } else {
       if (typeof props.clean === 'function') {
@@ -290,6 +291,7 @@ class SchemaField<P extends FieldProperties> {
 
   /**
    * Parses a value.
+   * todo move to util functions
    * @param value
    */
   parse<E> (value: any): E | null {
@@ -319,9 +321,9 @@ class SchemaField<P extends FieldProperties> {
     } else if (value instanceof Array) {
       // Parses all values in the array.
       val = value.map((key: number) => this.parse(value[key]))
-    } else if (props.type instanceof Schema && typeof props.type?.parse === 'function') {
+    } else if (props.type instanceof Schema) {
       // todo add test for this line
-      val = props.type.parse(value)
+      val = parse(value, props.type)
     }
     return val
   }
