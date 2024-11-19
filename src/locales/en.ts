@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import {
@@ -29,7 +29,7 @@ import {
 } from '../errors'
 import { LocaleData } from '../locale'
 
-const en = {
+const en: LocaleData = {
   [ERROR_FIELD_ALLOWED]: 'The field must contain an allowed value ({allowed}).',
   [ERROR_FIELD_DENIED]: 'The field contains a denied value ({denied}).',
   [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'The field must be lesser than {max}.',
@@ -50,7 +50,8 @@ const en = {
   [ERROR_FIELD_REQUIRED]: 'The field is required.',
   [ERROR_FIELD_TYPE]: 'The field type is not valid.',
   [ERROR_FIELD_UNIQUE_ITEMS]: 'The field must contain unique items.',
-  [ERROR_FIELD_UNKNOWN]: 'The field is unknown.'
+  [ERROR_FIELD_UNKNOWN]: 'The field is unknown.',
+  [ERROR_VALIDATION]: 'The object is not valid.'
 }
 
 export default en

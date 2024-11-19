@@ -26,7 +26,7 @@ export const ERROR_FIELD_UNIQUE_ITEMS = 'field-unique-items'
 export const ERROR_FIELD_UNKNOWN = 'field-unknown'
 export const ERROR_VALIDATION = 'object-invalid'
 
-const errors: string[] = [
+const errors = [
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
   ERROR_FIELD_EXCLUSIVE_MINIMUM,
@@ -49,6 +49,12 @@ const errors: string[] = [
   ERROR_FIELD_UNIQUE_ITEMS,
   ERROR_FIELD_UNKNOWN,
   ERROR_VALIDATION
-]
+] as const
+
+type ErrorType = typeof errors[number]
+
+export type ErrorMessages = {
+  [key in ErrorType]: string
+}
 
 export default errors

@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import {
@@ -29,7 +29,7 @@ import {
 } from '../errors'
 import { LocaleData } from '../locale'
 
-const fr = {
+const fr: LocaleData = {
   [ERROR_FIELD_ALLOWED]: 'Le champ doit contenir une valeur autorisée ({allowed}).',
   [ERROR_FIELD_DENIED]: 'Le champ contient une valeur interdite ({denied}).',
   [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'Le champ doit être inférieur à {max}.',
@@ -50,7 +50,8 @@ const fr = {
   [ERROR_FIELD_REQUIRED]: 'Le champ est obligatoire.',
   [ERROR_FIELD_TYPE]: 'Le type du champ n\'est pas valide.',
   [ERROR_FIELD_UNIQUE_ITEMS]: 'Le champ doit contenir des valeurs uniques.',
-  [ERROR_FIELD_UNKNOWN]: 'Le champ est inconnu.'
+  [ERROR_FIELD_UNKNOWN]: 'Le champ est inconnu.',
+  [ERROR_VALIDATION]: 'L\'objet n\'est pas valide.'
 }
 
 export default fr
