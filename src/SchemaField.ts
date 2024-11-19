@@ -50,6 +50,8 @@ type ValidateOptions = {
 // todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 // todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 export type FieldProperties = {
+  // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
+  additionalProperties?: false | Record<string, FieldProperties>;
   denied?: any[];
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: any[];
@@ -150,6 +152,13 @@ class SchemaField<P extends FieldProperties> {
       newValue = null
     }
     return newValue
+  }
+
+  /**
+   * Returns field's additional properties.
+   */
+  getAdditionalProperties (): P['additionalProperties'] {
+    return this.props.additionalProperties
   }
 
   /**
@@ -543,9 +552,7 @@ class SchemaField<P extends FieldProperties> {
       checkPattern(props.pattern, newVal, label, path)
     }
     // Test properties
-    if (props.properties != null) {
-      checkProperties(props.properties, newVal, label, path)
-    }
+    checkProperties(props.properties, props.additionalProperties, newVal, label, path)
     // Execute custom checks
     if (props.check != null && !props.check.call(this, newVal, context)) {
       throw new FieldError(label, path)

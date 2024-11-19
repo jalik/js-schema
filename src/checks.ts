@@ -35,6 +35,7 @@ import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
 import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 import FieldPropertiesError from './errors/FieldPropertiesError'
+import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
 
 // https://json-schema.org/understanding-json-schema/reference/string#format
 export type FieldFormat =
@@ -84,6 +85,7 @@ export type Computable<T> = T | ((context: Record<string, unknown>) => T)
  * Schema field properties
  */
 const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
+  'additionalProperties',
   'check',
   'clean',
   'denied',
@@ -522,11 +524,17 @@ export function checkPattern (pattern: FieldPattern, value: string, label: strin
 /**
  * Checks if the properties are valid.
  * @param properties
+ * @param additionalProperties
  * @param value
  * @param label
  * @param path
  */
-export function checkProperties (properties: FieldProperties['properties'], value: Record<string, unknown>, label: string, path: string) {
+export function checkProperties (
+  properties: FieldProperties['properties'],
+  additionalProperties: FieldProperties['additionalProperties'],
+  value: Record<string, unknown>,
+  label: string,
+  path: string) {
   if (properties != null) {
     if (typeof value !== 'undefined' && (typeof value !== 'object' || value == null)) {
       throw new FieldPropertiesError(label, properties, path)
@@ -534,6 +542,18 @@ export function checkProperties (properties: FieldProperties['properties'], valu
     for (const key in properties) {
       const field = new SchemaField(label, properties[key])
       field.validate(value[key])
+    }
+  }
+  if (additionalProperties != null) {
+    for (const key in value) {
+      if (additionalProperties === false) {
+        if (properties == null || !(key in properties)) {
+          throw new FieldAdditionalPropertiesError(label, [key], path)
+        }
+      } else {
+        const field = new SchemaField(label, additionalProperties)
+        field.validate(value[key])
+      }
     }
   }
 }

@@ -4,6 +4,7 @@
  */
 
 import {
+  ERROR_FIELD_ADDITIONAL_PROPERTIES,
   ERROR_FIELD_DENIED,
   ERROR_FIELD_ENUM,
   ERROR_FIELD_EXCLUSIVE_MAXIMUM,
@@ -31,6 +32,7 @@ import {
 import { LocaleData } from '../locale'
 
 const fr: LocaleData = {
+  [ERROR_FIELD_ADDITIONAL_PROPERTIES]: 'Le champ contient des propriétés additionnelles.',
   [ERROR_FIELD_DENIED]: 'Le champ contient une valeur interdite.',
   [ERROR_FIELD_ENUM]: 'Le champ doit contenir des valeurs "{allowed}".',
   [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'Le champ doit être inférieur à {exclusiveMaximum}.',
