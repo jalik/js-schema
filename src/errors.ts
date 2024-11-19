@@ -1,10 +1,12 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 export const ERROR_FIELD_ALLOWED = 'field-allowed'
 export const ERROR_FIELD_DENIED = 'field-denied'
+export const ERROR_FIELD_EXCLUSIVE_MAXIMUM = 'field-exclusive-maximum'
+export const ERROR_FIELD_EXCLUSIVE_MINIMUM = 'field-exclusive-minimum'
 export const ERROR_FIELD_FORMAT = 'field-format'
 export const ERROR_FIELD_INVALID = 'field-invalid'
 export const ERROR_FIELD_LENGTH = 'field-length'
@@ -27,6 +29,8 @@ export const ERROR_VALIDATION = 'object-invalid'
 const errors: string[] = [
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
+  ERROR_FIELD_EXCLUSIVE_MINIMUM,
+  ERROR_FIELD_EXCLUSIVE_MAXIMUM,
   ERROR_FIELD_FORMAT,
   ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
