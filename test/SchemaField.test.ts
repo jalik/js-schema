@@ -27,6 +27,7 @@ import FieldMinItemsError from '../src/errors/FieldMinItemsError'
 import FieldMaxItemsError from '../src/errors/FieldMaxItemsError'
 import FieldPropertiesError from '../src/errors/FieldPropertiesError'
 import FieldAdditionalPropertiesError from '../src/errors/FieldAdditionalPropertiesError'
+import FieldPatternPropertiesError from '../src/errors/FieldPatternPropertiesError'
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {
@@ -1593,6 +1594,53 @@ describe('SchemaField', () => {
             })
               .not.toThrow()
           })
+        })
+      })
+    })
+
+    describe('with patternProperties', () => {
+      describe('patternProperties = object', () => {
+        const field = new SchemaField('field', {
+          patternProperties: {
+            '^S_': { type: 'string' },
+            '^N_': { type: 'number', maximum: 999 }
+          }
+        })
+
+        describe('with valid pattern prop', () => {
+          it('should not throw', () => {
+            expect(() => {
+              field.validate({ S_other: 'ok' })
+              field.validate({ N_other: 123 })
+            }).not.toThrow()
+          })
+        })
+
+        describe('with invalid pattern prop', () => {
+          it('should throw FieldPatternPropertiesError', () => {
+            expect(() => {
+              field.validate({ other: 'ok' })
+            }).toThrow(FieldPatternPropertiesError)
+          })
+        })
+
+        it('should check pattern prop constraints', () => {
+          expect(() => {
+            field.validate({ N_other: 1000 })
+          }).toThrow(FieldMaximumError)
+          expect(() => {
+            field.validate({ N_other: true })
+          }).toThrow(FieldTypeError)
+        })
+      })
+
+      describe('patternProperties = undefined', () => {
+        const field = new SchemaField('field', {})
+
+        it('should not throw', () => {
+          expect(() => {
+            field.validate({ other: 123 })
+          }).not.toThrow()
         })
       })
     })

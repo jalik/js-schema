@@ -82,6 +82,8 @@ export type FieldProperties = {
   multipleOf?: number;
   // https://json-schema.org/understanding-json-schema/reference/string#regexp
   pattern?: FieldPattern;
+  // https://json-schema.org/understanding-json-schema/reference/object#patternProperties
+  patternProperties?: Record<string, FieldProperties>;
   // https://json-schema.org/understanding-json-schema/reference/object#properties
   properties?: Record<string, FieldProperties>;
   required?: boolean;
@@ -552,7 +554,12 @@ class SchemaField<P extends FieldProperties> {
       checkPattern(props.pattern, newVal, label, path)
     }
     // Test properties
-    checkProperties(props.properties, props.additionalProperties, newVal, label, path)
+    checkProperties(
+      props.properties,
+      props.patternProperties,
+      props.additionalProperties,
+      newVal, label, path)
+
     // Execute custom checks
     if (props.check != null && !props.check.call(this, newVal, context)) {
       throw new FieldError(label, path)

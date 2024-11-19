@@ -36,6 +36,7 @@ import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
 import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 import FieldPropertiesError from './errors/FieldPropertiesError'
 import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
+import FieldPatternPropertiesError from './errors/FieldPatternPropertiesError'
 
 // https://json-schema.org/understanding-json-schema/reference/string#format
 export type FieldFormat =
@@ -525,16 +526,18 @@ export function checkPattern (pattern: FieldPattern, value: string, label: strin
  * Checks if the properties are valid.
  * @param properties
  * @param additionalProperties
+ * @param patternProperties
  * @param value
  * @param label
  * @param path
  */
 export function checkProperties (
   properties: FieldProperties['properties'],
+  patternProperties: FieldProperties['patternProperties'],
   additionalProperties: FieldProperties['additionalProperties'],
   value: Record<string, unknown>,
   label: string,
-  path: string) {
+  path: string): void {
   if (properties != null) {
     if (typeof value !== 'undefined' && (typeof value !== 'object' || value == null)) {
       throw new FieldPropertiesError(label, properties, path)
@@ -544,7 +547,27 @@ export function checkProperties (
       field.validate(value[key])
     }
   }
-  if (additionalProperties != null) {
+
+  if (patternProperties != null && value != null) {
+    for (const key in value) {
+      let patternFound: boolean = false
+
+      for (const pattern in patternProperties) {
+        if (new RegExp(pattern).test(key)) {
+          patternFound = true
+          const field = new SchemaField(label, patternProperties[pattern])
+          field.validate(value[key])
+          // do not test other patterns
+          break
+        }
+      }
+      if (!patternFound) {
+        throw new FieldPatternPropertiesError(label, [key], path)
+      }
+    }
+  }
+
+  if (additionalProperties != null && value != null) {
     for (const key in value) {
       if (additionalProperties === false) {
         if (properties == null || !(key in properties)) {
