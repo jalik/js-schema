@@ -8,9 +8,9 @@ import FieldError from './FieldError'
 import { FieldProperties } from '../SchemaField'
 
 class FieldPropertiesError extends FieldError {
-  public properties: FieldProperties
+  public properties: FieldProperties['properties']
 
-  constructor (field: string, properties: FieldProperties, path: string) {
+  constructor (field: string, properties: FieldProperties['properties'], path: string) {
     super(field, path, ERROR_FIELD_PROPERTIES)
     Object.setPrototypeOf(this, FieldPropertiesError.prototype)
     this.properties = properties

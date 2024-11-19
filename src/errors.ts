@@ -3,6 +3,7 @@
  * Copyright (c) 2024 Karl STEIN
  */
 
+export const ERROR_FIELD_ADDITIONAL_PROPERTIES = 'field-additional-properties'
 export const ERROR_FIELD_DENIED = 'field-denied'
 export const ERROR_FIELD_ENUM = 'field-enum'
 export const ERROR_FIELD_EXCLUSIVE_MAXIMUM = 'field-exclusive-maximum'
@@ -28,6 +29,7 @@ export const ERROR_FIELD_UNKNOWN = 'field-unknown'
 export const ERROR_VALIDATION = 'object-invalid'
 
 const errors = [
+  ERROR_FIELD_ADDITIONAL_PROPERTIES,
   ERROR_FIELD_DENIED,
   ERROR_FIELD_ENUM,
   ERROR_FIELD_EXCLUSIVE_MINIMUM,

@@ -26,6 +26,7 @@ import FieldMultipleOfError from '../src/errors/FieldMultipleOfError'
 import FieldMinItemsError from '../src/errors/FieldMinItemsError'
 import FieldMaxItemsError from '../src/errors/FieldMaxItemsError'
 import FieldPropertiesError from '../src/errors/FieldPropertiesError'
+import FieldAdditionalPropertiesError from '../src/errors/FieldAdditionalPropertiesError'
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {
@@ -48,6 +49,27 @@ describe('SchemaField', () => {
 
       it('should return the same input value', () => {
         expect(field.clean(' test ')).toBe('test')
+      })
+    })
+  })
+
+  describe('getAdditionalProperties()', () => {
+    describe('with additionalProperties = false', () => {
+      it('should return the false', () => {
+        const field = new SchemaField('field', { additionalProperties: false })
+        expect(field.getAdditionalProperties()).toBe(false)
+      })
+    })
+    describe('with additionalProperties = object', () => {
+      it('should return the object', () => {
+        const field = new SchemaField('field', { additionalProperties: { type: 'string' } })
+        expect(field.getAdditionalProperties()).toStrictEqual({ type: 'string' })
+      })
+    })
+    describe('with additionalProperties = undefined', () => {
+      it('should return undefined', () => {
+        const field = new SchemaField('field', {})
+        expect(field.getAdditionalProperties()).toBeUndefined()
       })
     })
   })
@@ -456,6 +478,47 @@ describe('SchemaField', () => {
 
       it('should throw a FieldError with a "reason" attribute', () => {
         expect(error.reason).toBe(ERROR_FIELD_REQUIRED)
+      })
+    })
+
+    describe('with additionalProperties', () => {
+      describe('additionalProperties = object', () => {
+        const field = new SchemaField('field', {
+          additionalProperties: { type: 'string' }
+        })
+
+        describe('with valid additional prop', () => {
+          it('should not throw', () => {
+            expect(() => {
+              field.validate({ other: 'ok' })
+            }).not.toThrow()
+          })
+        })
+
+        describe('with invalid additional prop', () => {
+          it('should check additional prop constraints', () => {
+            expect(() => {
+              field.validate({ other: 123 })
+            }).toThrow(FieldTypeError)
+            expect(() => {
+              field.validate({ other: true })
+            }).toThrow(FieldTypeError)
+          })
+        })
+      })
+
+      describe('additionalProperties = false', () => {
+        const field = new SchemaField('field', {
+          additionalProperties: false
+        })
+
+        describe('with additional prop', () => {
+          it('should throw FieldAdditionalPropertiesError', () => {
+            expect(() => {
+              field.validate({ other: 123 })
+            }).toThrow(FieldAdditionalPropertiesError)
+          })
+        })
       })
     })
 
