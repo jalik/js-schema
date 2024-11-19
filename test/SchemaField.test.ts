@@ -247,14 +247,14 @@ describe('SchemaField', () => {
     describe('with minimum = number', () => {
       it('should return a number', () => {
         const field = new SchemaField('field', { minimum: 30 })
-        expect(field.getMin()).toBe(30)
+        expect(field.getMinimum()).toBe(30)
       })
     })
 
     describe('with minimum = undefined', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {})
-        expect(field.getMin()).toBeUndefined()
+        expect(field.getMinimum()).toBeUndefined()
       })
     })
   })
