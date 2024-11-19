@@ -299,6 +299,22 @@ describe('SchemaField', () => {
     })
   })
 
+  describe('getProperties()', () => {
+    describe('with properties = object', () => {
+      it('should return the object', () => {
+        const field = new SchemaField('field', { properties: { a: { type: 'string' } } })
+        expect(field.getProperties()).toEqual({ a: { type: 'string' } })
+      })
+    })
+
+    describe('with properties = undefined', () => {
+      it('should return undefined', () => {
+        const field = new SchemaField('field', {})
+        expect(field.getProperties()).toBeUndefined()
+      })
+    })
+  })
+
   describe('getType()', () => {
     describe('with type defined', () => {
       it('should return the type', () => {
@@ -529,6 +545,9 @@ describe('SchemaField', () => {
         })
       })
     })
+
+    // todo add test for exclusiveMaximum
+    // todo add test for exclusiveMinimum
 
     describe('with items', () => {
       describe('items.type: "boolean"', () => {
@@ -1511,6 +1530,73 @@ describe('SchemaField', () => {
             })
               .not.toThrow()
           })
+        })
+      })
+    })
+
+    describe('with properties', () => {
+      describe('properties = object', () => {
+        const field = new SchemaField('field', {
+          properties: {
+            age: { type: 'number', minimum: 18 },
+            name: { type: 'string' }
+          }
+        })
+
+        describe('with undefined', () => {
+          it('should not throw', () => {
+            expect(() => {
+              field.validate(undefined)
+            }).not.toThrow()
+          })
+        })
+
+        describe('with correct value', () => {
+          it('should not throw', () => {
+            expect(() => {
+              field.validate({
+                age: 36,
+                name: 'Karl'
+              })
+            }).not.toThrow()
+            expect(() => {
+              field.validate({ age: 36 })
+            }).not.toThrow()
+          })
+        })
+
+        describe('with additional properties', () => {
+          it('should not throw', () => {
+            expect(() => {
+              field.validate({
+                name: 'Karl',
+                sex: 'm'
+              })
+            }).not.toThrow()
+          })
+        })
+
+        describe('with incorrect value', () => {
+          it('should throw FieldPropertiesError', () => {
+            expect(() => {
+              field.validate(12345)
+            }).toThrow(FieldPropertiesError)
+            expect(() => {
+              field.validate('wrong')
+            }).toThrow(FieldPropertiesError)
+            expect(() => {
+              field.validate(true)
+            }).toThrow(FieldPropertiesError)
+          })
+        })
+
+        it('should check properties constraints', () => {
+          expect(() => {
+            field.validate({ age: 15 })
+          }).toThrow(FieldMinimumError)
+          expect(() => {
+            field.validate({ age: '15' })
+          }).toThrow(FieldTypeError)
         })
       })
     })

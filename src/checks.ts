@@ -29,7 +29,7 @@ import {
   UriRegExp
 } from './regex'
 import Schema from './Schema'
-import { FieldProperties } from './SchemaField'
+import SchemaField, { FieldProperties } from './SchemaField'
 import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
@@ -55,7 +55,7 @@ export type FieldMinMax = number | Date
 export type FieldPattern = string | RegExp
 
 export type FieldType =
-  // https://json-schema.org/understanding-json-schema/reference/array#array
+// https://json-schema.org/understanding-json-schema/reference/array#array
   'array'
   // https://json-schema.org/understanding-json-schema/reference/boolean#boolean
   | 'boolean'
@@ -105,6 +105,7 @@ const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
   'parse',
   'pattern',
   'prepare',
+  'properties',
   'required',
   'title',
   'type',
@@ -310,6 +311,11 @@ export function checkFieldProperties (name: string, props: FieldProperties): voi
     throw new TypeError(`${name}.pattern must be a string, a RegExp or function`)
   }
 
+  const { properties } = props
+  if (typeof properties !== 'undefined' && (typeof properties !== 'object' || properties === null)) {
+    throw new TypeError(`${name}.properties must be an object`)
+  }
+
   // Check required
   const { required } = props
   if (!['undefined', 'function', 'boolean'].includes(typeof required)) {
@@ -510,6 +516,25 @@ export function checkPattern (pattern: FieldPattern, value: string, label: strin
 
   if (!regex.test(value)) {
     throw new FieldPatternError(label, regex, path)
+  }
+}
+
+/**
+ * Checks if the properties are valid.
+ * @param properties
+ * @param value
+ * @param label
+ * @param path
+ */
+export function checkProperties (properties: FieldProperties['properties'], value: Record<string, unknown>, label: string, path: string) {
+  if (properties != null) {
+    if (typeof value !== 'undefined' && (typeof value !== 'object' || value == null)) {
+      throw new FieldPropertiesError(label, properties, path)
+    }
+    for (const key in properties) {
+      const field = new SchemaField(label, properties[key])
+      field.validate(value[key])
+    }
   }
 }
 

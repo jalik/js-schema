@@ -20,6 +20,7 @@ export const ERROR_FIELD_MIN_LENGTH = 'field-min-length'
 export const ERROR_FIELD_MIN_WORDS = 'field-min-words'
 export const ERROR_FIELD_MULTIPLE_OF = 'field-multiple-of'
 export const ERROR_FIELD_PATTERN = 'field-pattern'
+export const ERROR_FIELD_PROPERTIES = 'field-properties'
 export const ERROR_FIELD_REQUIRED = 'field-required'
 export const ERROR_FIELD_TYPE = 'field-type'
 export const ERROR_FIELD_UNIQUE_ITEMS = 'field-unique-items'
@@ -44,6 +45,7 @@ const errors = [
   ERROR_FIELD_MIN_WORDS,
   ERROR_FIELD_MULTIPLE_OF,
   ERROR_FIELD_PATTERN,
+  ERROR_FIELD_PROPERTIES,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,

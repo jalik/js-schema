@@ -22,6 +22,7 @@ import {
   checkMinWords,
   checkMultipleOf,
   checkPattern,
+  checkProperties,
   checkRequired,
   checkType,
   checkTypeArray,
@@ -79,6 +80,8 @@ export type FieldProperties = {
   multipleOf?: number;
   // https://json-schema.org/understanding-json-schema/reference/string#regexp
   pattern?: FieldPattern;
+  // https://json-schema.org/understanding-json-schema/reference/object#properties
+  properties?: Record<string, FieldProperties>;
   required?: boolean;
   // https://json-schema.org/understanding-json-schema/reference/annotations
   title?: string;
@@ -252,6 +255,13 @@ class SchemaField<P extends FieldProperties> {
    */
   getPattern (): P['pattern'] {
     return this.props.pattern
+  }
+
+  /**
+   * Returns field's properties.
+   */
+  getProperties (): P['properties'] {
+    return this.props.properties
   }
 
   /**
@@ -531,6 +541,10 @@ class SchemaField<P extends FieldProperties> {
     // Test pattern (regexp)
     if (props.pattern != null) {
       checkPattern(props.pattern, newVal, label, path)
+    }
+    // Test properties
+    if (props.properties != null) {
+      checkProperties(props.properties, newVal, label, path)
     }
     // Execute custom checks
     if (props.check != null && !props.check.call(this, newVal, context)) {
