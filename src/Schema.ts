@@ -416,7 +416,7 @@ class Schema<F extends Fields = Fields> {
     Object.keys(this.fields).forEach((name: string): void => {
       const value = clone[name]
 
-      // Ignore missing field if allowed.
+      // Ignore missing field.
       if (typeof value !== 'undefined' || !opts.ignoreMissing) {
         try {
           clone[name] = this.fields[name].validate(value, opts)

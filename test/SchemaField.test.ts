@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from '@jest/globals'
 import { ERROR_FIELD_REQUIRED } from '../src/errors'
-import FieldAllowedError from '../src/errors/FieldAllowedError'
+import FieldEnumError from '../src/errors/FieldEnumError'
 import FieldDeniedError from '../src/errors/FieldDeniedError'
 import FieldError from '../src/errors/FieldError'
 import FieldFormatError from '../src/errors/FieldFormatError'
@@ -13,7 +13,7 @@ import FieldLengthError from '../src/errors/FieldLengthError'
 import FieldMaxError from '../src/errors/FieldMaxError'
 import FieldMaxLengthError from '../src/errors/FieldMaxLengthError'
 import FieldMaxWordsError from '../src/errors/FieldMaxWordsError'
-import FieldMinError from '../src/errors/FieldMinError'
+import FieldMinimumError from '../src/errors/FieldMinimumError'
 import FieldMinLengthError from '../src/errors/FieldMinLengthError'
 import FieldMinWordsError from '../src/errors/FieldMinWordsError'
 import FieldPatternError from '../src/errors/FieldPatternError'
@@ -51,15 +51,15 @@ describe('SchemaField', () => {
     })
   })
 
-  describe('getAllowed()', () => {
-    describe('with allowed: Array', () => {
-      it('should return an array', () => {
-        const field = new SchemaField('field', { allowed: [1, 0] })
+  describe('getEnum()', () => {
+    describe('with enum = Array', () => {
+      it('should return the array', () => {
+        const field = new SchemaField('field', { enum: [1, 0] })
         expect(field.getAllowed()).toStrictEqual([1, 0])
       })
     })
 
-    describe('with allowed: undefined', () => {
+    describe('with enum = undefined', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {})
         expect(field.getAllowed()).toBeUndefined()
@@ -195,18 +195,18 @@ describe('SchemaField', () => {
     })
   })
 
-  describe('getMax()', () => {
-    describe('with max: Number', () => {
-      it('should return a number', () => {
-        const field = new SchemaField('field', { max: 30 })
-        expect(field.getMax()).toBe(30)
+  describe('getMaximum()', () => {
+    describe('with maximum = number', () => {
+      it('should return maximum', () => {
+        const field = new SchemaField('field', { maximum: 30 })
+        expect(field.getMaximum()).toBe(30)
       })
     })
 
-    describe('with max: undefined', () => {
+    describe('with maximum = undefined', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {})
-        expect(field.getMax()).toBeUndefined()
+        expect(field.getMaximum()).toBeUndefined()
       })
     })
   })
@@ -243,15 +243,15 @@ describe('SchemaField', () => {
     })
   })
 
-  describe('getMin()', () => {
-    describe('with min: Number', () => {
+  describe('getMinimum()', () => {
+    describe('with minimum = number', () => {
       it('should return a number', () => {
-        const field = new SchemaField('field', { min: 30 })
+        const field = new SchemaField('field', { minimum: 30 })
         expect(field.getMin()).toBe(30)
       })
     })
 
-    describe('with min: undefined', () => {
+    describe('with minimum = undefined', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {})
         expect(field.getMin()).toBeUndefined()
@@ -431,23 +431,23 @@ describe('SchemaField', () => {
       })
     })
 
-    describe('with allowed and denied', () => {
+    describe('with enum and denied', () => {
       it('should throw TypeError', () => {
         expect(() => (
           new SchemaField('field', {
-            allowed: ['red'],
+            enum: ['red'],
             denied: ['blue']
           })
         )).toThrow(TypeError)
       })
     })
 
-    describe('with allowed', () => {
-      describe('allowed: Array', () => {
-        const field = new SchemaField('field', { allowed: ['off', 'on'] })
+    describe('with enum', () => {
+      describe('enum = Array', () => {
+        const field = new SchemaField('field', { enum: ['off', 'on'] })
 
         describe('with Array', () => {
-          describe('with allowed values', () => {
+          describe('with enum values', () => {
             it('should not throw FieldAllowedError', () => {
               expect(() => {
                 field.validate(['on'])
@@ -456,12 +456,12 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('without allowed values', () => {
+          describe('without enum values', () => {
             it('should throw FieldAllowedError', () => {
               expect(() => {
                 field.validate(['yes'])
               })
-                .toThrow(FieldAllowedError)
+                .toThrow(FieldEnumError)
             })
           })
         })
@@ -930,12 +930,12 @@ describe('SchemaField', () => {
       // todo add tests with format: Function
     })
 
-    describe('with max', () => {
-      describe('max: Number', () => {
-        const field = new SchemaField('field', { max: 0 })
+    describe('with maximum', () => {
+      describe('maximum: number', () => {
+        const field = new SchemaField('field', { maximum: 0 })
 
         describe('with number', () => {
-          describe('with value higher than max', () => {
+          describe('with value higher than maximum', () => {
             it('should throw FieldMaxError', () => {
               expect(() => {
                 field.validate(10)
@@ -944,7 +944,7 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('with value equal to max', () => {
+          describe('with value equal to maximum', () => {
             it('should not throw FieldMaxError', () => {
               expect(() => {
                 field.validate(0)
@@ -953,7 +953,7 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('with value lower than max', () => {
+          describe('with value lower than maximum', () => {
             it('should not throw FieldMaxError', () => {
               expect(() => {
                 field.validate(-10)
@@ -964,7 +964,7 @@ describe('SchemaField', () => {
         })
 
         describe('with array', () => {
-          describe('with values higher than max', () => {
+          describe('with values higher than maximum', () => {
             it('should throw FieldMaxError', () => {
               expect(() => {
                 field.validate([10])
@@ -973,7 +973,7 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('with values equal to max', () => {
+          describe('with values equal to maximum', () => {
             it('should not throw FieldMaxError', () => {
               expect(() => {
                 field.validate([0])
@@ -982,7 +982,7 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('with values lower than max', () => {
+          describe('with values lower than maximum', () => {
             it('should not throw FieldMaxError', () => {
               expect(() => {
                 field.validate([-10])
@@ -993,11 +993,11 @@ describe('SchemaField', () => {
         })
       })
 
-      describe('max: Date', () => {
+      describe('maximum: Date', () => {
         const date = new Date()
-        const field = new SchemaField('field', { max: date })
+        const field = new SchemaField('field', { maximum: date })
 
-        describe('with date higher than max', () => {
+        describe('with date higher than maximum', () => {
           it('should throw FieldMaxError', () => {
             expect(() => {
               field.validate(new Date(date.getTime() + 1000))
@@ -1006,7 +1006,7 @@ describe('SchemaField', () => {
           })
         })
 
-        describe('with date equal to max', () => {
+        describe('with date equal to maximum', () => {
           it('should not throw FieldMaxError', () => {
             expect(() => {
               field.validate(date)
@@ -1015,7 +1015,7 @@ describe('SchemaField', () => {
           })
         })
 
-        describe('with date lower than max', () => {
+        describe('with date lower than maximum', () => {
           it('should not throw FieldMaxError', () => {
             expect(() => {
               field.validate(new Date(date.getTime() - 1000))
@@ -1024,8 +1024,6 @@ describe('SchemaField', () => {
           })
         })
       })
-
-      // todo add tests with max: Function
     })
 
     describe('with maxItems', () => {
@@ -1162,21 +1160,21 @@ describe('SchemaField', () => {
       // todo add tests with maxWords: Function
     })
 
-    describe('with min', () => {
-      describe('min: Number', () => {
-        const field = new SchemaField('field', { min: 0 })
+    describe('with minimum', () => {
+      describe('minimum = number', () => {
+        const field = new SchemaField('field', { minimum: 0 })
 
         describe('with number', () => {
-          describe('with value lower than min', () => {
+          describe('with value lower than minimum', () => {
             it('should throw FieldMinError', () => {
               expect(() => {
                 field.validate(-10)
               })
-                .toThrow(FieldMinError)
+                .toThrow(FieldMinimumError)
             })
           })
 
-          describe('with value equal to min', () => {
+          describe('with value equal to minimum', () => {
             it('should not throw FieldMinError', () => {
               expect(() => {
                 field.validate(0)
@@ -1185,7 +1183,7 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('with value higher than min', () => {
+          describe('with value higher than minimum', () => {
             it('should not throw FieldMinError', () => {
               expect(() => {
                 field.validate(10)
@@ -1196,16 +1194,16 @@ describe('SchemaField', () => {
         })
 
         describe('with array', () => {
-          describe('with values lower than min', () => {
+          describe('with values lower than minimum', () => {
             it('should throw FieldMinError', () => {
               expect(() => {
                 field.validate([-10])
               })
-                .toThrow(FieldMinError)
+                .toThrow(FieldMinimumError)
             })
           })
 
-          describe('with values equal to min', () => {
+          describe('with values equal to minimum', () => {
             it('should not throw FieldMinError', () => {
               expect(() => {
                 field.validate([0])
@@ -1214,7 +1212,7 @@ describe('SchemaField', () => {
             })
           })
 
-          describe('with values higher than min', () => {
+          describe('with values higher than minimum', () => {
             it('should not throw FieldMinError', () => {
               expect(() => {
                 field.validate([10])
@@ -1225,20 +1223,20 @@ describe('SchemaField', () => {
         })
       })
 
-      describe('min: Date', () => {
+      describe('minimum = Date', () => {
         const date = new Date()
-        const field = new SchemaField('field', { min: date })
+        const field = new SchemaField('field', { minimum: date })
 
-        describe('with date lower than min', () => {
+        describe('with date lower than minimum', () => {
           it('should throw FieldMinError', () => {
             expect(() => {
               field.validate(new Date(date.getTime() - 1000))
             })
-              .toThrow(FieldMinError)
+              .toThrow(FieldMinimumError)
           })
         })
 
-        describe('with date equal to min', () => {
+        describe('with date equal to minimum', () => {
           it('should not throw FieldMinError', () => {
             expect(() => {
               field.validate(date)
@@ -1247,7 +1245,7 @@ describe('SchemaField', () => {
           })
         })
 
-        describe('with date higher than min', () => {
+        describe('with date higher than minimum', () => {
           it('should not throw FieldMinError', () => {
             expect(() => {
               field.validate(new Date(date.getTime() + 1000))
@@ -1256,8 +1254,6 @@ describe('SchemaField', () => {
           })
         })
       })
-
-      // todo add tests with min: Function
     })
 
     describe('with minItems', () => {
