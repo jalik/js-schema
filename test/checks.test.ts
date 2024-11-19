@@ -1,11 +1,12 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { describe, expect, it } from '@jest/globals'
-import { checkAllowed } from '../src/checks'
+import { checkAllowed, checkType } from '../src/checks'
 import FieldAllowedError from '../src/errors/FieldAllowedError'
+import FieldTypeError from '../src/errors/FieldTypeError'
 
 describe('checkAllowed', () => {
   describe('with value allowed', () => {
@@ -20,6 +21,25 @@ describe('checkAllowed', () => {
       expect(() => {
         checkAllowed([0, 1], 2, 'number', 'numbers')
       }).toThrow(FieldAllowedError)
+    })
+  })
+})
+
+describe('checkType', () => {
+  describe('with type = "null"', () => {
+    describe('with value = null', () => {
+      it('should not throw an Error', () => {
+        expect(() => {
+          checkType('null', null, 'field', 'field')
+        }).not.toThrow()
+      })
+    })
+    describe('with value !== null', () => {
+      it('should throw a FieldTypeError', () => {
+        expect(() => {
+          checkType('null', 'null', 'field', 'field')
+        }).toThrow(FieldTypeError)
+      })
     })
   })
 })

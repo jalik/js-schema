@@ -55,6 +55,7 @@ export type FieldType =
   | 'boolean'
   | 'function' // todo remove in v5
   | 'integer'
+  | 'null'
   | 'number'
   | 'object'
   | 'string'
@@ -499,7 +500,7 @@ export function checkRequired (required: boolean, value: any, label: string, pat
  */
 export function checkType (
   type: FieldType,
-  value: any[] | boolean | number | object | string | ((...args: any[]) => void),
+  value: any[] | boolean | null | number | object | string | ((...args: any[]) => void),
   label: string,
   path: string
 ): void {
@@ -522,6 +523,11 @@ export function checkType (
         break
       case 'integer':
         if (typeof value !== 'number' || Number.isNaN(value) || value !== Math.round(value)) {
+          throw new FieldTypeError(label, type, path)
+        }
+        break
+      case 'null':
+        if (value !== null) {
           throw new FieldTypeError(label, type, path)
         }
         break

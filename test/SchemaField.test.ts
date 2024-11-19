@@ -267,14 +267,19 @@ describe('SchemaField', () => {
   })
 
   describe('getType()', () => {
-    describe('with type: String', () => {
-      it('should return a string', () => {
-        const field = new SchemaField('field', { type: 'string' })
-        expect(field.getType()).toBe('string')
+    describe('with type defined', () => {
+      it('should return the type', () => {
+        expect(new SchemaField('field', { type: 'array' }).getType()).toBe('array')
+        expect(new SchemaField('field', { type: 'boolean' }).getType()).toBe('boolean')
+        expect(new SchemaField('field', { type: 'integer' }).getType()).toBe('integer')
+        expect(new SchemaField('field', { type: 'null' }).getType()).toBe('null')
+        expect(new SchemaField('field', { type: 'number' }).getType()).toBe('number')
+        expect(new SchemaField('field', { type: 'object' }).getType()).toBe('object')
+        expect(new SchemaField('field', { type: 'string' }).getType()).toBe('string')
       })
     })
 
-    describe('with type: undefined', () => {
+    describe('with type undefined', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {})
         expect(field.getType()).toBeUndefined()
