@@ -147,18 +147,18 @@ describe('SchemaField', () => {
     })
   })
 
-  describe('getLabel()', () => {
-    describe('with label: String', () => {
-      it('should return label', () => {
-        const field = new SchemaField('field', { label: 'My Field' })
-        expect(field.getLabel()).toEqual('My Field')
+  describe('getTitle()', () => {
+    describe('with title = string', () => {
+      it('should return title', () => {
+        const field = new SchemaField('field', { title: 'My Field' })
+        expect(field.getTitle()).toEqual('My Field')
       })
     })
 
-    describe('with label: undefined', () => {
+    describe('with title = undefined', () => {
       it('should return field\'s name', () => {
         const field = new SchemaField('field', {})
-        expect(field.getLabel()).toBe('field')
+        expect(field.getTitle()).toBe('field')
       })
     })
   })
@@ -391,10 +391,11 @@ describe('SchemaField', () => {
   describe('toJSON()', () => {
     it('should return field as JSON object', () => {
       const p: FieldProperties = {
+        title: 'field',
         type: 'string',
         required: true
       }
-      expect(new SchemaField('field', p).toJSON()).toEqual({ ...p, label: 'field' })
+      expect(new SchemaField('field', p).toJSON()).toEqual(p)
     })
   })
 
