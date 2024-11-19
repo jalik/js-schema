@@ -91,7 +91,6 @@ const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
   'exclusiveMinimum',
   'format',
   'items',
-  'label',
   'length',
   'maximum',
   'maxItems',
@@ -106,6 +105,7 @@ const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
   'pattern',
   'prepare',
   'required',
+  'title',
   'type',
   'uniqueItems'
 ]
@@ -245,8 +245,8 @@ export function checkFieldProperties (name: string, props: FieldProperties): voi
   }
 
   // Check label
-  const { label } = props
-  if (!['undefined', 'function', 'string'].includes(typeof label)) {
+  const { title } = props
+  if (!['undefined', 'function', 'string'].includes(typeof title)) {
     throw new TypeError(`${name}.label must be a string or function`)
   }
 

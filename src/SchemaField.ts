@@ -59,7 +59,6 @@ export type FieldProperties = {
   format?: FieldFormat;
   // https://json-schema.org/understanding-json-schema/reference/array#items
   items?: FieldItems;
-  label?: string;
   // https://json-schema.org/understanding-json-schema/reference/string#length
   length?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
@@ -81,6 +80,8 @@ export type FieldProperties = {
   // https://json-schema.org/understanding-json-schema/reference/string#regexp
   pattern?: FieldPattern;
   required?: boolean;
+  // https://json-schema.org/understanding-json-schema/reference/annotations
+  title?: string;
   // https://json-schema.org/understanding-json-schema/reference/type
   type?: FieldType;
   // https://json-schema.org/understanding-json-schema/reference/array#uniqueItems
@@ -99,7 +100,7 @@ class SchemaField<P extends FieldProperties> {
     // Default properties
     const props: P = {
       ...properties,
-      label: properties.label ?? name
+      title: properties.title ?? name
     }
 
     checkFieldProperties(name, props)
@@ -190,13 +191,6 @@ class SchemaField<P extends FieldProperties> {
   }
 
   /**
-   * Returns field's label.
-   */
-  getLabel (): P['label'] {
-    return this.props.label
-  }
-
-  /**
    * Returns field's length.
    */
   getLength (): P['length'] {
@@ -257,6 +251,13 @@ class SchemaField<P extends FieldProperties> {
    */
   getPattern (): P['pattern'] {
     return this.props.pattern
+  }
+
+  /**
+   * Returns field's title.
+   */
+  getTitle (): P['title'] {
+    return this.props.title
   }
 
   /**
@@ -371,7 +372,7 @@ class SchemaField<P extends FieldProperties> {
       path
     } = opts
     const props = this.props
-    const label = props.label ?? this.name
+    const label = props.title ?? this.name
     const isRequired: boolean = props.required ?? false
     const isArray: boolean = props.type === 'array' || props.type instanceof Array
 
