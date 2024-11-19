@@ -82,7 +82,7 @@ class Schema<F extends Fields = Fields> {
     const fields: Fields = {}
 
     Object.keys(this.fields).forEach((name) => {
-      fields[name] = this.fields[name].getProperties()
+      fields[name] = this.fields[name].toJSON()
     })
     return new Schema(deepExtend({}, fields))
   }
@@ -95,7 +95,7 @@ class Schema<F extends Fields = Fields> {
     const fields: Fields = {}
 
     Object.keys(this.fields).forEach((name) => {
-      fields[name] = this.fields[name].getProperties()
+      fields[name] = this.fields[name].toJSON()
     })
     return new Schema(deepExtend({}, fields, newFields))
   }
@@ -171,7 +171,7 @@ class Schema<F extends Fields = Fields> {
 
     Object.keys(this.fields).forEach((name) => {
       if (!fieldNames.includes(name as K)) {
-        fields[name] = this.fields[name].getProperties()
+        fields[name] = this.fields[name].toJSON()
       }
     })
     return new Schema(deepExtend({}, fields))
@@ -199,7 +199,7 @@ class Schema<F extends Fields = Fields> {
     const fields: Fields = {}
 
     Object.keys(this.fields).forEach((name) => {
-      fields[name] = deepExtend({}, this.fields[name].getProperties())
+      fields[name] = deepExtend({}, this.fields[name].toJSON())
       fields[name].required = false
     })
     return new Schema(deepExtend({}, fields))
@@ -214,7 +214,7 @@ class Schema<F extends Fields = Fields> {
 
     fieldNames.forEach((name) => {
       if (typeof this.fields[name] !== 'undefined') {
-        fields[String(name)] = this.fields[name].getProperties()
+        fields[String(name)] = this.fields[name].toJSON()
       }
     })
     return new Schema(deepExtend({}, fields))
@@ -255,7 +255,7 @@ class Schema<F extends Fields = Fields> {
     const fields = {} as Fields
 
     Object.keys(this.fields).forEach((name: string): void => {
-      fields[name] = deepExtend({}, this.fields[name].getProperties())
+      fields[name] = deepExtend({}, this.fields[name].toJSON())
       fields[name].required = true
     })
     return new Schema(deepExtend({}, fields))
@@ -338,7 +338,7 @@ class Schema<F extends Fields = Fields> {
     // Get nested field
     if (typeof subPath === 'string' && subPath.length > 0) {
       const type = field.getType()
-      const props = field.getProperties()
+      const props = field.toJSON()
 
       if (type instanceof Schema) {
         return type.resolveField(subPath, true)

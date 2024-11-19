@@ -20,7 +20,7 @@ import FieldPatternError from '../src/errors/FieldPatternError'
 import FieldRequiredError from '../src/errors/FieldRequiredError'
 import FieldTypeError from '../src/errors/FieldTypeError'
 import ValidationError from '../src/errors/ValidationError'
-import SchemaField from '../src/SchemaField'
+import SchemaField, { FieldProperties } from '../src/SchemaField'
 import FieldUniqueItemsError from '../src/errors/FieldUniqueItemsError'
 import FieldMultipleOfError from '../src/errors/FieldMultipleOfError'
 import FieldMinItemsError from '../src/errors/FieldMinItemsError'
@@ -385,6 +385,16 @@ describe('SchemaField', () => {
         expect(field.parse<Date>('2018-04-05')?.getTime())
           .toBe(new Date(2018, 3, 5).getTime())
       })
+    })
+  })
+
+  describe('toJSON()', () => {
+    it('should return field as JSON object', () => {
+      const p: FieldProperties = {
+        type: 'string',
+        required: true
+      }
+      expect(new SchemaField('field', p).toJSON()).toEqual({ ...p, label: 'field' })
     })
   })
 
