@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_TYPE } from '../errors'
@@ -13,7 +13,7 @@ class FieldTypeError extends FieldError {
     super(field, path, ERROR_FIELD_TYPE)
     Object.setPrototypeOf(this, FieldTypeError.prototype)
     this.type = type
-    this.message = 'The field type is not valid.'
+    this.message = `The field "${path}" must be of type "${type}".`
   }
 }
 

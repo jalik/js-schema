@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_PATTERN } from '../errors'
@@ -13,7 +13,7 @@ class FieldPatternError extends FieldError {
     super(field, path, ERROR_FIELD_PATTERN)
     Object.setPrototypeOf(this, FieldPatternError.prototype)
     this.pattern = pattern
-    this.message = `The field does not match the pattern "${pattern}".`
+    this.message = `The field "${path}" must match the pattern "${pattern}".`
   }
 }
 

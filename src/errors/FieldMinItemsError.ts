@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MIN_ITEMS } from '../errors'
@@ -13,7 +13,7 @@ class FieldMinItemsError extends FieldError {
     super(field, path, ERROR_FIELD_MIN_ITEMS)
     Object.setPrototypeOf(this, FieldMinItemsError.prototype)
     this.minItems = minItems
-    this.message = `The field must contain at least ${minItems} items.`
+    this.message = `The field "${path}" must contain at least ${minItems} items.`
   }
 }
 

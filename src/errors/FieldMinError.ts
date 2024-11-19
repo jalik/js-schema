@@ -14,7 +14,7 @@ class FieldMinError extends FieldError {
     super(field, path, ERROR_FIELD_MIN)
     Object.setPrototypeOf(this, FieldMinError.prototype)
     this.min = min
-    this.message = `The field must be greater than or equal to ${min}.`
+    this.message = `The field "${path}" must be greater than or equal to ${min}.`
   }
 }
 

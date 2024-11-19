@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MULTIPLE_OF } from '../errors'
@@ -13,7 +13,7 @@ class FieldMultipleOfError extends FieldError {
     super(field, path, ERROR_FIELD_MULTIPLE_OF)
     Object.setPrototypeOf(this, FieldMultipleOfError.prototype)
     this.multipleOf = multipleOf
-    this.message = `The field must be a multiple of ${multipleOf}.`
+    this.message = `The field "${path}" must be a multiple of ${multipleOf}.`
   }
 }
 
