@@ -83,6 +83,38 @@ describe('SchemaField', () => {
     })
   })
 
+  describe('getExclusiveMaximum()', () => {
+    describe('with exclusiveMaximum = number', () => {
+      it('should return exclusiveMaximum', () => {
+        const field = new SchemaField('field', { exclusiveMaximum: 30 })
+        expect(field.getExclusiveMaximum()).toBe(30)
+      })
+    })
+
+    describe('with exclusiveMaximum = undefined', () => {
+      it('should return undefined', () => {
+        const field = new SchemaField('field', {})
+        expect(field.getExclusiveMaximum()).toBeUndefined()
+      })
+    })
+  })
+
+  describe('getExclusiveMinimum()', () => {
+    describe('with exclusiveMinimum = number', () => {
+      it('should return exclusiveMinimum', () => {
+        const field = new SchemaField('field', { exclusiveMinimum: 0 })
+        expect(field.getExclusiveMinimum()).toBe(0)
+      })
+    })
+
+    describe('with exclusiveMinimum = undefined', () => {
+      it('should return undefined', () => {
+        const field = new SchemaField('field', {})
+        expect(field.getExclusiveMinimum()).toBeUndefined()
+      })
+    })
+  })
+
   describe('getFormat()', () => {
     describe('with format: String', () => {
       it('should return format', () => {

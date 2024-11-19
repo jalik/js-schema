@@ -6,6 +6,8 @@
 import {
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
+  ERROR_FIELD_EXCLUSIVE_MAXIMUM,
+  ERROR_FIELD_EXCLUSIVE_MINIMUM,
   ERROR_FIELD_FORMAT,
   ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
@@ -22,12 +24,16 @@ import {
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,
-  ERROR_FIELD_UNKNOWN
+  ERROR_FIELD_UNKNOWN,
+  ERROR_VALIDATION
 } from '../errors'
+import { LocaleData } from '../locale'
 
 const en = {
   [ERROR_FIELD_ALLOWED]: 'The field must contain an allowed value ({allowed}).',
   [ERROR_FIELD_DENIED]: 'The field contains a denied value ({denied}).',
+  [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'The field must be lesser than {max}.',
+  [ERROR_FIELD_EXCLUSIVE_MINIMUM]: 'The field must be greater than {min}',
   [ERROR_FIELD_FORMAT]: 'The field does not match format ({format}).',
   [ERROR_FIELD_INVALID]: 'The field is not valid.',
   [ERROR_FIELD_LENGTH]: 'The field must have a length of {length}.',

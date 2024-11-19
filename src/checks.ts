@@ -32,6 +32,8 @@ import Schema from './Schema'
 import { FieldProperties } from './SchemaField'
 import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMaxItemsError from './errors/FieldMaxItemsError'
+import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
+import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 
 export type FieldFormat =
   'date'
@@ -134,6 +136,32 @@ export function checkDenied (denied: any[], value: any, label: string, path: str
     }
   } else if (denied.includes(value)) {
     throw new FieldDeniedError(label, denied, path)
+  }
+}
+
+/**
+ * Checks if the value is lesser than or equal to max (excluded).
+ * @param max
+ * @param value
+ * @param label
+ * @param path
+ */
+export function checkExclusiveMaximum (max: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+  if (value >= max) {
+    throw new FieldExclusiveMaximumError(label, max, path)
+  }
+}
+
+/**
+ * Checks if the value is greater than or equal to min (excluded).
+ * @param min
+ * @param value
+ * @param label
+ * @param path
+ */
+export function checkExclusiveMinimum (min: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+  if (value <= min) {
+    throw new FieldExclusiveMinimumError(label, min, path)
   }
 }
 
@@ -349,7 +377,7 @@ export function checkLength (length: number, value: {
  * @param label
  * @param path
  */
-export function checkMax (max: FieldMinMax, value: number | Date, label: string, path: string): void {
+export function checkMax (max: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
   if (value > max) {
     throw new FieldMaxError(label, max, path)
   }
@@ -403,7 +431,7 @@ export function checkMaxWords (maxWords: number, value: string, label: string, p
  * @param label
  * @param path
  */
-export function checkMin (min: FieldMinMax, value: number | Date, label: string, path: string): void {
+export function checkMin (min: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
   if (typeof min !== 'undefined' && value < min) {
     throw new FieldMinError(label, min, path)
   }

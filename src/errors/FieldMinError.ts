@@ -1,15 +1,16 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MIN } from '../errors'
 import FieldError from './FieldError'
+import { FieldMinMax } from '../checks'
 
 class FieldMinError extends FieldError {
-  public min: number | Date
+  public min: FieldMinMax
 
-  constructor (field: string, min: number | Date, path: string) {
+  constructor (field: string, min: FieldMinMax, path: string) {
     super(field, path, ERROR_FIELD_MIN)
     Object.setPrototypeOf(this, FieldMinError.prototype)
     this.min = min

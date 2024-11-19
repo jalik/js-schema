@@ -6,6 +6,8 @@
 import {
   ERROR_FIELD_ALLOWED,
   ERROR_FIELD_DENIED,
+  ERROR_FIELD_EXCLUSIVE_MAXIMUM,
+  ERROR_FIELD_EXCLUSIVE_MINIMUM,
   ERROR_FIELD_FORMAT,
   ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
@@ -22,12 +24,16 @@ import {
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,
-  ERROR_FIELD_UNKNOWN
+  ERROR_FIELD_UNKNOWN,
+  ERROR_VALIDATION
 } from '../errors'
+import { LocaleData } from '../locale'
 
 const fr = {
   [ERROR_FIELD_ALLOWED]: 'Le champ doit contenir une valeur autorisée ({allowed}).',
   [ERROR_FIELD_DENIED]: 'Le champ contient une valeur interdite ({denied}).',
+  [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'Le champ doit être inférieur à {max}.',
+  [ERROR_FIELD_EXCLUSIVE_MINIMUM]: 'Le champ doit être supérieur à {min}',
   [ERROR_FIELD_FORMAT]: 'Le champ ne correspond pas au format attendu ({format}).',
   [ERROR_FIELD_INVALID]: 'Le champ n\'est pas valide.',
   [ERROR_FIELD_LENGTH]: 'Le champ doit avoir une taille égale à {length}.',

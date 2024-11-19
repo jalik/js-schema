@@ -7,6 +7,8 @@ import deepExtend from '@jalik/deep-extend'
 import {
   checkAllowed,
   checkDenied,
+  checkExclusiveMaximum,
+  checkExclusiveMinimum,
   checkFieldProperties,
   checkFormat,
   checkLength,
@@ -48,6 +50,8 @@ export type FieldProperties = {
   check? (value: any, context?: Record<string, unknown>): boolean;
   clean? (value: any): any;
   denied?: any[];
+  exclusiveMaximum?: FieldMinMax;
+  exclusiveMinimum?: FieldMinMax;
   format?: FieldFormat;
   items?: FieldItems;
   label?: string;
@@ -137,6 +141,20 @@ class SchemaField<P extends FieldProperties> {
    */
   getDenied (): P['denied'] {
     return this.properties.denied
+  }
+
+  /**
+   * Returns the field's exclusive maximum value.
+   */
+  getExclusiveMaximum (): P['exclusiveMaximum'] {
+    return this.properties.exclusiveMaximum
+  }
+
+  /**
+   * Returns the field's exclusive minimum value.
+   */
+  getExclusiveMinimum (): P['exclusiveMinimum'] {
+    return this.properties.exclusiveMinimum
   }
 
   /**
@@ -381,7 +399,7 @@ class SchemaField<P extends FieldProperties> {
         // Check if value is an instance of the function.
         if (!(newVal instanceof props.type)) {
           throw new FieldTypeError(label,
-          // @ts-ignore
+            // @ts-ignore
             props.type.name,
             path)
         }
@@ -436,6 +454,14 @@ class SchemaField<P extends FieldProperties> {
     // Check denied values
     if (props.denied != null) {
       checkDenied(props.denied, newVal, label, path)
+    }
+    // Check exclusive maximal value
+    if (props.exclusiveMaximum != null) {
+      checkExclusiveMaximum(props.exclusiveMaximum, newVal, label, path)
+    }
+    // Check exclusive minimal value
+    if (props.exclusiveMinimum != null) {
+      checkExclusiveMinimum(props.exclusiveMinimum, newVal, label, path)
     }
     // Check string format
     if (props.format != null) {
