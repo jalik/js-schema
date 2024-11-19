@@ -209,7 +209,7 @@ class SchemaField<P extends FieldProperties> {
   /**
    * Returns field's minimal value.
    */
-  getMin (): P['minimum'] {
+  getMinimum (): P['minimum'] {
     return this.properties.minimum
   }
 
