@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_ALLOWED } from '../errors'
@@ -13,7 +13,7 @@ class FieldAllowedError extends FieldError {
     super(field, path, ERROR_FIELD_ALLOWED)
     Object.setPrototypeOf(this, FieldAllowedError.prototype)
     this.allowed = allowed
-    this.message = `The field must contain an allowed value (${allowed}).`
+    this.message = `The field "${path}" must be one of: ${allowed}.`
   }
 }
 

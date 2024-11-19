@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_LENGTH } from '../errors'
@@ -13,7 +13,7 @@ class FieldLengthError extends FieldError {
     super(field, path, ERROR_FIELD_LENGTH)
     Object.setPrototypeOf(this, FieldLengthError.prototype)
     this.length = length
-    this.message = `The field must have a length of ${length}.`
+    this.message = `The field "${path}" must have a length of ${length}.`
   }
 }
 

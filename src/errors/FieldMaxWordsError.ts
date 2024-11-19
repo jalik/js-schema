@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MAX_WORDS } from '../errors'
@@ -13,7 +13,7 @@ class FieldMaxWordsError extends FieldError {
     super(field, path, ERROR_FIELD_MAX_WORDS)
     Object.setPrototypeOf(this, FieldMaxWordsError.prototype)
     this.maxWords = maxWords
-    this.message = `The field must not contain more than ${maxWords} words.`
+    this.message = `The field "${path}" must not contain more than ${maxWords} words.`
   }
 }
 

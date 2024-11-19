@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MIN_LENGTH } from '../errors'
@@ -13,7 +13,7 @@ class FieldMinLengthError extends FieldError {
     super(field, path, ERROR_FIELD_MIN_LENGTH)
     Object.setPrototypeOf(this, FieldMinLengthError.prototype)
     this.minLength = minLength
-    this.message = `The field must have a length that is greater than or equal to ${minLength}.`
+    this.message = `The field "${path}" must have a length that is greater than or equal to ${minLength}.`
   }
 }
 

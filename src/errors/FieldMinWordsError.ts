@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MIN_WORDS } from '../errors'
@@ -13,7 +13,7 @@ class FieldMinWordsError extends FieldError {
     super(field, path, ERROR_FIELD_MIN_WORDS)
     Object.setPrototypeOf(this, FieldMinWordsError.prototype)
     this.minWords = minWords
-    this.message = `The field must contain at least ${minWords} words.`
+    this.message = `The field "${path}" must contain at least ${minWords} words.`
   }
 }
 

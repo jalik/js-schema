@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_MAX_ITEMS } from '../errors'
@@ -13,7 +13,7 @@ class FieldMaxItemsError extends FieldError {
     super(field, path, ERROR_FIELD_MAX_ITEMS)
     Object.setPrototypeOf(this, FieldMaxItemsError.prototype)
     this.maxItems = maxItems
-    this.message = `The field must contain at most ${maxItems} items.`
+    this.message = `The field "${path}" must contain at most ${maxItems} items.`
   }
 }
 

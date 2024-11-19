@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { ERROR_FIELD_FORMAT } from '../errors'
@@ -13,7 +13,7 @@ class FieldFormatError extends FieldError {
     super(field, path, ERROR_FIELD_FORMAT)
     Object.setPrototypeOf(this, FieldFormatError.prototype)
     this.format = format
-    this.message = `The field does not match format (${format}).`
+    this.message = `The field "${path}" must match the format "${format}".`
   }
 }
 

@@ -14,7 +14,7 @@ class FieldMaxError extends FieldError {
     super(field, path, ERROR_FIELD_MAX)
     Object.setPrototypeOf(this, FieldMaxError.prototype)
     this.max = max
-    this.message = `The field must be lesser than or equal to ${max}.`
+    this.message = `The field "${path}" must be lesser than or equal to ${max}.`
   }
 }
 

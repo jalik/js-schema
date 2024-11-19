@@ -14,7 +14,7 @@ class FieldExclusiveMinimumError extends FieldError {
     super(field, path, ERROR_FIELD_EXCLUSIVE_MINIMUM)
     Object.setPrototypeOf(this, FieldExclusiveMinimumError.prototype)
     this.min = min
-    this.message = `The field must be greater than ${min}.`
+    this.message = `The field "${path}" must be greater than ${min}.`
   }
 }
 
