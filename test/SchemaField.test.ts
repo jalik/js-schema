@@ -55,14 +55,14 @@ describe('SchemaField', () => {
     describe('with enum = Array', () => {
       it('should return the array', () => {
         const field = new SchemaField('field', { enum: [1, 0] })
-        expect(field.getAllowed()).toStrictEqual([1, 0])
+        expect(field.getEnum()).toStrictEqual([1, 0])
       })
     })
 
     describe('with enum = undefined', () => {
       it('should return undefined', () => {
         const field = new SchemaField('field', {})
-        expect(field.getAllowed()).toBeUndefined()
+        expect(field.getEnum()).toBeUndefined()
       })
     })
   })

@@ -152,7 +152,7 @@ class SchemaField<P extends FieldProperties> {
   /**
    * Returns field's enum values.
    */
-  getAllowed (): P['enum'] {
+  getEnum (): P['enum'] {
     return this.props.enum
   }
 
