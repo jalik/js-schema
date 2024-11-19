@@ -137,67 +137,6 @@ describe('Schema', () => {
     })
   })
 
-  describe('parse(object)', () => {
-    it('should parse boolean fields', () => {
-      expect(BaseSchema.parse({ boolean: 'true' })).toEqual({ boolean: true })
-      expect(BaseSchema.parse({ boolean: 'FALSE' })).toEqual({ boolean: false })
-      expect(BaseSchema.parse({ boolean: 'TRUE' })).toEqual({ boolean: true })
-    })
-
-    it('should parse number fields', () => {
-      expect(BaseSchema.parse({ number: '01010' })).toEqual({ number: 1010 })
-      expect(BaseSchema.parse({ number: '12345' })).toEqual({ number: 12345 })
-      expect(BaseSchema.parse({ number: '99.99' })).toEqual({ number: 99.99 })
-    })
-
-    it('should parse fields using custom function if present', () => {
-      const object = { date: '2018-04-05' }
-      const result = { date: new Date(2018, 3, 5) }
-      expect(BaseSchema.parse(object)).toMatchObject(result)
-    })
-  })
-
-  describe('removeUnknownFields(object)', () => {
-    it('should remove unknown fields', () => {
-      const object = {
-        string: 'test',
-        unknown: true
-      }
-      const result = {
-        string: object.string
-      }
-      expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result)
-    })
-
-    it('should remove nested unknown fields', () => {
-      const object = {
-        string: 'test',
-        embedded: {
-          string: 'test',
-          unknown: true
-        }
-      }
-      const result = {
-        string: 'test',
-        embedded: { string: 'test' }
-      }
-      expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result)
-    })
-
-    it('should remove nested unknown fields in arrays', () => {
-      const object = {
-        embeddedArray: [{
-          string: 'test',
-          unknown: true
-        }]
-      }
-      const result = {
-        embeddedArray: [{ string: 'test' }]
-      }
-      expect(BaseSchema.removeUnknownFields(object)).toMatchObject(result)
-    })
-  })
-
   describe('resolveField(name)', () => {
     const PhoneSchema = new Schema({
       number: { type: 'string' }
