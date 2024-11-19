@@ -10,7 +10,7 @@ import FieldDeniedError from '../src/errors/FieldDeniedError'
 import FieldError from '../src/errors/FieldError'
 import FieldFormatError from '../src/errors/FieldFormatError'
 import FieldLengthError from '../src/errors/FieldLengthError'
-import FieldMaxError from '../src/errors/FieldMaxError'
+import FieldMaximumError from '../src/errors/FieldMaximumError'
 import FieldMaxLengthError from '../src/errors/FieldMaxLengthError'
 import FieldMaxWordsError from '../src/errors/FieldMaxWordsError'
 import FieldMinimumError from '../src/errors/FieldMinimumError'
@@ -25,6 +25,7 @@ import FieldUniqueItemsError from '../src/errors/FieldUniqueItemsError'
 import FieldMultipleOfError from '../src/errors/FieldMultipleOfError'
 import FieldMinItemsError from '../src/errors/FieldMinItemsError'
 import FieldMaxItemsError from '../src/errors/FieldMaxItemsError'
+import FieldPropertiesError from '../src/errors/FieldPropertiesError'
 
 describe('SchemaField', () => {
   it('should be importable from package', () => {
@@ -951,7 +952,7 @@ describe('SchemaField', () => {
               expect(() => {
                 field.validate(10)
               })
-                .toThrow(FieldMaxError)
+                .toThrow(FieldMaximumError)
             })
           })
 
@@ -980,7 +981,7 @@ describe('SchemaField', () => {
               expect(() => {
                 field.validate([10])
               })
-                .toThrow(FieldMaxError)
+                .toThrow(FieldMaximumError)
             })
           })
 
@@ -1013,7 +1014,7 @@ describe('SchemaField', () => {
             expect(() => {
               field.validate(new Date(date.getTime() + 1000))
             })
-              .toThrow(FieldMaxError)
+              .toThrow(FieldMaximumError)
           })
         })
 
