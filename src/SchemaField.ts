@@ -75,7 +75,7 @@ export type FieldProperties = {
 
 class SchemaField<P extends FieldProperties> {
   public name: string
-  public properties: P
+  public props: P
 
   constructor (name: string, properties: P) {
     // Default properties
@@ -87,7 +87,7 @@ class SchemaField<P extends FieldProperties> {
     checkFieldProperties(name, props)
 
     this.name = name
-    this.properties = props
+    this.props = props
   }
 
   /**
@@ -101,7 +101,7 @@ class SchemaField<P extends FieldProperties> {
     }
 
     let newValue
-    const props = this.properties
+    const props = this.props
 
     if (typeof value === 'string') {
       if (typeof props.clean === 'function') {
@@ -133,98 +133,98 @@ class SchemaField<P extends FieldProperties> {
    * Returns field's enum values.
    */
   getAllowed (): P['enum'] {
-    return this.properties.enum
+    return this.props.enum
   }
 
   /**
    * Returns field's denied values.
    */
   getDenied (): P['denied'] {
-    return this.properties.denied
+    return this.props.denied
   }
 
   /**
    * Returns the field's exclusive maximum value.
    */
   getExclusiveMaximum (): P['exclusiveMaximum'] {
-    return this.properties.exclusiveMaximum
+    return this.props.exclusiveMaximum
   }
 
   /**
    * Returns the field's exclusive minimum value.
    */
   getExclusiveMinimum (): P['exclusiveMinimum'] {
-    return this.properties.exclusiveMinimum
+    return this.props.exclusiveMinimum
   }
 
   /**
    * Returns field's format.
    */
   getFormat (): P['format'] {
-    return this.properties.format
+    return this.props.format
   }
 
   /**
    * Returns field's items.
    */
   getItems (): P['items'] {
-    return this.properties.items
+    return this.props.items
   }
 
   /**
    * Returns field's label.
    */
   getLabel (): P['label'] {
-    return this.properties.label
+    return this.props.label
   }
 
   /**
    * Returns field's length.
    */
   getLength (): P['length'] {
-    return this.properties.length
+    return this.props.length
   }
 
   /**
    * Returns field's maximal value.
    */
   getMaximum (): P['maximum'] {
-    return this.properties.maximum
+    return this.props.maximum
   }
 
   /**
    * Returns field's maximal length.
    */
   getMaxLength (): P['maxLength'] {
-    return this.properties.maxLength
+    return this.props.maxLength
   }
 
   /**
    * Returns field's maximal words.
    */
   getMaxWords (): P['maxWords'] {
-    return this.properties.maxWords
+    return this.props.maxWords
   }
 
   /**
    * Returns field's minimal value.
    */
   getMinimum (): P['minimum'] {
-    return this.properties.minimum
+    return this.props.minimum
   }
 
   /**
    * Returns field's minimal length.
    */
   getMinLength (): P['minLength'] {
-    return this.properties.minLength
+    return this.props.minLength
   }
 
   /**
    * Returns field's minimal words.
    */
   getMinWords (): P['minWords'] {
-    return this.properties.minWords
+    return this.props.minWords
   }
 
   /**
@@ -238,28 +238,21 @@ class SchemaField<P extends FieldProperties> {
    * Returns field's pattern (regular expression).
    */
   getPattern (): P['pattern'] {
-    return this.properties.pattern
-  }
-
-  /**
-   * Returns a copy of the field's properties.
-   */
-  getProperties (): P {
-    return deepExtend({}, this.properties)
+    return this.props.pattern
   }
 
   /**
    * Returns field's type.
    */
   getType (): P['type'] {
-    return this.properties.type
+    return this.props.type
   }
 
   /**
    * Checks if field is required
    */
   isRequired (): P['required'] {
-    return this.properties.required ?? false
+    return this.props.required ?? false
   }
 
   /**
@@ -286,7 +279,7 @@ class SchemaField<P extends FieldProperties> {
     }
 
     let val
-    const props = this.properties
+    const props = this.props
 
     if (typeof value === 'string') {
       if (typeof props.parse === 'function') {
@@ -312,6 +305,13 @@ class SchemaField<P extends FieldProperties> {
       val = props.type.parse(value)
     }
     return val
+  }
+
+  /**
+   * Returns field as JSON object.
+   */
+  toJSON (): P {
+    return deepExtend({}, this.props)
   }
 
   /**
@@ -352,7 +352,7 @@ class SchemaField<P extends FieldProperties> {
       context,
       path
     } = opts
-    const props = this.properties
+    const props = this.props
     const label = props.label ?? this.name
     const isRequired: boolean = props.required ?? false
     const isArray: boolean = props.type === 'array' || props.type instanceof Array
