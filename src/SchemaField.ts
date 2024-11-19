@@ -50,6 +50,8 @@ type ValidateOptions = {
 // todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 // todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 export type FieldProperties = {
+  // https://json-schema.org/understanding-json-schema/reference/schema#schema
+  $schema?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
   additionalProperties?: false | Record<string, FieldProperties>;
   denied?: any[];
@@ -106,6 +108,7 @@ class SchemaField<P extends FieldProperties> {
   constructor (name: string, properties: P) {
     // Default properties
     const props: P = {
+      $schema: 'https://json-schema.org/draft/2020-12/schema',
       ...properties,
       title: properties.title ?? name
     }
