@@ -8,13 +8,13 @@ import FieldError from './FieldError'
 import { FieldMinMax } from '../checks'
 
 class FieldExclusiveMinimumError extends FieldError {
-  public min: FieldMinMax
+  public exclusiveMinimum: FieldMinMax
 
-  constructor (field: string, min: FieldMinMax, path: string) {
+  constructor (field: string, exclusiveMinimum: FieldMinMax, path: string) {
     super(field, path, ERROR_FIELD_EXCLUSIVE_MINIMUM)
     Object.setPrototypeOf(this, FieldExclusiveMinimumError.prototype)
-    this.min = min
-    this.message = `The field "${path}" must be greater than ${min}.`
+    this.exclusiveMinimum = exclusiveMinimum
+    this.message = `The field "${path}" must be greater than ${exclusiveMinimum}.`
   }
 }
 

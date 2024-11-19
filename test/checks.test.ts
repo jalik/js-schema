@@ -4,30 +4,25 @@
  */
 
 import { describe, expect, it } from '@jest/globals'
-import {
-  checkAllowed,
-  checkExclusiveMaximum,
-  checkExclusiveMinimum,
-  checkType
-} from '../src/checks'
-import FieldAllowedError from '../src/errors/FieldAllowedError'
+import { checkEnum, checkExclusiveMaximum, checkExclusiveMinimum, checkType } from '../src/checks'
+import FieldEnumError from '../src/errors/FieldEnumError'
 import FieldTypeError from '../src/errors/FieldTypeError'
 import FieldExclusiveMinimumError from '../src/errors/FieldExclusiveMinError'
 import FieldExclusiveMaximumError from '../src/errors/FieldExclusiveMaxError'
 
-describe('checkAllowed', () => {
-  describe('with value allowed', () => {
+describe('checkEnum', () => {
+  describe('with value in enum', () => {
     it('should not throw an Error', () => {
       expect(() => {
-        checkAllowed([0, 1], 1, 'number', 'numbers')
+        checkEnum([0, 1], 1, 'number', 'numbers')
       }).not.toThrow()
     })
   })
-  describe('with value not allowed', () => {
-    it('should throw a FieldAllowedError', () => {
+  describe('with value not in enum', () => {
+    it('should throw a FieldEnumError', () => {
       expect(() => {
-        checkAllowed([0, 1], 2, 'number', 'numbers')
-      }).toThrow(FieldAllowedError)
+        checkEnum([0, 1], 2, 'number', 'numbers')
+      }).toThrow(FieldEnumError)
     })
   })
 })

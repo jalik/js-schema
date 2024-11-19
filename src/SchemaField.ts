@@ -5,8 +5,8 @@
 
 import deepExtend from '@jalik/deep-extend'
 import {
-  checkAllowed,
   checkDenied,
+  checkEnum,
   checkExclusiveMaximum,
   checkExclusiveMinimum,
   checkFieldProperties,
@@ -16,7 +16,7 @@ import {
   checkMaxItems,
   checkMaxLength,
   checkMaxWords,
-  checkMin,
+  checkMinimum,
   checkMinItems,
   checkMinLength,
   checkMinWords,
@@ -46,21 +46,21 @@ type ValidateOptions = {
 }
 
 export type FieldProperties = {
-  allowed?: any[];
   check? (value: any, context?: Record<string, unknown>): boolean;
   clean? (value: any): any;
   denied?: any[];
+  enum?: any[];
   exclusiveMaximum?: FieldMinMax;
   exclusiveMinimum?: FieldMinMax;
   format?: FieldFormat;
   items?: FieldItems;
   label?: string;
   length?: number;
-  max?: FieldMinMax;
+  maximum?: FieldMinMax;
   maxItems?: number;
   maxLength?: number;
   maxWords?: number;
-  min?: FieldMinMax;
+  minimum?: FieldMinMax;
   minItems?: number;
   minLength?: number;
   minWords?: number;
@@ -130,10 +130,10 @@ class SchemaField<P extends FieldProperties> {
   }
 
   /**
-   * Returns field's allowed values.
+   * Returns field's enum values.
    */
-  getAllowed (): P['allowed'] {
-    return this.properties.allowed
+  getAllowed (): P['enum'] {
+    return this.properties.enum
   }
 
   /**
@@ -188,8 +188,8 @@ class SchemaField<P extends FieldProperties> {
   /**
    * Returns field's maximal value.
    */
-  getMax (): P['max'] {
-    return this.properties.max
+  getMaximum (): P['maximum'] {
+    return this.properties.maximum
   }
 
   /**
@@ -209,8 +209,8 @@ class SchemaField<P extends FieldProperties> {
   /**
    * Returns field's minimal value.
    */
-  getMin (): P['min'] {
-    return this.properties.min
+  getMin (): P['minimum'] {
+    return this.properties.minimum
   }
 
   /**
@@ -443,71 +443,71 @@ class SchemaField<P extends FieldProperties> {
       }
     }
 
-    // Check that items are unique
+    // Check uniqueItems
     if (props.uniqueItems != null && newVal instanceof Array && computeValue(props.uniqueItems, context)) {
       checkUniqueItems(newVal, label, path)
     }
-    // Check allowed values
-    if (props.allowed != null) {
-      checkAllowed(props.allowed, newVal, label, path)
+    // Check enum
+    if (props.enum != null) {
+      checkEnum(props.enum, newVal, label, path)
     }
-    // Check denied values
+    // Check denied
     if (props.denied != null) {
       checkDenied(props.denied, newVal, label, path)
     }
-    // Check exclusive maximal value
+    // Check exclusiveMaximum
     if (props.exclusiveMaximum != null) {
       checkExclusiveMaximum(props.exclusiveMaximum, newVal, label, path)
     }
-    // Check exclusive minimal value
+    // Check exclusiveMinimum
     if (props.exclusiveMinimum != null) {
       checkExclusiveMinimum(props.exclusiveMinimum, newVal, label, path)
     }
-    // Check string format
+    // Check format
     if (props.format != null) {
       checkFormat(props.format, newVal, label, path)
     }
-    // Check length if value has the length attribute
+    // Check length
     if (props.length != null) {
       checkLength(props.length, newVal, label, path)
     }
-    // Check max items
+    // Check maxItems
     if (props.maxItems != null && newVal != null) {
       checkMaxItems(props.maxItems, newVal, label, path)
     }
-    // Check min items
+    // Check minItems
     if (props.minItems != null && newVal != null) {
       checkMinItems(props.minItems, newVal, label, path)
     }
-    // Check maximal length
+    // Check maxLength
     if (props.maxLength != null) {
       checkMaxLength(props.maxLength, newVal, label, path)
     }
-    // Check minimal length
+    // Check minLength
     if (props.minLength != null) {
       checkMinLength(props.minLength, newVal, label, path)
     }
-    // Check maximal words
+    // Check maxWords
     if (props.maxWords != null) {
       checkMaxWords(props.maxWords, newVal, label, path)
     }
-    // Check minimal words
+    // Check minWords
     if (props.minWords != null) {
       checkMinWords(props.minWords, newVal, label, path)
     }
-    // Check maximal value
-    if (props.max != null) {
-      checkMax(props.max, newVal, label, path)
+    // Check maximum
+    if (props.maximum != null) {
+      checkMax(props.maximum, newVal, label, path)
     }
-    // Check minimal value
-    if (props.min != null) {
-      checkMin(props.min, newVal, label, path)
+    // Check minimum
+    if (props.minimum != null) {
+      checkMinimum(props.minimum, newVal, label, path)
     }
-    // Check if value is a multiple of a number.
+    // Check multipleOf
     if (props.multipleOf != null) {
       checkMultipleOf(props.multipleOf, newVal, label, path)
     }
-    // Test regular expression
+    // Test pattern (regexp)
     if (props.pattern != null) {
       checkPattern(props.pattern, newVal, label, path)
     }

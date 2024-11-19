@@ -3,14 +3,14 @@
  * Copyright (c) 2024 Karl STEIN
  */
 
-import FieldAllowedError from './errors/FieldAllowedError'
+import FieldEnumError from './errors/FieldEnumError'
 import FieldDeniedError from './errors/FieldDeniedError'
 import FieldFormatError from './errors/FieldFormatError'
 import FieldLengthError from './errors/FieldLengthError'
 import FieldMaxError from './errors/FieldMaxError'
 import FieldMaxLengthError from './errors/FieldMaxLengthError'
 import FieldMaxWordsError from './errors/FieldMaxWordsError'
-import FieldMinError from './errors/FieldMinError'
+import FieldMinimumError from './errors/FieldMinimumError'
 import FieldMinLengthError from './errors/FieldMinLengthError'
 import FieldMinWordsError from './errors/FieldMinWordsError'
 import FieldMultipleOfError from './errors/FieldMultipleOfError'
@@ -75,20 +75,21 @@ export type Computable<T> = T | ((context: Record<string, unknown>) => T)
  * Schema field properties
  */
 const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
-  'allowed',
   'check',
   'clean',
   'denied',
-  // todo add 'enum',
+  'enum',
+  'exclusiveMaximum',
+  'exclusiveMinimum',
   'format',
   'items',
   'label',
   'length',
-  'max',
+  'maximum',
   'maxItems',
   'maxLength',
   'maxWords',
-  'min',
+  'minimum',
   'minItems',
   'minLength',
   'minWords',
@@ -103,20 +104,20 @@ const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
 
 /**
  * Checks if value is allowed.
- * @param allowed
+ * @param values
  * @param value
  * @param label
  * @param path
  */
-export function checkAllowed (allowed: any[], value: any, label: string, path: string): void {
+export function checkEnum (values: any[], value: any, label: string, path: string): void {
   if (value instanceof Array) {
     for (let i = 0; i < value.length; i += 1) {
-      if (!allowed.includes(value[i])) {
-        throw new FieldAllowedError(label, allowed, path)
+      if (!values.includes(value[i])) {
+        throw new FieldEnumError(label, values, path)
       }
     }
-  } else if (!allowed.includes(value)) {
-    throw new FieldAllowedError(label, allowed, path)
+  } else if (!values.includes(value)) {
+    throw new FieldEnumError(label, values, path)
   }
 }
 
@@ -140,28 +141,28 @@ export function checkDenied (denied: any[], value: any, label: string, path: str
 }
 
 /**
- * Checks if the value is lesser than or equal to max (excluded).
- * @param max
+ * Checks if the value is lesser than or equal to maximum (excluded).
+ * @param maximum
  * @param value
  * @param label
  * @param path
  */
-export function checkExclusiveMaximum (max: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
-  if (value >= max) {
-    throw new FieldExclusiveMaximumError(label, max, path)
+export function checkExclusiveMaximum (maximum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+  if (value >= maximum) {
+    throw new FieldExclusiveMaximumError(label, maximum, path)
   }
 }
 
 /**
  * Checks if the value is greater than or equal to min (excluded).
- * @param min
+ * @param exclusiveMinimum
  * @param value
  * @param label
  * @param path
  */
-export function checkExclusiveMinimum (min: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
-  if (value <= min) {
-    throw new FieldExclusiveMinimumError(label, min, path)
+export function checkExclusiveMinimum (exclusiveMinimum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+  if (value <= exclusiveMinimum) {
+    throw new FieldExclusiveMinimumError(label, exclusiveMinimum, path)
   }
 }
 
@@ -196,17 +197,14 @@ export function checkFieldProperties (name: string, props: FieldProperties): voi
   }
 
   // Check conflicting options.
-  const {
-    allowed,
-    denied
-  } = props
-  if (allowed && denied) {
-    throw new TypeError('allowed and denied cannot be defined together')
+  const { denied } = props
+  if (props.enum && denied) {
+    throw new TypeError('enum and denied cannot be defined together')
   }
 
-  // Check allowed values
-  if (typeof allowed !== 'undefined' && !(allowed instanceof Array) && typeof allowed !== 'function') {
-    throw new TypeError(`${name}.allowed must be an array or function`)
+  // Check enum
+  if (typeof props.enum !== 'undefined' && !(props.enum instanceof Array) && typeof props.enum !== 'function') {
+    throw new TypeError(`${name}.enum must be an array or function`)
   }
 
   // Check custom check function
@@ -249,10 +247,10 @@ export function checkFieldProperties (name: string, props: FieldProperties): voi
     throw new TypeError(`${name}.length must be a function or number`)
   }
 
-  // Check max value
-  const { max } = props
-  if (!['undefined', 'function', 'number', 'string'].includes(typeof max) && !(max instanceof Date)) {
-    throw new TypeError(`${name}.max must be a date, number, string or function`)
+  // Check maximum value
+  const { maximum } = props
+  if (!['undefined', 'function', 'number', 'string'].includes(typeof maximum) && !(maximum instanceof Date)) {
+    throw new TypeError(`${name}.maximum must be a date, number, string or function`)
   }
 
   // Check max length
@@ -267,10 +265,10 @@ export function checkFieldProperties (name: string, props: FieldProperties): voi
     throw new TypeError(`${name}.maxWords must be a number or function`)
   }
 
-  // Check min value
-  const { min } = props
-  if (!['undefined', 'function', 'number', 'string'].includes(typeof min) && !(min instanceof Date)) {
-    throw new TypeError(`${name}.min must be a date, number, string or function`)
+  // Check minimum value
+  const { minimum } = props
+  if (!['undefined', 'function', 'number', 'string'].includes(typeof minimum) && !(minimum instanceof Date)) {
+    throw new TypeError(`${name}.minimum must be a date, number, string or function`)
   }
 
   // Check min length
@@ -371,15 +369,15 @@ export function checkLength (length: number, value: {
 }
 
 /**
- * Checks if the value is lesser than or equal to max.
- * @param max
+ * Checks if the value is lesser than or equal to maximum.
+ * @param maximum
  * @param value
  * @param label
  * @param path
  */
-export function checkMax (max: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
-  if (value > max) {
-    throw new FieldMaxError(label, max, path)
+export function checkMax (maximum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+  if (value > maximum) {
+    throw new FieldMaxError(label, maximum, path)
   }
 }
 
@@ -425,15 +423,15 @@ export function checkMaxWords (maxWords: number, value: string, label: string, p
 }
 
 /**
- * Checks if the value is greater than or equal to min.
- * @param min
+ * Checks if the value is greater than or equal to minimum.
+ * @param minimum
  * @param value
  * @param label
  * @param path
  */
-export function checkMin (min: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
-  if (typeof min !== 'undefined' && value < min) {
-    throw new FieldMinError(label, min, path)
+export function checkMinimum (minimum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+  if (typeof minimum !== 'undefined' && value < minimum) {
+    throw new FieldMinimumError(label, minimum, path)
   }
 }
 
