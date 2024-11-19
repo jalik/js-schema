@@ -35,6 +35,7 @@ import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
 import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 
+// https://json-schema.org/understanding-json-schema/reference/string#format
 export type FieldFormat =
   'date'
   | 'datetime'
@@ -53,13 +54,20 @@ export type FieldMinMax = number | Date
 export type FieldPattern = string | RegExp
 
 export type FieldType =
+  // https://json-schema.org/understanding-json-schema/reference/array#array
   'array'
+  // https://json-schema.org/understanding-json-schema/reference/boolean#boolean
   | 'boolean'
   | 'function' // todo remove in v5
+  // https://json-schema.org/understanding-json-schema/reference/numeric#integer
   | 'integer'
+  // https://json-schema.org/understanding-json-schema/reference/null#null
   | 'null'
+  // https://json-schema.org/understanding-json-schema/reference/numeric#number
   | 'number'
+  // https://json-schema.org/understanding-json-schema/reference/object#object
   | 'object'
+  // https://json-schema.org/understanding-json-schema/reference/string#string
   | 'string'
   | Schema
   // todo remove in v5

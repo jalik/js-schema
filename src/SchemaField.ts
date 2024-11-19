@@ -45,32 +45,50 @@ type ValidateOptions = {
   rootOnly?: boolean;
 }
 
+// todo add contains https://json-schema.org/understanding-json-schema/reference/array#contains
+// todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
+// todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 export type FieldProperties = {
-  check? (value: any, context?: Record<string, unknown>): boolean;
-  clean? (value: any): any;
   denied?: any[];
+  // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: any[];
+  // https://json-schema.org/understanding-json-schema/reference/numeric#range
   exclusiveMaximum?: FieldMinMax;
   exclusiveMinimum?: FieldMinMax;
+  // https://json-schema.org/understanding-json-schema/reference/string#format
   format?: FieldFormat;
+  // https://json-schema.org/understanding-json-schema/reference/array#items
   items?: FieldItems;
   label?: string;
+  // https://json-schema.org/understanding-json-schema/reference/string#length
   length?: number;
+  // https://json-schema.org/understanding-json-schema/reference/numeric#range
   maximum?: FieldMinMax;
+  // https://json-schema.org/understanding-json-schema/reference/array#length
   maxItems?: number;
+  // https://json-schema.org/understanding-json-schema/reference/string#length
   maxLength?: number;
   maxWords?: number;
+  // https://json-schema.org/understanding-json-schema/reference/numeric#range
   minimum?: FieldMinMax;
+  // https://json-schema.org/understanding-json-schema/reference/array#length
   minItems?: number;
+  // https://json-schema.org/understanding-json-schema/reference/string#length
   minLength?: number;
   minWords?: number;
+  // https://json-schema.org/understanding-json-schema/reference/numeric#multiples
   multipleOf?: number;
-  parse? (value: any): any;
+  // https://json-schema.org/understanding-json-schema/reference/string#regexp
   pattern?: FieldPattern;
-  prepare? (value: any, context?: Record<string, unknown>): any;
   required?: boolean;
+  // https://json-schema.org/understanding-json-schema/reference/type
   type?: FieldType;
+  // https://json-schema.org/understanding-json-schema/reference/array#uniqueItems
   uniqueItems?: boolean;
+  check? (value: any, context?: Record<string, unknown>): boolean;
+  clean? (value: any): any;
+  prepare? (value: any, context?: Record<string, unknown>): any;
+  parse? (value: any): any;
 }
 
 class SchemaField<P extends FieldProperties> {
