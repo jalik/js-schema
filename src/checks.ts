@@ -7,7 +7,7 @@ import FieldEnumError from './errors/FieldEnumError'
 import FieldDeniedError from './errors/FieldDeniedError'
 import FieldFormatError from './errors/FieldFormatError'
 import FieldLengthError from './errors/FieldLengthError'
-import FieldMaxError from './errors/FieldMaxError'
+import FieldMaximumError from './errors/FieldMaximumError'
 import FieldMaxLengthError from './errors/FieldMaxLengthError'
 import FieldMaxWordsError from './errors/FieldMaxWordsError'
 import FieldMinimumError from './errors/FieldMinimumError'
@@ -34,6 +34,7 @@ import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
 import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
+import FieldPropertiesError from './errors/FieldPropertiesError'
 
 // https://json-schema.org/understanding-json-schema/reference/string#format
 export type FieldFormat =
@@ -385,7 +386,7 @@ export function checkLength (length: number, value: {
  */
 export function checkMax (maximum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
   if (value > maximum) {
-    throw new FieldMaxError(label, maximum, path)
+    throw new FieldMaximumError(label, maximum, path)
   }
 }
 
