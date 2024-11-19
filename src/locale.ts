@@ -1,13 +1,14 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import FieldError from './errors/FieldError'
+import { ErrorMessages } from './errors'
 
-export interface LocaleData {
+export type LocaleData = {
   [key: string]: string;
-}
+} & ErrorMessages
 
 const locales: { [key: string]: LocaleData } = {}
 
