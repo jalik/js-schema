@@ -4,11 +4,11 @@
  */
 
 import { ERROR_FIELD_REQUIRED } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldRequiredError extends FieldError {
-  constructor (field: string, path: string) {
-    super(field, path, ERROR_FIELD_REQUIRED)
+class FieldRequiredError extends ValidationError {
+  constructor (path: string) {
+    super(path, ERROR_FIELD_REQUIRED)
     Object.setPrototypeOf(this, FieldRequiredError.prototype)
     this.message = `The field "${path}" is required.`
   }

@@ -4,16 +4,13 @@
  */
 
 import { ERROR_FIELD_ADDITIONAL_PROPERTIES } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldAdditionalPropertiesError extends FieldError {
-  public additionalProperties: string[]
-
-  constructor (field: string, additionalProperties: string[], path: string) {
-    super(field, path, ERROR_FIELD_ADDITIONAL_PROPERTIES)
+class FieldAdditionalPropertiesError extends ValidationError {
+  constructor (path: string) {
+    super(path, ERROR_FIELD_ADDITIONAL_PROPERTIES)
     Object.setPrototypeOf(this, FieldAdditionalPropertiesError.prototype)
-    this.additionalProperties = additionalProperties
-    this.message = `The field "${path}" contains additional properties "${additionalProperties}".`
+    this.message = `The field "${path}" is not allowed.`
   }
 }
 

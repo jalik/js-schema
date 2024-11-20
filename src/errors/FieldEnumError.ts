@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_ENUM } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldEnumError extends FieldError {
-  public enum: any[]
+class FieldEnumError extends ValidationError {
+  public enum: unknown[]
 
-  constructor (field: string, values: any[], path: string) {
-    super(field, path, ERROR_FIELD_ENUM)
+  constructor (path: string, values: unknown[]) {
+    super(path, ERROR_FIELD_ENUM)
     Object.setPrototypeOf(this, FieldEnumError.prototype)
     this.enum = values
     this.message = `The field "${path}" must be one of: ${values}.`

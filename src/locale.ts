@@ -3,8 +3,8 @@
  * Copyright (c) 2024 Karl STEIN
  */
 
-import FieldError from './errors/FieldError'
 import { ErrorMessages } from './errors'
+import ValidationError from './errors/ValidationError'
 
 export type LocaleData = {
   [key: string]: string;
@@ -17,7 +17,7 @@ const locales: { [key: string]: LocaleData } = {}
  * @param error
  * @param locale
  */
-export function getErrorMessage (error: FieldError, locale: string): string {
+export function getErrorMessage (error: ValidationError, locale: string): string {
   const messages: LocaleData = locales[locale]
 
   if (messages != null) {

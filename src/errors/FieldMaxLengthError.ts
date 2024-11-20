@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_MAX_LENGTH } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldMaxLengthError extends FieldError {
+class FieldMaxLengthError extends ValidationError {
   public maxLength: number
 
-  constructor (field: string, maxLength: number, path: string) {
-    super(field, path, ERROR_FIELD_MAX_LENGTH)
+  constructor (path: string, maxLength: number) {
+    super(path, ERROR_FIELD_MAX_LENGTH)
     Object.setPrototypeOf(this, FieldMaxLengthError.prototype)
     this.maxLength = maxLength
     this.message = `The field "${path}" must have a length that is lesser than or equal to ${maxLength}.`

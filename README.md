@@ -383,7 +383,7 @@ export const ExampleSchema = new Schema({
 Use `max` and `min` to check if a field value is below or above a limit.
 
 - Accepts `Number` or `Function`
-- Throws `FieldMaxError`, `FieldMinError`
+- Throws `FieldMaximumError`, `FieldMinimumError`
 
 ```js
 import { Schema } from '@jalik/schema';
@@ -677,7 +677,7 @@ export const ExampleSchema = new Schema({
 Use `check` to apply custom checks that are not possible with the schema.
 
 - Accepts `Function`
-- Throws `FieldError`
+- Throws `SchemaError`
 
 ```js
 import { Schema } from '@jalik/schema';

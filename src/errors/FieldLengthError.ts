@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_LENGTH } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldLengthError extends FieldError {
+class FieldLengthError extends ValidationError {
   public length: number
 
-  constructor (field: string, length: number, path: string) {
-    super(field, path, ERROR_FIELD_LENGTH)
+  constructor (path: string, length: number) {
+    super(path, ERROR_FIELD_LENGTH)
     Object.setPrototypeOf(this, FieldLengthError.prototype)
     this.length = length
     this.message = `The field "${path}" must have a length of ${length}.`

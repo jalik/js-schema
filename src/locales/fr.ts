@@ -10,7 +10,6 @@ import {
   ERROR_FIELD_EXCLUSIVE_MAXIMUM,
   ERROR_FIELD_EXCLUSIVE_MINIMUM,
   ERROR_FIELD_FORMAT,
-  ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
   ERROR_FIELD_MAX_ITEMS,
   ERROR_FIELD_MAX_LENGTH,
@@ -27,19 +26,17 @@ import {
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,
-  ERROR_FIELD_UNKNOWN,
-  ERROR_VALIDATION
+  ERROR_SCHEMA_VALIDATION
 } from '../errors'
 import { LocaleData } from '../locale'
 
 const fr: LocaleData = {
-  [ERROR_FIELD_ADDITIONAL_PROPERTIES]: 'Le champ contient des propriétés additionnelles.',
+  [ERROR_FIELD_ADDITIONAL_PROPERTIES]: 'Le champ n\'est pas autorisé.',
   [ERROR_FIELD_DENIED]: 'Le champ contient une valeur interdite.',
   [ERROR_FIELD_ENUM]: 'Le champ doit contenir des valeurs "{allowed}".',
   [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'Le champ doit être inférieur à {exclusiveMaximum}.',
   [ERROR_FIELD_EXCLUSIVE_MINIMUM]: 'Le champ doit être supérieur à {exclusiveMinimum}',
   [ERROR_FIELD_FORMAT]: 'Le champ ne correspond pas au format attendu ({format}).',
-  [ERROR_FIELD_INVALID]: 'Le champ n\'est pas valide.',
   [ERROR_FIELD_LENGTH]: 'Le champ doit avoir une taille égale à {length}.',
   [ERROR_FIELD_MAXIMUM]: 'Le champ doit être inférieur ou égal à {maximum}.',
   [ERROR_FIELD_MAX_ITEMS]: 'Le champ doit contenir au plus {maxItems} éléments.',
@@ -56,8 +53,7 @@ const fr: LocaleData = {
   [ERROR_FIELD_REQUIRED]: 'Le champ est obligatoire.',
   [ERROR_FIELD_TYPE]: 'Le type du champ n\'est pas valide.',
   [ERROR_FIELD_UNIQUE_ITEMS]: 'Le champ doit contenir des valeurs uniques.',
-  [ERROR_FIELD_UNKNOWN]: 'Le champ est inconnu.',
-  [ERROR_VALIDATION]: 'L\'objet n\'est pas valide.'
+  [ERROR_SCHEMA_VALIDATION]: 'La validation a échouée.'
 }
 
 export default fr
