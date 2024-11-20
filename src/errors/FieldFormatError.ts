@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_FORMAT } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldFormatError extends FieldError {
+class FieldFormatError extends ValidationError {
   public format: string
 
-  constructor (field: string, format: string, path: string) {
-    super(field, path, ERROR_FIELD_FORMAT)
+  constructor (path: string, format: string) {
+    super(path, ERROR_FIELD_FORMAT)
     Object.setPrototypeOf(this, FieldFormatError.prototype)
     this.format = format
     this.message = `The field "${path}" must match the format "${format}".`

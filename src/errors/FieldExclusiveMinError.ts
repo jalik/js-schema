@@ -4,14 +4,13 @@
  */
 
 import { ERROR_FIELD_EXCLUSIVE_MINIMUM } from '../errors'
-import FieldError from './FieldError'
-import { FieldMinMax } from '../checks'
+import ValidationError from './ValidationError'
 
-class FieldExclusiveMinimumError extends FieldError {
-  public exclusiveMinimum: FieldMinMax
+class FieldExclusiveMinimumError extends ValidationError {
+  public exclusiveMinimum: number
 
-  constructor (field: string, exclusiveMinimum: FieldMinMax, path: string) {
-    super(field, path, ERROR_FIELD_EXCLUSIVE_MINIMUM)
+  constructor (path: string, exclusiveMinimum: number) {
+    super(path, ERROR_FIELD_EXCLUSIVE_MINIMUM)
     Object.setPrototypeOf(this, FieldExclusiveMinimumError.prototype)
     this.exclusiveMinimum = exclusiveMinimum
     this.message = `The field "${path}" must be greater than ${exclusiveMinimum}.`

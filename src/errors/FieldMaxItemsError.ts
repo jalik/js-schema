@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_MAX_ITEMS } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldMaxItemsError extends FieldError {
+class FieldMaxItemsError extends ValidationError {
   public maxItems: number
 
-  constructor (field: string, maxItems: number, path: string) {
-    super(field, path, ERROR_FIELD_MAX_ITEMS)
+  constructor (path: string, maxItems: number) {
+    super(path, ERROR_FIELD_MAX_ITEMS)
     Object.setPrototypeOf(this, FieldMaxItemsError.prototype)
     this.maxItems = maxItems
     this.message = `The field "${path}" must contain at most ${maxItems} items.`

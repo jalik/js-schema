@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_MAX_WORDS } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldMaxWordsError extends FieldError {
+class FieldMaxWordsError extends ValidationError {
   public maxWords: number
 
-  constructor (field: string, maxWords: number, path: string) {
-    super(field, path, ERROR_FIELD_MAX_WORDS)
+  constructor (path: string, maxWords: number) {
+    super(path, ERROR_FIELD_MAX_WORDS)
     Object.setPrototypeOf(this, FieldMaxWordsError.prototype)
     this.maxWords = maxWords
     this.message = `The field "${path}" must not contain more than ${maxWords} words.`
