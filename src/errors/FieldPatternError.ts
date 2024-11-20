@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_PATTERN } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldPatternError extends FieldError {
+class FieldPatternError extends ValidationError {
   public pattern: RegExp
 
-  constructor (field: string, pattern: RegExp, path: string) {
-    super(field, path, ERROR_FIELD_PATTERN)
+  constructor (path: string, pattern: RegExp) {
+    super(path, ERROR_FIELD_PATTERN)
     Object.setPrototypeOf(this, FieldPatternError.prototype)
     this.pattern = pattern
     this.message = `The field "${path}" must match the pattern "${pattern}".`

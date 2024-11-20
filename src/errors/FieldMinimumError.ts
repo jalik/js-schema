@@ -4,14 +4,13 @@
  */
 
 import { ERROR_FIELD_MINIMUM } from '../errors'
-import FieldError from './FieldError'
-import { FieldMinMax } from '../checks'
+import ValidationError from './ValidationError'
 
-class FieldMinimumError extends FieldError {
-  public minimum: FieldMinMax
+class FieldMinimumError extends ValidationError {
+  public minimum: number
 
-  constructor (field: string, minimum: FieldMinMax, path: string) {
-    super(field, path, ERROR_FIELD_MINIMUM)
+  constructor (path: string, minimum: number) {
+    super(path, ERROR_FIELD_MINIMUM)
     Object.setPrototypeOf(this, FieldMinimumError.prototype)
     this.minimum = minimum
     this.message = `The field "${path}" must be greater than or equal to ${minimum}.`

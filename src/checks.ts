@@ -28,20 +28,24 @@ import {
   TimeRegExp,
   UriRegExp
 } from './regex'
-import Schema from './Schema'
-import SchemaField, { FieldProperties } from './SchemaField'
+import JSONSchema, { SchemaAttributes } from './JSONSchema'
 import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
 import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 import FieldPropertiesError from './errors/FieldPropertiesError'
 import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
-import FieldPatternPropertiesError from './errors/FieldPatternPropertiesError'
+import { joinPath } from './utils'
+import ValidateError, { ValidationErrors } from './errors/ValidateError'
+import SchemaError from './errors/SchemaError'
 
-// https://json-schema.org/understanding-json-schema/reference/string#format
-export type FieldFormat =
+/**
+ * The format of a string.
+ * @see https://json-schema.org/understanding-json-schema/reference/string#format
+ */
+export type SchemaFormat =
   'date'
-  | 'datetime'
+  | 'datetime' // todo remove alias
   | 'date-time'
   // todo add 'duration'
   | 'email'
@@ -52,16 +56,21 @@ export type FieldFormat =
   | 'uri'
 // todo add 'uuid'
 
-export type FieldMinMax = number | Date
+/**
+ * The constraints of items in an array.
+ * @see https://json-schema.org/understanding-json-schema/reference/array#items
+ */
+export type SchemaItems = Omit<SchemaAttributes, '$schema' | '$id'>
 
-export type FieldPattern = string | RegExp
-
-export type FieldType =
+/**
+ * The type of the data.
+ * @see https://json-schema.org/understanding-json-schema/reference/type#type-specific-keywords
+ */
+export type SchemaType =
 // https://json-schema.org/understanding-json-schema/reference/array#array
   'array'
   // https://json-schema.org/understanding-json-schema/reference/boolean#boolean
   | 'boolean'
-  | 'function' // todo remove in v5
   // https://json-schema.org/understanding-json-schema/reference/numeric#integer
   | 'integer'
   // https://json-schema.org/understanding-json-schema/reference/null#null
@@ -72,23 +81,15 @@ export type FieldType =
   | 'object'
   // https://json-schema.org/understanding-json-schema/reference/string#string
   | 'string'
-  | Schema
-  // todo remove in v5
-  | Array<'array' | 'boolean' | 'function' | 'integer' | 'number' | 'object' | 'string' | Schema>
-
-export type FieldItems = {
-  type?: FieldType
-}
-
-export type Computable<T> = T | ((context: Record<string, unknown>) => T)
+  | SchemaType[]
 
 /**
- * Schema field properties
+ * Schema field properties.
  */
-const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
+const ATTRIBUTES: (keyof SchemaAttributes)[] = [
+  '$schema',
+  '$id',
   'additionalProperties',
-  'check',
-  'clean',
   'denied',
   'enum',
   'exclusiveMaximum',
@@ -105,9 +106,8 @@ const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
   'minLength',
   'minWords',
   'multipleOf',
-  'parse',
   'pattern',
-  'prepare',
+  'patternProperties',
   'properties',
   'required',
   'title',
@@ -116,21 +116,51 @@ const FIELD_PROPERTIES: (keyof FieldProperties)[] = [
 ]
 
 /**
- * Checks if value is allowed.
- * @param values
+ * Checks additional properties.
+ * @param additionalProperties
+ * @param properties
  * @param value
- * @param label
  * @param path
+ * @param throwOnError
  */
-export function checkEnum (values: any[], value: any, label: string, path: string): void {
-  if (value instanceof Array) {
-    for (let i = 0; i < value.length; i += 1) {
-      if (!values.includes(value[i])) {
-        throw new FieldEnumError(label, values, path)
+export function checkAdditionalProperties (
+  additionalProperties: SchemaAttributes['additionalProperties'],
+  properties: SchemaAttributes['properties'],
+  value: Record<string, unknown>,
+  path: string,
+  throwOnError: boolean): void {
+  if (additionalProperties != null && value != null) {
+    for (const key in value) {
+      if (additionalProperties === false) {
+        if (properties == null || !(key in properties)) {
+          throw new FieldAdditionalPropertiesError(joinPath(path, key))
+        }
+      } else {
+        new JSONSchema(additionalProperties)
+          .validate(value[key], {
+            path: joinPath(path, key),
+            throwOnError
+          })
       }
     }
-  } else if (!values.includes(value)) {
-    throw new FieldEnumError(label, values, path)
+  }
+}
+
+/**
+ * Checks if value is allowed.
+ * @param enums
+ * @param value
+ * @param path
+ */
+export function checkEnum (enums: unknown[], value: unknown, path: string): void {
+  if (value instanceof Array) {
+    for (let i = 0; i < value.length; i += 1) {
+      if (!enums.includes(value[i])) {
+        throw new FieldEnumError(path, enums)
+      }
+    }
+  } else if (!enums.includes(value)) {
+    throw new FieldEnumError(path, enums)
   }
 }
 
@@ -138,31 +168,29 @@ export function checkEnum (values: any[], value: any, label: string, path: strin
  * Checks if a value is denied.
  * @param denied
  * @param value
- * @param label
  * @param path
  */
-export function checkDenied (denied: any[], value: any, label: string, path: string): void {
+export function checkDenied (denied: unknown[], value: unknown, path: string): void {
   if (value instanceof Array) {
     for (let i = 0; i < value.length; i += 1) {
       if (denied.includes(value[i])) {
-        throw new FieldDeniedError(label, denied, path)
+        throw new FieldDeniedError(path, denied)
       }
     }
   } else if (denied.includes(value)) {
-    throw new FieldDeniedError(label, denied, path)
+    throw new FieldDeniedError(path, denied)
   }
 }
 
 /**
  * Checks if the value is lesser than or equal to maximum (excluded).
- * @param maximum
+ * @param exclusiveMaximum
  * @param value
- * @param label
  * @param path
  */
-export function checkExclusiveMaximum (maximum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
-  if (value >= maximum) {
-    throw new FieldExclusiveMaximumError(label, maximum, path)
+export function checkExclusiveMaximum (exclusiveMaximum: number, value: number, path: string): void {
+  if (value >= exclusiveMaximum) {
+    throw new FieldExclusiveMaximumError(path, exclusiveMaximum)
   }
 }
 
@@ -170,159 +198,11 @@ export function checkExclusiveMaximum (maximum: FieldMinMax, value: FieldMinMax,
  * Checks if the value is greater than or equal to min (excluded).
  * @param exclusiveMinimum
  * @param value
- * @param label
  * @param path
  */
-export function checkExclusiveMinimum (exclusiveMinimum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+export function checkExclusiveMinimum (exclusiveMinimum: number, value: number, path: string): void {
   if (value <= exclusiveMinimum) {
-    throw new FieldExclusiveMinimumError(label, exclusiveMinimum, path)
-  }
-}
-
-/**
- * Throws an error if properties are not valid.
- * @param name
- * @param props
- */
-export function checkFieldProperties (name: string, props: FieldProperties): void {
-  // Check unknown properties.
-  const keys = Object.keys(props)
-  keys.forEach((prop) => {
-    if (!FIELD_PROPERTIES.includes(prop as keyof FieldProperties)) {
-      // eslint-disable-next-line no-console
-      console.warn(`Unknown schema field property "${name}.${prop}"`)
-    }
-  })
-
-  // Check field type
-  const { type } = props
-  if (typeof type !== 'undefined' && type !== null) {
-    if (type instanceof Array) {
-      const arrayType = type[0]
-
-      // Check that array type is a function or class
-      if (!['function', 'object', 'string'].includes(typeof arrayType)) {
-        throw new TypeError(`${name}.type[] must contain a class or a function`)
-      }
-    } else if (!['function', 'object', 'string'].includes(typeof type)) {
-      throw new TypeError(`${name}.type = "${type}" is not a valid type`)
-    }
-  }
-
-  // Check conflicting options.
-  const { denied } = props
-  if (props.enum && denied) {
-    throw new TypeError('enum and denied cannot be defined together')
-  }
-
-  // Check enum
-  if (typeof props.enum !== 'undefined' && !(props.enum instanceof Array) && typeof props.enum !== 'function') {
-    throw new TypeError(`${name}.enum must be an array or function`)
-  }
-
-  // Check custom check function
-  const { check } = props
-  if (typeof check !== 'undefined' && typeof check !== 'function') {
-    throw new TypeError(`${name}.check must be a function`)
-  }
-
-  // Check custom clean function
-  const { clean } = props
-  if (typeof clean !== 'undefined' && typeof clean !== 'function') {
-    throw new TypeError(`${name}.clean must be a function`)
-  }
-
-  // Check denied values
-  if (typeof denied !== 'undefined' && !(denied instanceof Array) && typeof denied !== 'function') {
-    throw new TypeError(`${name}.denied must be an array or function`)
-  }
-
-  // Check format
-  const { format } = props
-  if (!['undefined', 'string', 'function'].includes(typeof format)) {
-    throw new TypeError(`${name}.format must be a string or function`)
-  }
-
-  // Check items
-  const { items } = props
-  if (typeof items !== 'undefined' && typeof items !== 'object') {
-    throw new TypeError(`${name}.items must be an object`)
-  }
-
-  // Check label
-  const { title } = props
-  if (!['undefined', 'function', 'string'].includes(typeof title)) {
-    throw new TypeError(`${name}.label must be a string or function`)
-  }
-
-  // Check length
-  if (!['undefined', 'function', 'number'].includes(typeof length)) {
-    throw new TypeError(`${name}.length must be a function or number`)
-  }
-
-  // Check maximum value
-  const { maximum } = props
-  if (!['undefined', 'function', 'number', 'string'].includes(typeof maximum) && !(maximum instanceof Date)) {
-    throw new TypeError(`${name}.maximum must be a date, number, string or function`)
-  }
-
-  // Check max length
-  const { maxLength } = props
-  if (!['undefined', 'function', 'number'].includes(typeof maxLength)) {
-    throw new TypeError(`${name}.maxLength must be a number or function`)
-  }
-
-  // Check max words
-  const { maxWords } = props
-  if (!['undefined', 'function', 'number'].includes(typeof maxWords)) {
-    throw new TypeError(`${name}.maxWords must be a number or function`)
-  }
-
-  // Check minimum value
-  const { minimum } = props
-  if (!['undefined', 'function', 'number', 'string'].includes(typeof minimum) && !(minimum instanceof Date)) {
-    throw new TypeError(`${name}.minimum must be a date, number, string or function`)
-  }
-
-  // Check min length
-  const { minLength } = props
-  if (!['undefined', 'function', 'number'].includes(typeof minLength)) {
-    throw new TypeError(`${name}.minLength must be a number or function`)
-  }
-
-  // Check min words
-  const { minWords } = props
-  if (!['undefined', 'function', 'number'].includes(typeof minWords)) {
-    throw new TypeError(`${name}.minWords must be a number or function`)
-  }
-
-  // Check custom parse function
-  const { parse } = props
-  if (typeof parse !== 'undefined' && typeof parse !== 'function') {
-    throw new TypeError(`${name}.parse must be a function`)
-  }
-
-  // Check custom prepare function
-  const { prepare } = props
-  if (typeof prepare !== 'undefined' && typeof prepare !== 'function') {
-    throw new TypeError(`${name}.prepare must be a function`)
-  }
-
-  // Check pattern (regular expression)
-  const { pattern } = props
-  if (!['undefined', 'string', 'object', 'function'].includes(typeof pattern) && !(pattern instanceof RegExp)) {
-    throw new TypeError(`${name}.pattern must be a string, a RegExp or function`)
-  }
-
-  const { properties } = props
-  if (typeof properties !== 'undefined' && (typeof properties !== 'object' || properties === null)) {
-    throw new TypeError(`${name}.properties must be an object`)
-  }
-
-  // Check required
-  const { required } = props
-  if (!['undefined', 'function', 'boolean'].includes(typeof required)) {
-    throw new TypeError(`${name}.required must be a boolean or function`)
+    throw new FieldExclusiveMinimumError(path, exclusiveMinimum)
   }
 }
 
@@ -330,10 +210,9 @@ export function checkFieldProperties (name: string, props: FieldProperties): voi
  * Checks the format of a value.
  * @param format
  * @param value
- * @param label
  * @param path
  */
-export function checkFormat (format: FieldFormat, value: string, label: string, path: string) {
+export function checkFormat (format: SchemaFormat, value: string, path: string): void {
   let regexp
 
   switch (format) {
@@ -367,7 +246,41 @@ export function checkFormat (format: FieldFormat, value: string, label: string, 
   }
 
   if (!regexp.test(value)) {
-    throw new FieldFormatError(label, format, path)
+    throw new FieldFormatError(path, format)
+  }
+}
+
+/**
+ * Checks items in an array.
+ * @param items
+ * @param value
+ * @param path
+ * @param throwOnError
+ */
+export function checkItems (
+  items: SchemaItems,
+  value: unknown[],
+  path: string,
+  throwOnError: boolean): void {
+  if (items != null) {
+    let errors: ValidationErrors = {}
+
+    for (let i = 0; i < value.length; i += 1) {
+      const itemPath = `${path}[${i}]`
+
+      errors = {
+        ...errors,
+        ...new JSONSchema(items)
+          .validate(value[i], {
+            path: itemPath,
+            throwOnError
+          })
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      throw new ValidateError(errors)
+    }
   }
 }
 
@@ -375,14 +288,11 @@ export function checkFormat (format: FieldFormat, value: string, label: string, 
  * Checks the length of a value.
  * @param length
  * @param value
- * @param label
  * @param path
  */
-export function checkLength (length: number, value: {
-  length: number
-}, label: string, path: string): void {
-  if (value.length !== length) {
-    throw new FieldLengthError(label, length, path)
+export function checkLength (length: number, value: unknown, path: string): void {
+  if (value != null && (value as any)?.length !== length) {
+    throw new FieldLengthError(path, length)
   }
 }
 
@@ -390,12 +300,11 @@ export function checkLength (length: number, value: {
  * Checks if the value is lesser than or equal to maximum.
  * @param maximum
  * @param value
- * @param label
  * @param path
  */
-export function checkMax (maximum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+export function checkMaximum (maximum: number, value: number, path: string): void {
   if (value > maximum) {
-    throw new FieldMaximumError(label, maximum, path)
+    throw new FieldMaximumError(path, maximum)
   }
 }
 
@@ -403,12 +312,11 @@ export function checkMax (maximum: FieldMinMax, value: FieldMinMax, label: strin
  * Checks if the array contains at most a number of items.
  * @param maxItems
  * @param value
- * @param label
  * @param path
  */
-export function checkMaxItems (maxItems: number, value: any[], label: string, path: string): void {
+export function checkMaxItems (maxItems: number, value: unknown[], path: string): void {
   if (value.length > maxItems) {
-    throw new FieldMaxItemsError(label, maxItems, path)
+    throw new FieldMaxItemsError(path, maxItems)
   }
 }
 
@@ -416,14 +324,11 @@ export function checkMaxItems (maxItems: number, value: any[], label: string, pa
  * Checks if the length of the value is lesser than or equal to max.
  * @param maxLength
  * @param value
- * @param label
  * @param path
  */
-export function checkMaxLength (maxLength: number, value: {
-  length: number
-}, label: string, path: string): void {
-  if (value.length > maxLength) {
-    throw new FieldMaxLengthError(label, maxLength, path)
+export function checkMaxLength (maxLength: number, value: unknown, path: string): void {
+  if (value != null && (value as any)?.length > maxLength) {
+    throw new FieldMaxLengthError(path, maxLength)
   }
 }
 
@@ -431,12 +336,11 @@ export function checkMaxLength (maxLength: number, value: {
  * Checks if the number of words is lesser than of equal to max.
  * @param maxWords
  * @param value
- * @param label
  * @param path
  */
-export function checkMaxWords (maxWords: number, value: string, label: string, path: string): void {
+export function checkMaxWords (maxWords: number, value: string, path: string): void {
   if (value.split(' ').length > maxWords) {
-    throw new FieldMaxWordsError(label, maxWords, path)
+    throw new FieldMaxWordsError(path, maxWords)
   }
 }
 
@@ -444,12 +348,11 @@ export function checkMaxWords (maxWords: number, value: string, label: string, p
  * Checks if the value is greater than or equal to minimum.
  * @param minimum
  * @param value
- * @param label
  * @param path
  */
-export function checkMinimum (minimum: FieldMinMax, value: FieldMinMax, label: string, path: string): void {
+export function checkMinimum (minimum: number, value: number, path: string): void {
   if (typeof minimum !== 'undefined' && value < minimum) {
-    throw new FieldMinimumError(label, minimum, path)
+    throw new FieldMinimumError(path, minimum)
   }
 }
 
@@ -457,12 +360,11 @@ export function checkMinimum (minimum: FieldMinMax, value: FieldMinMax, label: s
  * Checks if the array contains at least a number of items.
  * @param minItems
  * @param value
- * @param label
  * @param path
  */
-export function checkMinItems (minItems: number, value: any[], label: string, path: string): void {
+export function checkMinItems (minItems: number, value: unknown[], path: string): void {
   if (value.length < minItems) {
-    throw new FieldMinItemsError(label, minItems, path)
+    throw new FieldMinItemsError(path, minItems)
   }
 }
 
@@ -470,14 +372,11 @@ export function checkMinItems (minItems: number, value: any[], label: string, pa
  * Checks if the value is greater than or equal to min.
  * @param minLength
  * @param value
- * @param label
  * @param path
  */
-export function checkMinLength (minLength: number, value: {
-  length: number
-}, label: string, path: string): void {
-  if (value.length < minLength) {
-    throw new FieldMinLengthError(label, minLength, path)
+export function checkMinLength (minLength: number, value: unknown, path: string): void {
+  if (value != null && (value as any)?.length < minLength) {
+    throw new FieldMinLengthError(path, minLength)
   }
 }
 
@@ -485,12 +384,11 @@ export function checkMinLength (minLength: number, value: {
  * Checks if the number of words is greater or equal to min.
  * @param minWords
  * @param value
- * @param label
  * @param path
  */
-export function checkMinWords (minWords: number, value: string, label: string, path: string): void {
+export function checkMinWords (minWords: number, value: string, path: string): void {
   if (value.split(' ').length < minWords) {
-    throw new FieldMinWordsError(label, minWords, path)
+    throw new FieldMinWordsError(path, minWords)
   }
 }
 
@@ -498,12 +396,11 @@ export function checkMinWords (minWords: number, value: string, label: string, p
  * Checks if the value is a multiple of a number.
  * @param multipleOf
  * @param value
- * @param label
  * @param path
  */
-export function checkMultipleOf (multipleOf: number, value: number, label: string, path: string) {
+export function checkMultipleOf (multipleOf: number, value: number, path: string): void {
   if (value % multipleOf !== 0) {
-    throw new FieldMultipleOfError(label, multipleOf, path)
+    throw new FieldMultipleOfError(path, multipleOf)
   }
 }
 
@@ -511,72 +408,75 @@ export function checkMultipleOf (multipleOf: number, value: number, label: strin
  * Checks if the value matches the pattern.
  * @param pattern
  * @param value
- * @param label
  * @param path
  */
-export function checkPattern (pattern: FieldPattern, value: string, label: string, path: string): void {
-  const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern
+export function checkPattern (pattern: string, value: string, path: string): void {
+  const regex = new RegExp(pattern)
 
   if (!regex.test(value)) {
-    throw new FieldPatternError(label, regex, path)
+    throw new FieldPatternError(path, regex)
+  }
+}
+
+/**
+ * Checks pattern properties.
+ * @param patternProperties
+ * @param value
+ * @param path
+ * @param throwOnError
+ */
+export function checkPatternProperties (
+  patternProperties: SchemaAttributes['patternProperties'],
+  value: Record<string, unknown>,
+  path: string,
+  throwOnError: boolean): void {
+  if (patternProperties != null && value != null) {
+    for (const key in value) {
+      for (const pattern in patternProperties) {
+        if (new RegExp(pattern).test(key)) {
+          new JSONSchema(patternProperties[pattern])
+            .validate(value[key], {
+              path: joinPath(path, key),
+              throwOnError
+            })
+          // do not test other patterns for this key
+          break
+        }
+      }
+    }
   }
 }
 
 /**
  * Checks if the properties are valid.
  * @param properties
- * @param additionalProperties
- * @param patternProperties
  * @param value
- * @param label
  * @param path
+ * @param throwOnError
  */
 export function checkProperties (
-  properties: FieldProperties['properties'],
-  patternProperties: FieldProperties['patternProperties'],
-  additionalProperties: FieldProperties['additionalProperties'],
+  properties: SchemaAttributes['properties'],
   value: Record<string, unknown>,
-  label: string,
-  path: string): void {
+  path: string,
+  throwOnError: boolean): void {
   if (properties != null) {
-    if (typeof value !== 'undefined' && (typeof value !== 'object' || value == null)) {
-      throw new FieldPropertiesError(label, properties, path)
+    if (typeof value !== 'undefined' && (typeof value !== 'object' || value === null)) {
+      throw new FieldPropertiesError(path, properties)
     }
+    let errors = {} as ValidationErrors
+
     for (const key in properties) {
-      const field = new SchemaField(label, properties[key])
-      field.validate(value[key])
-    }
-  }
-
-  if (patternProperties != null && value != null) {
-    for (const key in value) {
-      let patternFound: boolean = false
-
-      for (const pattern in patternProperties) {
-        if (new RegExp(pattern).test(key)) {
-          patternFound = true
-          const field = new SchemaField(label, patternProperties[pattern])
-          field.validate(value[key])
-          // do not test other patterns
-          break
-        }
-      }
-      if (!patternFound) {
-        throw new FieldPatternPropertiesError(label, [key], path)
+      errors = {
+        ...errors,
+        ...new JSONSchema(properties[key])
+          .validate(value[key], {
+            path: joinPath(path, key),
+            throwOnError
+          })
       }
     }
-  }
-
-  if (additionalProperties != null && value != null) {
-    for (const key in value) {
-      if (additionalProperties === false) {
-        if (properties == null || !(key in properties)) {
-          throw new FieldAdditionalPropertiesError(label, [key], path)
-        }
-      } else {
-        const field = new SchemaField(label, additionalProperties)
-        field.validate(value[key])
-      }
+    if (Object.keys(errors).length > 0) {
+      throw new ValidateError(errors)
     }
   }
 }
@@ -585,12 +485,130 @@ export function checkProperties (
  * Checks if the value is required.
  * @param required
  * @param value
- * @param label
  * @param path
  */
-export function checkRequired (required: boolean, value: any, label: string, path: string): void {
-  if (required && value == null) {
-    throw new FieldRequiredError(label, path)
+export function checkRequired (required: string[], value: unknown, path: string): void {
+  if (required instanceof Array && typeof value === 'object' && value != null) {
+    for (const key of required) {
+      if (!(key in value)) {
+        throw new FieldRequiredError(path)
+      }
+    }
+  }
+}
+
+/**
+ * Throws an error if schema attributes are not valid.
+ * @param attributes
+ * @param path
+ */
+export function checkSchemaAttributes (attributes: SchemaAttributes, path = ''): void {
+  // Check type
+  const { type } = attributes
+  if (type != null) {
+    if (type instanceof Array) {
+      type.forEach((el) => {
+        if (typeof el !== 'string') {
+          throw new SchemaError(`${joinPath(path, 'type')} is not valid`)
+        }
+      })
+    } else if (typeof type !== 'string') {
+      throw new SchemaError(`${joinPath(path, 'type')} = "${type}" must be a string or an array of strings`)
+    }
+  }
+  // Check enum
+  if (typeof attributes.enum !== 'undefined' && !(attributes.enum instanceof Array)) {
+    throw new SchemaError(`${joinPath(path, 'enum')} must be an array`)
+  }
+  // Check format
+  const { format } = attributes
+  if (!['undefined', 'string'].includes(typeof format)) {
+    throw new SchemaError(`${joinPath(path, 'format')} must be a string`)
+  }
+  // Check items
+  const { items } = attributes
+  if (typeof items !== 'undefined' && typeof items !== 'object') {
+    throw new SchemaError(`${joinPath(path, 'items')} must be an object`)
+  }
+  // Check length
+  if (!['undefined', 'number'].includes(typeof length)) {
+    throw new SchemaError(`${joinPath(path, 'length')} must be a number`)
+  }
+  // Check maximum value
+  const { maximum } = attributes
+  if (!['undefined', 'number'].includes(typeof maximum)) {
+    throw new SchemaError(`${joinPath(path, 'maximum')} must be a number`)
+  }
+  // Check max length
+  const { maxLength } = attributes
+  if (!['undefined', 'number'].includes(typeof maxLength)) {
+    throw new SchemaError(`${joinPath(path, 'maxLength')} must be a number`)
+  }
+  // Check minimum value
+  const { minimum } = attributes
+  if (!['undefined', 'number'].includes(typeof minimum)) {
+    throw new SchemaError(`${joinPath(path, 'minimum')} must be a number`)
+  }
+  // Check min length
+  const { minLength } = attributes
+  if (!['undefined', 'number'].includes(typeof minLength)) {
+    throw new SchemaError(`${joinPath(path, 'minLength')} must be a number`)
+  }
+  // Check pattern
+  const { pattern } = attributes
+  if (!['undefined', 'string'].includes(typeof pattern)) {
+    throw new SchemaError(`${joinPath(path, 'pattern')} must be a string`)
+  }
+  // Check pattern properties
+  const { patternProperties } = attributes
+  if (typeof patternProperties !== 'undefined' && (typeof patternProperties !== 'object' || patternProperties === null)) {
+    throw new SchemaError(`${joinPath(path, 'patternProperties')} must be an object`)
+  }
+  // Check properties
+  const { properties } = attributes
+  if (typeof properties !== 'undefined' && (typeof properties !== 'object' || properties === null)) {
+    throw new SchemaError(`${joinPath(path, 'properties')} must be an object`)
+  }
+  // Check title
+  const { title } = attributes
+  if (!['undefined', 'string'].includes(typeof title)) {
+    throw new SchemaError(`${joinPath(path, 'title')} must be a string`)
+  }
+
+  // Check denied values
+  const { denied } = attributes
+  if (typeof denied !== 'undefined' && !(denied instanceof Array)) {
+    throw new SchemaError(`${joinPath(path, 'denied')} must be an array`)
+  }
+  // Check max words
+  const { maxWords } = attributes
+  if (!['undefined', 'number'].includes(typeof maxWords)) {
+    throw new SchemaError(`${joinPath(path, 'maxWords')} must be a number`)
+  }
+  // Check min words
+  const { minWords } = attributes
+  if (!['undefined', 'number'].includes(typeof minWords)) {
+    throw new SchemaError(`${joinPath(path, 'minWords')} must be a number`)
+  }
+  // Check required
+  const { required } = attributes
+  if (typeof required !== 'undefined' && !(required instanceof Array)) {
+    throw new SchemaError(`${joinPath(path, 'required')} must be an array`)
+  } else if (required != null && required.length === 0) {
+    throw new SchemaError(`${joinPath(path, 'required')} must contain at least one entry`)
+  }
+  // Check unknown attributes.
+  const keys = Object.keys(attributes)
+  keys.forEach((key) => {
+    if (!ATTRIBUTES.includes(key as keyof SchemaAttributes)) {
+      // eslint-disable-next-line no-console
+      console.warn(`Unknown schema attribute "${path}.${key}"`)
+    }
+  })
+
+  // Check conflicting options.
+  if (attributes.enum && attributes.denied) {
+    throw new SchemaError(`${joinPath(path, 'enum')} and ${joinPath(path, 'denied')} cannot be defined together`)
   }
 }
 
@@ -598,55 +616,67 @@ export function checkRequired (required: boolean, value: any, label: string, pat
  * Checks type of value.
  * @param type
  * @param value
- * @param label
  * @param path
  */
 export function checkType (
-  type: FieldType,
-  value: any[] | boolean | null | number | object | string | ((...args: any[]) => void),
-  label: string,
+  type: SchemaType,
+  value: unknown,
   path: string
 ): void {
-  if (typeof type === 'string') {
+  // Ignore if value is undefined
+  if (value === undefined) {
+    return
+  }
+  if (type instanceof Array) {
+    // Check different types (ex: ['string', 'number'])
+    let valid = false
+
+    for (let i = 0; i < type.length; i += 1) {
+      try {
+        checkType(type[i], value, path)
+        valid = true
+      } catch {
+        // do nothing
+      }
+    }
+    if (!valid) {
+      throw new FieldTypeError(path, type.toString())
+    }
+  } else {
     switch (type) {
       case 'array':
         if (!(value instanceof Array)) {
-          throw new FieldTypeError(label, type, path)
+          throw new FieldTypeError(path, type)
         }
         break
       case 'boolean':
         if (typeof value !== 'boolean') {
-          throw new FieldTypeError(label, type, path)
-        }
-        break
-      case 'function':
-        if (typeof value !== 'function') {
-          throw new FieldTypeError(label, type, path)
+          throw new FieldTypeError(path, type)
         }
         break
       case 'integer':
         if (typeof value !== 'number' || Number.isNaN(value) || value !== Math.round(value)) {
-          throw new FieldTypeError(label, type, path)
+          throw new FieldTypeError(path, type)
         }
         break
       case 'null':
         if (value !== null) {
-          throw new FieldTypeError(label, type, path)
+          throw new FieldTypeError(path, type)
         }
         break
       case 'number':
         if (typeof value !== 'number' || Number.isNaN(value)) {
-          throw new FieldTypeError(label, type, path)
+          throw new FieldTypeError(path, type)
         }
         break
       case 'object':
-        if (typeof value !== 'object') {
-          throw new FieldTypeError(label, type, path)
+        if (typeof value !== 'object' || value === null || value instanceof Array) {
+          throw new FieldTypeError(path, type)
         }
         break
       case 'string':
         if (typeof value !== 'string') {
-          throw new FieldTypeError(label, type, path)
+          throw new FieldTypeError(path, type)
         }
         break
       default:
@@ -656,49 +686,19 @@ export function checkType (
 }
 
 /**
- * Checks if the type of value is one of given types.
- * todo check if type is instance of schema
- * @param types
- * @param values
- * @param label
- * @param path
- */
-export function checkTypeArray (
-  types: Array<FieldType>,
-  values: Array<any[] | boolean | number | object | string | ((...args: any[]) => void)>,
-  label: string,
-  path: string
-): void {
-  for (let i = 0; i < values.length; i += 1) {
-    let oneOf = false
-
-    for (let j = 0; j < types.length; j += 1) {
-      try {
-        checkType(types[j], values[i], label, path)
-        oneOf = true
-      } catch {
-        // do nothing
-      }
-    }
-    if (!oneOf) {
-      throw new FieldTypeError(label, types.toString(), path)
-    }
-  }
-}
-
-/**
  * Checks if items are unique.
- * @param items
- * @param label
+ * @param value
  * @param path
  */
-export function checkUniqueItems (items: any[], label: string, path: string) {
-  const dict = new Map()
+export function checkUniqueItems (value: unknown[], path: string): void {
+  if (value != null) {
+    const dict = new Map()
 
-  for (let i = 0; i < items.length; i += 1) {
-    if (dict.has(items[i])) {
-      throw new FieldUniqueItemsError(label, path)
+    for (let i = 0; i < value.length; i += 1) {
+      if (dict.get(value[i])) {
+        throw new FieldUniqueItemsError(path)
+      }
+      dict.set(value[i], true)
     }
-    dict.set(items[i], true)
   }
 }

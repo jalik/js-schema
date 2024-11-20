@@ -10,7 +10,6 @@ import {
   ERROR_FIELD_EXCLUSIVE_MAXIMUM,
   ERROR_FIELD_EXCLUSIVE_MINIMUM,
   ERROR_FIELD_FORMAT,
-  ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
   ERROR_FIELD_MAX_ITEMS,
   ERROR_FIELD_MAX_LENGTH,
@@ -27,19 +26,17 @@ import {
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,
-  ERROR_FIELD_UNKNOWN,
-  ERROR_VALIDATION
+  ERROR_SCHEMA_VALIDATION
 } from '../errors'
 import { LocaleData } from '../locale'
 
 const en: LocaleData = {
-  [ERROR_FIELD_ADDITIONAL_PROPERTIES]: 'The contains additional properties.',
+  [ERROR_FIELD_ADDITIONAL_PROPERTIES]: 'The field is not allowed.',
   [ERROR_FIELD_DENIED]: 'The field contains a denied value.',
   [ERROR_FIELD_ENUM]: 'The field must be one of "{allowed}".',
   [ERROR_FIELD_EXCLUSIVE_MAXIMUM]: 'The field must be lesser than {exclusiveMaximum}.',
   [ERROR_FIELD_EXCLUSIVE_MINIMUM]: 'The field must be greater than {exclusiveMinimum}',
   [ERROR_FIELD_FORMAT]: 'The field does not match format ({format}).',
-  [ERROR_FIELD_INVALID]: 'The field is not valid.',
   [ERROR_FIELD_LENGTH]: 'The field must have a length of {length}.',
   [ERROR_FIELD_MAXIMUM]: 'The field must be lesser than or equal to {maximum}.',
   [ERROR_FIELD_MAX_ITEMS]: 'The field must contain at most {maxItems} items.',
@@ -56,8 +53,7 @@ const en: LocaleData = {
   [ERROR_FIELD_REQUIRED]: 'The field is required.',
   [ERROR_FIELD_TYPE]: 'The field type is not valid.',
   [ERROR_FIELD_UNIQUE_ITEMS]: 'The field must contain unique items.',
-  [ERROR_FIELD_UNKNOWN]: 'The field is unknown.',
-  [ERROR_VALIDATION]: 'The object is not valid.'
+  [ERROR_SCHEMA_VALIDATION]: 'Validation failed.'
 }
 
 export default en

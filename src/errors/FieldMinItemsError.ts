@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_MIN_ITEMS } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldMinItemsError extends FieldError {
+class FieldMinItemsError extends ValidationError {
   public minItems: number
 
-  constructor (field: string, minItems: number, path: string) {
-    super(field, path, ERROR_FIELD_MIN_ITEMS)
+  constructor (path: string, minItems: number) {
+    super(path, ERROR_FIELD_MIN_ITEMS)
     Object.setPrototypeOf(this, FieldMinItemsError.prototype)
     this.minItems = minItems
     this.message = `The field "${path}" must contain at least ${minItems} items.`

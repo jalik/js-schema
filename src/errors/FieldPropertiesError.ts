@@ -4,14 +4,14 @@
  */
 
 import { ERROR_FIELD_PROPERTIES } from '../errors'
-import FieldError from './FieldError'
-import { FieldProperties } from '../SchemaField'
+import { SchemaAttributes } from '../JSONSchema'
+import ValidationError from './ValidationError'
 
-class FieldPropertiesError extends FieldError {
-  public properties: FieldProperties['properties']
+class FieldPropertiesError extends ValidationError {
+  public properties: SchemaAttributes['properties']
 
-  constructor (field: string, properties: FieldProperties['properties'], path: string) {
-    super(field, path, ERROR_FIELD_PROPERTIES)
+  constructor (path: string, properties: SchemaAttributes['properties']) {
+    super(path, ERROR_FIELD_PROPERTIES)
     Object.setPrototypeOf(this, FieldPropertiesError.prototype)
     this.properties = properties
     this.message = `The field "${path}" must be an object.`

@@ -9,7 +9,6 @@ export const ERROR_FIELD_ENUM = 'field-enum'
 export const ERROR_FIELD_EXCLUSIVE_MAXIMUM = 'field-exclusive-maximum'
 export const ERROR_FIELD_EXCLUSIVE_MINIMUM = 'field-exclusive-minimum'
 export const ERROR_FIELD_FORMAT = 'field-format'
-export const ERROR_FIELD_INVALID = 'field-invalid'
 export const ERROR_FIELD_LENGTH = 'field-length'
 export const ERROR_FIELD_MAXIMUM = 'field-maximum'
 export const ERROR_FIELD_MAX_ITEMS = 'field-max-items'
@@ -26,8 +25,9 @@ export const ERROR_FIELD_PROPERTIES = 'field-properties'
 export const ERROR_FIELD_REQUIRED = 'field-required'
 export const ERROR_FIELD_TYPE = 'field-type'
 export const ERROR_FIELD_UNIQUE_ITEMS = 'field-unique-items'
-export const ERROR_FIELD_UNKNOWN = 'field-unknown'
-export const ERROR_VALIDATION = 'object-invalid'
+
+export const ERROR_SCHEMA_INVALID = 'schema-invalid'
+export const ERROR_SCHEMA_VALIDATION = 'schema-validation'
 
 const errors = [
   ERROR_FIELD_ADDITIONAL_PROPERTIES,
@@ -36,7 +36,6 @@ const errors = [
   ERROR_FIELD_EXCLUSIVE_MINIMUM,
   ERROR_FIELD_EXCLUSIVE_MAXIMUM,
   ERROR_FIELD_FORMAT,
-  ERROR_FIELD_INVALID,
   ERROR_FIELD_LENGTH,
   ERROR_FIELD_MAXIMUM,
   ERROR_FIELD_MAX_ITEMS,
@@ -53,8 +52,7 @@ const errors = [
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,
-  ERROR_FIELD_UNKNOWN,
-  ERROR_VALIDATION
+  ERROR_SCHEMA_VALIDATION
 ] as const
 
 type ErrorType = typeof errors[number]

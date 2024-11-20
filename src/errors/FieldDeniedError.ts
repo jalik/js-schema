@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_DENIED } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldDeniedError extends FieldError {
-  public denied: any[]
+class FieldDeniedError extends ValidationError {
+  public denied: unknown[]
 
-  constructor (field: string, denied: any[], path: string) {
-    super(field, path, ERROR_FIELD_DENIED)
+  constructor (path: string, denied: unknown[]) {
+    super(path, ERROR_FIELD_DENIED)
     Object.setPrototypeOf(this, FieldDeniedError.prototype)
     this.denied = denied
     this.message = `The field "${path}" must not be one of: ${denied}.`

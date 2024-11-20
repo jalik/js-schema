@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_MULTIPLE_OF } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldMultipleOfError extends FieldError {
+class FieldMultipleOfError extends ValidationError {
   public multipleOf: number
 
-  constructor (field: string, multipleOf: number, path: string) {
-    super(field, path, ERROR_FIELD_MULTIPLE_OF)
+  constructor (path: string, multipleOf: number) {
+    super(path, ERROR_FIELD_MULTIPLE_OF)
     Object.setPrototypeOf(this, FieldMultipleOfError.prototype)
     this.multipleOf = multipleOf
     this.message = `The field "${path}" must be a multiple of ${multipleOf}.`

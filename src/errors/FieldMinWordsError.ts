@@ -4,13 +4,13 @@
  */
 
 import { ERROR_FIELD_MIN_WORDS } from '../errors'
-import FieldError from './FieldError'
+import ValidationError from './ValidationError'
 
-class FieldMinWordsError extends FieldError {
+class FieldMinWordsError extends ValidationError {
   public minWords: number
 
-  constructor (field: string, minWords: number, path: string) {
-    super(field, path, ERROR_FIELD_MIN_WORDS)
+  constructor (path: string, minWords: number) {
+    super(path, ERROR_FIELD_MIN_WORDS)
     Object.setPrototypeOf(this, FieldMinWordsError.prototype)
     this.minWords = minWords
     this.message = `The field "${path}" must contain at least ${minWords} words.`
