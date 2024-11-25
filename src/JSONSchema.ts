@@ -46,6 +46,8 @@ export type ValidateOptions = {
 // todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 // todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 export type SchemaAttributes = {
+  // https://json-schema.org/understanding-json-schema/reference/comments#comments
+  $comment?: string;
   // https://json-schema.org/understanding-json-schema/structuring#id
   $id?: string;
   // https://json-schema.org/understanding-json-schema/reference/schema#schema
