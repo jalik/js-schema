@@ -37,23 +37,18 @@ import {
 } from './checks'
 import { ValidationErrors } from './errors/ValidateError'
 
-export type ValidateOptions = {
-  path?: string;
-  throwOnError?: boolean;
-}
-
-// todo add contains https://json-schema.org/understanding-json-schema/reference/array#contains
-// todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
-// todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
 export type SchemaAttributes = {
   // https://json-schema.org/understanding-json-schema/reference/comments#comments
   $comment?: string;
   // https://json-schema.org/understanding-json-schema/structuring#id
   $id?: string;
+  // https://json-schema.org/understanding-json-schema/structuring#dollarref
+  $ref?: string;
   // https://json-schema.org/understanding-json-schema/reference/schema#schema
   $schema?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
   additionalProperties?: false | Record<string, SchemaAttributes>;
+  // todo add contains https://json-schema.org/understanding-json-schema/reference/array#contains
   denied?: unknown[];
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: unknown[];
@@ -69,6 +64,7 @@ export type SchemaAttributes = {
   length?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
   maximum?: number;
+  // todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
   // https://json-schema.org/understanding-json-schema/reference/array#length
   maxItems?: number;
   // https://json-schema.org/understanding-json-schema/reference/string#length
@@ -76,6 +72,7 @@ export type SchemaAttributes = {
   maxWords?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
   minimum?: number;
+  // todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
   // https://json-schema.org/understanding-json-schema/reference/array#length
   minItems?: number;
   // https://json-schema.org/understanding-json-schema/reference/string#length
@@ -97,6 +94,13 @@ export type SchemaAttributes = {
   type?: SchemaType;
   // https://json-schema.org/understanding-json-schema/reference/array#uniqueItems
   uniqueItems?: boolean;
+}
+
+export type ValidateOptions = {
+  path?: string;
+  schemas?: SchemaAttributes[];
+  strict?: boolean;
+  throwOnError?: boolean;
 }
 
 /**
@@ -557,11 +561,13 @@ class JSONSchema<A extends SchemaAttributes> {
    */
   validate (value: unknown, options?: ValidateOptions): ValidationErrors<(keyof A['properties'] & string) | string> | null {
     const opts: ValidateOptions = {
+      strict: false,
       throwOnError: true,
       ...options
     }
 
-    const throwOnError = opts.throwOnError ?? false
+    const strict = opts.strict ?? false
+    const throwOnError = opts.throwOnError ?? true
     const path = opts.path ?? ''
     const attrs = this.attributes
     let errors: ValidationErrors
@@ -677,7 +683,7 @@ class JSONSchema<A extends SchemaAttributes> {
 
         ...validate(() => {
           if (attrs.format != null) {
-            checkFormat(attrs.format, value, path)
+            checkFormat(attrs.format, strict, value, path)
           }
         }, throwOnError),
 
@@ -738,7 +744,11 @@ class JSONSchema<A extends SchemaAttributes> {
         }, throwOnError),
 
         ...validate(() => {
-          checkAdditionalProperties(attrs.additionalProperties, attrs.properties, value as any, path, throwOnError)
+          checkAdditionalProperties(
+            attrs.additionalProperties,
+            attrs.properties,
+            attrs.patternProperties,
+            value as any, path, throwOnError)
         }, throwOnError)
       }
     }
