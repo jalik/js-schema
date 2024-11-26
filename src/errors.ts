@@ -22,6 +22,7 @@ export const ERROR_FIELD_MULTIPLE_OF = 'field-multiple-of'
 export const ERROR_FIELD_PATTERN = 'field-pattern'
 export const ERROR_FIELD_PATTERN_PROPERTIES = 'field-pattern-properties'
 export const ERROR_FIELD_PROPERTIES = 'field-properties'
+export const ERROR_FIELD_PROPERTY_NAMES = 'field-property-names'
 export const ERROR_FIELD_REQUIRED = 'field-required'
 export const ERROR_FIELD_TYPE = 'field-type'
 export const ERROR_FIELD_UNIQUE_ITEMS = 'field-unique-items'
@@ -49,6 +50,7 @@ const errors = [
   ERROR_FIELD_PATTERN,
   ERROR_FIELD_PATTERN_PROPERTIES,
   ERROR_FIELD_PROPERTIES,
+  ERROR_FIELD_PROPERTY_NAMES,
   ERROR_FIELD_REQUIRED,
   ERROR_FIELD_TYPE,
   ERROR_FIELD_UNIQUE_ITEMS,

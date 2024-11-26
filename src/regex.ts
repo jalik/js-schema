@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 /**
@@ -41,4 +41,9 @@ export const TimeRegExp = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.[
 /**
  * URI pattern.
  */
-export const UriRegExp = /^(mailto:|news:|tel:|urn:|[^ :/?#\r\n]+:\/\/)([^ /?#\r\n]+)([^ ?#\r\n]*)(\?[^ #\r\n]*)?(#(.*))?$/
+export const URIRegExp = /^(mailto:|news:|tel:|urn:|[^ :/?#\r\n]+:\/\/)([^ /?#\r\n]+)([^ ?#\r\n]*)(\?[^ #\r\n]*)?(#(.*))?$/
+
+/**
+ * UUID pattern.
+ */
+export const UUIDRegExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i

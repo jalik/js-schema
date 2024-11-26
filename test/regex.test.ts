@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2023 Karl STEIN
+ * Copyright (c) 2024 Karl STEIN
  */
 
 import { describe, expect, it } from '@jest/globals'
@@ -12,7 +12,7 @@ import {
   IPv4RegExp,
   IPv6RegExp,
   TimeRegExp,
-  UriRegExp
+  URIRegExp
 } from '../src/regex'
 
 describe('DateRegExp', () => {
@@ -140,21 +140,21 @@ describe('TimeRegExp', () => {
 describe('UriRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
-      expect(UriRegExp.test('ftp://ftp.is.co.za/rfc/rfc1808.txt')).toBeTruthy()
-      expect(UriRegExp.test('https://www.ietf.org/rfc/rfc2396.txt')).toBeTruthy()
-      expect(UriRegExp.test('ldap://[2001:db8::7]/c=GB?objectClass?one')).toBeTruthy()
-      expect(UriRegExp.test('telnet://192.0.2.16:80/')).toBeTruthy()
-      expect(UriRegExp.test('ssh://user:pass@host:22')).toBeTruthy()
-      expect(UriRegExp.test('mailto:user@mail.com')).toBeTruthy()
-      expect(UriRegExp.test('news:comp.infosystems.www.servers.unix')).toBeTruthy()
-      expect(UriRegExp.test('tel:+1-816-555-1212')).toBeTruthy()
-      expect(UriRegExp.test('urn:oasis:names:specification:docbook:dtd:xml:4.1.2')).toBeTruthy()
+      expect(URIRegExp.test('ftp://ftp.is.co.za/rfc/rfc1808.txt')).toBeTruthy()
+      expect(URIRegExp.test('https://www.ietf.org/rfc/rfc2396.txt')).toBeTruthy()
+      expect(URIRegExp.test('ldap://[2001:db8::7]/c=GB?objectClass?one')).toBeTruthy()
+      expect(URIRegExp.test('telnet://192.0.2.16:80/')).toBeTruthy()
+      expect(URIRegExp.test('ssh://user:pass@host:22')).toBeTruthy()
+      expect(URIRegExp.test('mailto:user@mail.com')).toBeTruthy()
+      expect(URIRegExp.test('news:comp.infosystems.www.servers.unix')).toBeTruthy()
+      expect(URIRegExp.test('tel:+1-816-555-1212')).toBeTruthy()
+      expect(URIRegExp.test('urn:oasis:names:specification:docbook:dtd:xml:4.1.2')).toBeTruthy()
     })
   })
 
   describe('with incorrect value', () => {
     it('should return false', () => {
-      expect(UriRegExp.test('https://www.ietf.org/rfc/ rfc2396.txt')).toBeFalsy()
+      expect(URIRegExp.test('https://www.ietf.org/rfc/ rfc2396.txt')).toBeFalsy()
     })
   })
 })

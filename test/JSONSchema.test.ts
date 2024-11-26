@@ -46,6 +46,41 @@ describe('constructor(attributes)', () => {
       }).not.toThrow()
     })
   })
+
+  describe('with $ref', () => {
+    it('should use schema identified by $ref URI', () => {
+      const emailSchema = new JSONSchema({
+        $id: 'https://example.com/schemas/email',
+        type: 'string',
+        format: 'email'
+      })
+      const phoneSchema = new JSONSchema({
+        $id: 'https://example.com/schemas/phone',
+        type: 'string',
+        pattern: '^\\+[0-9]+$'
+      })
+      const userSchema = new JSONSchema({
+        $id: 'https://example.com/schemas/user',
+        properties: {
+          email: {
+            $ref: emailSchema.get$Id()
+          },
+          phones: {
+            type: 'array',
+            items: { $ref: phoneSchema.get$Id() }
+          }
+        }
+      }, {
+        schemas: {
+          'https://example.com/schemas/email': emailSchema,
+          'https://example.com/schemas/phone': phoneSchema
+        }
+      })
+      expect(userSchema.isValid({
+        phones: ['+68987218910']
+      })).toBe(true)
+    })
+  })
 })
 
 describe('clone()', () => {
