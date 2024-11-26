@@ -26,7 +26,9 @@ import {
   checkMultipleOf,
   checkPattern,
   checkPatternProperties,
+  checkPrefixItems,
   checkProperties,
+  checkPropertyNames,
   checkRequired,
   checkSchemaAttributes,
   checkType,
@@ -36,10 +38,15 @@ import {
   SchemaType
 } from './checks'
 import { ValidationErrors } from './errors/ValidateError'
+import SchemaError from './errors/SchemaError'
+import ValidationError from './errors/ValidationError'
 
 export type SchemaAttributes = {
+  [key: string]: any;
   // https://json-schema.org/understanding-json-schema/reference/comments#comments
   $comment?: string;
+  // https://json-schema.org/understanding-json-schema/structuring#defs
+  $defs?: Record<string, Pick<SchemaAttributes, '$ref'>>;
   // https://json-schema.org/understanding-json-schema/structuring#id
   $id?: string;
   // https://json-schema.org/understanding-json-schema/structuring#dollarref
@@ -47,7 +54,7 @@ export type SchemaAttributes = {
   // https://json-schema.org/understanding-json-schema/reference/schema#schema
   $schema?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
-  additionalProperties?: false | Record<string, SchemaAttributes>;
+  additionalProperties?: false | SchemaAttributes;
   // todo add contains https://json-schema.org/understanding-json-schema/reference/array#contains
   denied?: unknown[];
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
@@ -83,9 +90,13 @@ export type SchemaAttributes = {
   // https://json-schema.org/understanding-json-schema/reference/string#regexp
   pattern?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#patternProperties
-  patternProperties?: Record<string, SchemaAttributes>;
+  patternProperties?: Record<string, boolean | SchemaAttributes>;
+  // https://json-schema.org/understanding-json-schema/reference/array#tupleValidation
+  prefixItems?: (boolean | SchemaAttributes)[];
   // https://json-schema.org/understanding-json-schema/reference/object#properties
-  properties?: Record<string, SchemaAttributes>;
+  properties?: Record<string, boolean | SchemaAttributes>;
+  // https://json-schema.org/understanding-json-schema/reference/object#propertyNames
+  propertyNames?: boolean | Record<string, SchemaAttributes>;
   // https://json-schema.org/understanding-json-schema/reference/object#required
   required?: string[];
   // https://json-schema.org/understanding-json-schema/reference/annotations
@@ -97,9 +108,25 @@ export type SchemaAttributes = {
 }
 
 export type ValidateOptions = {
+  /**
+   * Used internally to process nested validation.
+   */
   path?: string;
-  schemas?: SchemaAttributes[];
+  /**
+   * Reference to the root schema.
+   */
+  // eslint-disable-next-line no-use-before-define
+  root?: JSONSchema<SchemaAttributes>;
+  /**
+   * Schemas referenced with "$ref".
+   */
+  // eslint-disable-next-line no-use-before-define
+  schemas?: Record<string, JSONSchema<any>>;
+  // todo add description
   strict?: boolean;
+  /**
+   * Throws a ValidationError when validation fails.
+   */
   throwOnError?: boolean;
 }
 
@@ -140,20 +167,38 @@ export const JSON_SCHEMA_DRAFT_2020_12 = 'https://json-schema.org/draft/2020-12/
 
 class JSONSchema<A extends SchemaAttributes> {
   protected readonly attributes: A
+  protected readonly baseURI: string | null
+  // eslint-disable-next-line no-use-before-define
+  protected readonly schemas: Record<string, JSONSchema<SchemaAttributes>>
 
-  constructor (attributes: A) {
+  constructor (attributes: A, options?: {
+    schemas?: Record<string, JSONSchema<SchemaAttributes>>
+  }) {
+    checkSchemaAttributes(attributes, options?.schemas)
+
     this.attributes = {
       $schema: JSON_SCHEMA_DRAFT_2020_12,
       ...attributes
     }
-    checkSchemaAttributes(attributes)
+    // Prepare schemas references.
+    this.schemas = options?.schemas ?? {}
+
+    // Get base URI.
+    if (attributes.$id != null && attributes.$id.startsWith('http')) {
+      const baseURI = new URL(attributes.$id)
+      this.baseURI = baseURI.origin
+    } else {
+      this.baseURI = null
+    }
   }
 
   /**
    * Returns a clone of the schema.
    */
   clone (): JSONSchema<A> {
-    return new JSONSchema(this.toJSON())
+    return new JSONSchema(this.toJSON(), {
+      schemas: this.schemas
+    })
   }
 
   /**
@@ -168,16 +213,46 @@ class JSONSchema<A extends SchemaAttributes> {
         newAttributes[key] = attributes[key as keyof NA] as any
       }
     }
-    return new JSONSchema(newAttributes)
+    return new JSONSchema(newAttributes, {
+      schemas: this.schemas
+    })
   }
 
   // todo add extendProperties(properties)
+
+  /**
+   * Returns local definitions.
+   */
+  get$Defs (): A['$defs'] {
+    return this.attributes.$defs
+  }
+
+  /**
+   * Returns schema identifier.
+   */
+  get$Id (): A['$id'] {
+    return this.attributes.$id
+  }
+
+  /**
+   * Returns schema reference.
+   */
+  get$Ref (): A['$ref'] {
+    return this.attributes.$ref
+  }
 
   /**
    * Returns additional properties.
    */
   getAdditionalProperties (): A['additionalProperties'] {
     return this.attributes.additionalProperties
+  }
+
+  /**
+   * Returns the schema base URI.
+   */
+  getBaseURI (): string | null {
+    return this.baseURI
   }
 
   /**
@@ -338,8 +413,12 @@ class JSONSchema<A extends SchemaAttributes> {
     try {
       this.validate(value, { ...options, throwOnError: true })
       return true
-    } catch {
-      return false
+    } catch (error) {
+      console.log(error)
+      if (error instanceof ValidationError) {
+        return false
+      }
+      throw error
     }
   }
 
@@ -360,7 +439,9 @@ class JSONSchema<A extends SchemaAttributes> {
         }
       }
     }
-    return new JSONSchema(attributes) as any
+    return new JSONSchema(attributes, {
+      schemas: this.schemas
+    }) as any
   }
 
   /**
@@ -372,7 +453,9 @@ class JSONSchema<A extends SchemaAttributes> {
     if (attributes.required != null) {
       delete attributes.required
     }
-    return new JSONSchema(attributes)
+    return new JSONSchema(attributes, {
+      schemas: this.schemas
+    })
   }
 
   /**
@@ -392,7 +475,9 @@ class JSONSchema<A extends SchemaAttributes> {
         }
       }
     }
-    return new JSONSchema(attributes) as any
+    return new JSONSchema(attributes, {
+      schemas: this.schemas
+    }) as any
   }
 
   /**
@@ -408,9 +493,12 @@ class JSONSchema<A extends SchemaAttributes> {
       const copy = deepExtend([], value) as unknown[]
       const items = this.attributes.items
 
-      if (items != null) {
+      if (typeof items === 'object' && items != null) {
+        const schema = new JSONSchema(items, {
+          schemas: this.schemas
+        })
         copy.forEach((item, index) => {
-          copy[index] = new JSONSchema(items).removeUnknownProperties(item)
+          copy[index] = schema.removeUnknownProperties(item)
         })
       }
       return copy
@@ -423,7 +511,9 @@ class JSONSchema<A extends SchemaAttributes> {
           const prop = this.resolveProperty(key)
 
           if (prop != null) {
-            copy[key] = new JSONSchema(prop).removeUnknownProperties(copy[key])
+            copy[key] = new JSONSchema(prop, {
+              schemas: this.schemas
+            }).removeUnknownProperties(copy[key])
           }
         } catch (error) {
           if (error instanceof InvalidPathError) {
@@ -445,7 +535,9 @@ class JSONSchema<A extends SchemaAttributes> {
     if (attributes.properties) {
       attributes.required = Object.keys(attributes.properties)
     }
-    return new JSONSchema(attributes) as any
+    return new JSONSchema(attributes, {
+      schemas: this.schemas
+    }) as any
   }
 
   /**
@@ -526,13 +618,19 @@ class JSONSchema<A extends SchemaAttributes> {
     const items = this.attributes.items
 
     if (typeof subPath === 'string' && subPath.length > 0) {
+      const prop = properties?.[propName]
+
       // Resolve nested property
-      if (properties && properties[propName] != null) {
-        return new JSONSchema(properties[propName]).resolveProperty(subPath, true)
+      if (properties && typeof prop === 'object' && prop != null) {
+        return new JSONSchema(prop, {
+          schemas: this.schemas
+        }).resolveProperty(subPath, true)
       }
       // Resolve nested item
-      if (items) {
-        return new JSONSchema(items).resolveProperty(subPath, true)
+      if (typeof items === 'object' && items != null) {
+        return new JSONSchema(items, {
+          schemas: this.schemas
+        }).resolveProperty(subPath, true)
       }
     } else if (propName === '') {
       // Return schema attributes
@@ -540,7 +638,7 @@ class JSONSchema<A extends SchemaAttributes> {
     } else if (properties && properties[propName] != null) {
       // Return property
       return properties[propName] as unknown as PA
-    } else if (items && items.properties && items.properties[propName] != null) {
+    } else if (typeof items === 'object' && items != null && items.properties && items.properties[propName] != null) {
       // Return item property
       return items.properties[propName] as unknown as PA
     }
@@ -560,17 +658,70 @@ class JSONSchema<A extends SchemaAttributes> {
    * @param options
    */
   validate (value: unknown, options?: ValidateOptions): ValidationErrors<(keyof A['properties'] & string) | string> | null {
-    const opts: ValidateOptions = {
+    const opts = {
+      root: this,
       strict: false,
       throwOnError: true,
       ...options
+    } satisfies ValidateOptions
+
+    const path = opts.path ?? ''
+    const root = opts.root
+    const strict = opts.strict
+    const throwOnError = opts.throwOnError
+
+    let attrs = this.attributes
+    let errors: ValidationErrors
+
+    // Complete or overwrite schema references.
+    opts.schemas = { ...this.schemas, ...opts.schemas }
+    const { schemas } = opts
+
+    // Add root pointer ref to schemas.
+    if (opts.path == null || opts.path === '') {
+      schemas['#'] = this
+      // opts.root = this
     }
 
-    const strict = opts.strict ?? false
-    const throwOnError = opts.throwOnError ?? true
-    const path = opts.path ?? ''
-    const attrs = this.attributes
-    let errors: ValidationErrors
+    // Add current schema ref to schemas
+    if (attrs.$id != null) {
+      schemas[attrs.$id] = this
+    }
+
+    // Resolve reference.
+    const { $ref } = attrs
+    if ($ref != null) {
+      if ($ref.startsWith('#/$defs')) {
+        const key = $ref.substring('#/$defs'.length + 1)
+        const $defs = root.get$Defs()
+
+        if ($defs != null && key in $defs) {
+          attrs = deepExtend({}, attrs, $defs[key])
+        } else {
+          throw new SchemaError(`cannot resolve $ref = "${$ref}"`)
+        }
+      } else if ($ref.startsWith('#/properties')) {
+        const key = $ref.substring(12 + 1)
+
+        if (attrs.properties != null && key in attrs.properties) {
+          attrs = deepExtend({}, attrs, attrs.properties[key])
+        } else {
+          throw new SchemaError(`cannot resolve $ref = "${$ref}"`)
+        }
+      } else {
+        let uri = $ref
+
+        if ($ref.startsWith('/')) {
+          uri = (this.baseURI ?? '') + $ref
+        }
+
+        if (uri in schemas) {
+          attrs = deepExtend({}, attrs, schemas[uri].toJSON())
+        } else {
+          throw new SchemaError(`cannot resolve $ref = "${$ref}"`)
+        }
+      }
+    }
 
     errors = {
       ...validate(() => {
@@ -583,17 +734,7 @@ class JSONSchema<A extends SchemaAttributes> {
         if (attrs.type != null) {
           checkType(attrs.type, value, path)
         }
-      }, throwOnError)
-    }
-
-    // Ignore next checks if value is null or undefined
-    if (value == null) {
-      return errors
-    }
-
-    // Special values
-    errors = {
-      ...errors,
+      }, throwOnError),
 
       ...validate(() => {
         if (attrs.enum != null) {
@@ -608,6 +749,11 @@ class JSONSchema<A extends SchemaAttributes> {
       }, throwOnError)
     }
 
+    // Ignore next checks if value is null or undefined
+    if (value == null) {
+      return errors
+    }
+
     // Array
     if (value instanceof Array) {
       errors = {
@@ -615,7 +761,13 @@ class JSONSchema<A extends SchemaAttributes> {
 
         ...validate(() => {
           if (attrs.items != null) {
-            checkItems(attrs.items, value, path, throwOnError)
+            checkItems(attrs.items, attrs.prefixItems, value, path, opts)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.prefixItems != null) {
+            checkPrefixItems(attrs.prefixItems, value, path, opts)
           }
         }, throwOnError),
 
@@ -731,16 +883,20 @@ class JSONSchema<A extends SchemaAttributes> {
     }
 
     // Object
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && !(value instanceof Array)) {
       errors = {
         ...errors,
 
         ...validate(() => {
-          checkProperties(attrs.properties, value as any, path, throwOnError)
+          checkProperties(attrs.properties, value as any, path, opts)
         }, throwOnError),
 
         ...validate(() => {
-          checkPatternProperties(attrs.patternProperties, value as any, path, throwOnError)
+          checkPropertyNames(attrs.propertyNames, value as any, path, opts)
+        }, throwOnError),
+
+        ...validate(() => {
+          checkPatternProperties(attrs.patternProperties, value as any, path, opts)
         }, throwOnError),
 
         ...validate(() => {
@@ -748,7 +904,7 @@ class JSONSchema<A extends SchemaAttributes> {
             attrs.additionalProperties,
             attrs.properties,
             attrs.patternProperties,
-            value as any, path, throwOnError)
+            value as any, path, opts)
         }, throwOnError)
       }
     }

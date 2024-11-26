@@ -26,9 +26,10 @@ import {
   IPv4RegExp,
   IPv6RegExp,
   TimeRegExp,
-  UriRegExp
+  URIRegExp,
+  UUIDRegExp
 } from './regex'
-import JSONSchema, { SchemaAttributes } from './JSONSchema'
+import JSONSchema, { SchemaAttributes, ValidateOptions } from './JSONSchema'
 import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
@@ -38,6 +39,8 @@ import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesEr
 import { joinPath } from './utils'
 import ValidateError, { ValidationErrors } from './errors/ValidateError'
 import SchemaError from './errors/SchemaError'
+import FieldPropertyNamesError from './errors/FieldPropertyNamesError'
+import ValidationError from './errors/ValidationError'
 
 /**
  * The format of a string.
@@ -51,15 +54,17 @@ export type SchemaFormat =
   | 'hostname'
   | 'ipv4'
   | 'ipv6'
+  | 'json-pointer'
+  | 'relative-json-pointer'
   | 'time'
   | 'uri'
-// todo add 'uuid'
+  | 'uuid'
 
 /**
  * The constraints of items in an array.
  * @see https://json-schema.org/understanding-json-schema/reference/array#items
  */
-export type SchemaItems = Omit<SchemaAttributes, '$schema' | '$id'>
+export type SchemaItems = boolean | Omit<SchemaAttributes, '$schema' | '$id'>
 
 /**
  * The type of the data.
@@ -89,7 +94,7 @@ export type SchemaType =
  * @param patternProperties
  * @param value
  * @param path
- * @param throwOnError
+ * @param options
  */
 export function checkAdditionalProperties (
   additionalProperties: SchemaAttributes['additionalProperties'],
@@ -97,32 +102,51 @@ export function checkAdditionalProperties (
   patternProperties: SchemaAttributes['patternProperties'],
   value: Record<string, unknown>,
   path: string,
-  throwOnError: boolean): void {
+  options: ValidateOptions): void {
   if (additionalProperties != null && value != null) {
     // ignore arrays
     if (value instanceof Array) {
       return
     }
-    for (const key in value) {
-      if (additionalProperties === false) {
-        if (patternProperties != null) {
-          for (const pattern in patternProperties) {
-            // ignore properties matching pattern
-            if (new RegExp(pattern).test(key)) {
-              return
-            }
+    let errors = {} as ValidationErrors
+
+    if (patternProperties != null) {
+      for (const pattern in patternProperties) {
+        const regexp = new RegExp(pattern)
+
+        for (const key in value) {
+          // ignore properties matching pattern
+          if (regexp.test(key)) {
+            return
           }
         }
+      }
+    }
+
+    if (additionalProperties === false) {
+      for (const key in value) {
         if (properties == null || !(key in properties)) {
           throw new FieldAdditionalPropertiesError(joinPath(path, key))
         }
-      } else if (properties != null && !(key in properties)) {
-        new JSONSchema(additionalProperties)
-          .validate(value[key], {
-            path: joinPath(path, key),
-            throwOnError
-          })
       }
+    } else if (typeof additionalProperties === 'object') {
+      for (const key in value) {
+        if (properties == null || !(key in properties)) {
+          errors = {
+            ...errors,
+            ...new JSONSchema(additionalProperties, {
+              schemas: options?.schemas
+            })
+              .validate(value[key], {
+                ...options,
+                path: joinPath(path, key)
+              })
+          }
+        }
+      }
+    }
+    if (Object.keys(errors).length > 0) {
+      throw new ValidateError(errors)
     }
   }
 }
@@ -134,11 +158,32 @@ export function checkAdditionalProperties (
  * @param path
  */
 export function checkEnum (enums: unknown[], value: unknown, path: string): void {
+  if (typeof value === 'undefined') {
+    return
+  }
   if (value instanceof Array) {
-    for (let i = 0; i < value.length; i += 1) {
-      if (!enums.includes(value[i])) {
-        throw new FieldEnumError(path, enums)
+    for (let j = 0; j < enums.length; j += 1) {
+      for (let i = 0; i < value.length; i += 1) {
+        const x = enums[j]
+
+        if (x instanceof Array && x[i] !== value[i]) {
+          throw new FieldEnumError(path + `[${i}]`, enums)
+        }
       }
+    }
+  } else if (typeof value === 'object' && value != null) {
+    const json = JSON.stringify(value)
+    let valid = false
+
+    for (const x in enums) {
+      if (typeof enums[x] === 'object' && enums[x] != null &&
+        json === JSON.stringify(enums[x])) {
+        valid = true
+        break
+      }
+    }
+    if (!valid) {
+      throw new FieldEnumError(path, enums)
     }
   } else if (!enums.includes(value)) {
     throw new FieldEnumError(path, enums)
@@ -216,11 +261,22 @@ export function checkFormat (format: SchemaFormat, strict: boolean, value: strin
     case 'ipv6':
       regexp = IPv6RegExp
       break
+    case 'json-pointer':
+      // todo check json-pointer format
+      regexp = /^.+$/
+      break
+    case 'relative-json-pointer':
+      // todo check relative-json-pointer format
+      regexp = /^.+$/
+      break
     case 'time':
       regexp = TimeRegExp
       break
     case 'uri':
-      regexp = UriRegExp
+      regexp = URIRegExp
+      break
+    case 'uuid':
+      regexp = UUIDRegExp
       break
     default:
       throw new Error(`"${format}" is not a valid format`)
@@ -238,33 +294,49 @@ export function checkFormat (format: SchemaFormat, strict: boolean, value: strin
 /**
  * Checks items in an array.
  * @param items
+ * @param prefixItems
  * @param value
  * @param path
- * @param throwOnError
+ * @param options
  */
 export function checkItems (
-  items: SchemaItems,
+  items: SchemaAttributes['items'],
+  prefixItems: SchemaAttributes['prefixItems'],
   value: unknown[],
   path: string,
-  throwOnError: boolean): void {
+  options: ValidateOptions): void {
   if (items != null) {
-    let errors: ValidationErrors = {}
-
-    for (let i = 0; i < value.length; i += 1) {
-      const itemPath = `${path}[${i}]`
-
-      errors = {
-        ...errors,
-        ...new JSONSchema(items)
-          .validate(value[i], {
-            path: itemPath,
-            throwOnError
-          })
+    if (items === false) {
+      // throw if additional items are found
+      if ((prefixItems == null && value.length > 0) ||
+        (prefixItems != null && value.length > prefixItems.length)) {
+        throw new ValidationError(path)
       }
-    }
+    } else if (typeof items === 'object' && items != null) {
+      let errors = {} as ValidationErrors
+      const schema = new JSONSchema(items, {
+        schemas: options?.schemas
+      })
 
-    if (Object.keys(errors).length > 0) {
-      throw new ValidateError(errors)
+      let index = 0
+
+      // Adjust index with prefixItems
+      if (prefixItems != null) {
+        index = prefixItems.length
+      }
+
+      for (let i = index; i < value.length; i += 1) {
+        errors = {
+          ...errors,
+          ...schema.validate(value[i], {
+            ...options,
+            path: `${path}[${i}]`
+          })
+        }
+      }
+      if (Object.keys(errors).length > 0) {
+        throw new ValidateError(errors)
+      }
     }
   }
 }
@@ -312,7 +384,7 @@ export function checkMaxItems (maxItems: number, value: unknown[], path: string)
  * @param path
  */
 export function checkMaxLength (maxLength: number, value: unknown, path: string): void {
-  if (value != null && (value as any)?.length > maxLength) {
+  if (value != null && (typeof value === 'string') && [...value].length > maxLength) {
     throw new FieldMaxLengthError(path, maxLength)
   }
 }
@@ -360,7 +432,7 @@ export function checkMinItems (minItems: number, value: unknown[], path: string)
  * @param path
  */
 export function checkMinLength (minLength: number, value: unknown, path: string): void {
-  if (value != null && (value as any)?.length < minLength) {
+  if (value != null && (typeof value === 'string') && [...value].length < minLength) {
     throw new FieldMinLengthError(path, minLength)
   }
 }
@@ -408,24 +480,47 @@ export function checkPattern (pattern: string, value: string, path: string): voi
  * @param patternProperties
  * @param value
  * @param path
- * @param throwOnError
+ * @param options
  */
 export function checkPatternProperties (
   patternProperties: SchemaAttributes['patternProperties'],
   value: Record<string, unknown>,
   path: string,
-  throwOnError: boolean): void {
+  options: ValidateOptions): void {
   if (patternProperties != null && value != null) {
-    for (const key in value) {
-      for (const pattern in patternProperties) {
-        if (new RegExp(pattern).test(key)) {
-          new JSONSchema(patternProperties[pattern])
-            .validate(value[key], {
-              path: joinPath(path, key),
-              throwOnError
+    let errors = {} as ValidationErrors
+
+    for (const pattern in patternProperties) {
+      const regex = new RegExp(pattern)
+      const patternProp = patternProperties[pattern]
+
+      for (const key in value) {
+        const propPath = joinPath(path, key)
+
+        if (regex.test(key)) {
+          if (patternProp === false && value[key] != null) {
+            const error = new ValidationError(propPath)
+            if (options.throwOnError) {
+              throw error
+            }
+            errors[propPath] = error
+          } else if (typeof patternProp === 'object' && patternProp != null) {
+            const schema = new JSONSchema(patternProp, {
+              schemas: options?.schemas
             })
+            errors = {
+              ...errors,
+              ...schema.validate(value[key], {
+                ...options,
+                path: propPath
+              })
+            }
+          }
         }
       }
+    }
+    if (Object.keys(errors).length > 0) {
+      throw new ValidateError(errors)
     }
   }
 }
@@ -435,31 +530,81 @@ export function checkPatternProperties (
  * @param properties
  * @param value
  * @param path
- * @param throwOnError
+ * @param options
  */
 export function checkProperties (
   properties: SchemaAttributes['properties'],
   value: Record<string, unknown>,
   path: string,
-  throwOnError: boolean): void {
+  options: ValidateOptions): void {
   if (properties != null) {
     if (typeof value !== 'undefined' && (typeof value !== 'object' || value === null)) {
       throw new FieldPropertiesError(path, properties)
     }
+    // Ignore empty object
+    if (Object.keys(value).length === 0) {
+      return
+    }
     let errors = {} as ValidationErrors
 
     for (const key in properties) {
-      errors = {
-        ...errors,
-        ...new JSONSchema(properties[key])
-          .validate(value[key], {
-            path: joinPath(path, key),
-            throwOnError
+      const propPath = joinPath(path, key)
+      const property = properties[key]
+
+      if (property === false && value[key] != null) {
+        const error = new ValidationError(propPath)
+
+        if (options.throwOnError) {
+          throw error
+        }
+        errors[propPath] = error
+      } else if (typeof property === 'object') {
+        errors = {
+          ...errors,
+          ...new JSONSchema(property, {
+            schemas: options?.schemas
           })
+            .validate(value[key], {
+              ...options,
+              path: propPath
+            })
+        }
       }
     }
     if (Object.keys(errors).length > 0) {
       throw new ValidateError(errors)
+    }
+  }
+}
+
+/**
+ * Checks property names.
+ * @param propertyNames
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkPropertyNames (
+  propertyNames: SchemaAttributes['propertyNames'],
+  value: Record<string, unknown>,
+  path: string,
+  options: ValidateOptions): void {
+  if (value != null) {
+    if (propertyNames === false) {
+      if (Object.keys(value).length > 0) {
+        throw new FieldPropertyNamesError(path)
+      }
+    } else if (typeof propertyNames === 'object' && propertyNames != null) {
+      const schema = new JSONSchema(propertyNames, {
+        schemas: options?.schemas
+      })
+
+      for (const key in value) {
+        const propPath = joinPath(path, key)
+        if (!schema.isValid(key, { ...options, path: propPath })) {
+          throw new FieldPropertyNamesError(propPath)
+        }
+      }
     }
   }
 }
@@ -472,8 +617,12 @@ export function checkProperties (
  */
 export function checkRequired (required: string[], value: unknown, path: string): void {
   if (required instanceof Array && typeof value === 'object' && value != null) {
+    // Ignore array
+    if (value instanceof Array) {
+      return
+    }
     for (const key of required) {
-      if (!(key in value)) {
+      if (!(Object.prototype.hasOwnProperty.call(value, key))) {
         throw new FieldRequiredError(path)
       }
     }
@@ -483,104 +632,139 @@ export function checkRequired (required: string[], value: unknown, path: string)
 /**
  * Throws an error if schema attributes are not valid.
  * @param attributes
- * @param path
+ * @param schemas
  */
-export function checkSchemaAttributes (attributes: SchemaAttributes, path = ''): void {
+export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: Record<string, JSONSchema<SchemaAttributes>>): void {
+  // Check schema reference
+  const { $ref } = attributes
+  if ($ref != null) {
+    if (typeof $ref !== 'string') {
+      throw new SchemaError('"$ref" must be a string')
+    }
+    if ($ref.startsWith('#/')) {
+      // todo handle absolute ref
+    } else if ($ref.startsWith('/')) {
+      // todo handle relative ref
+    } else if (schemas == null || !($ref in schemas)) {
+      throw new SchemaError(`schema with $id = "${$ref}" not found`)
+    }
+  }
+
   // Check type
   const { type } = attributes
   if (type != null) {
     if (type instanceof Array) {
       type.forEach((el) => {
         if (typeof el !== 'string') {
-          throw new SchemaError(`${joinPath(path, 'type')} is not valid`)
+          throw new SchemaError('"type" is not valid')
         }
       })
     } else if (typeof type !== 'string') {
-      throw new SchemaError(`${joinPath(path, 'type')} = "${type}" must be a string or an array of strings`)
+      throw new SchemaError('"type" must be a string or an array of strings')
     }
   }
   // Check enum
   if (typeof attributes.enum !== 'undefined' && !(attributes.enum instanceof Array)) {
-    throw new SchemaError(`${joinPath(path, 'enum')} must be an array`)
+    throw new SchemaError('"enum" must be an array')
   }
   // Check format
   const { format } = attributes
   if (!['undefined', 'string'].includes(typeof format)) {
-    throw new SchemaError(`${joinPath(path, 'format')} must be a string`)
+    throw new SchemaError('"format" must be a string')
   }
   // Check items
   const { items } = attributes
-  if (typeof items !== 'undefined' && typeof items !== 'object') {
-    throw new SchemaError(`${joinPath(path, 'items')} must be an object`)
+  if (!['undefined', 'object', 'boolean'].includes(typeof items) || items === null) {
+    throw new SchemaError('"items" must be an object or a boolean')
   }
   // Check length
   if (!['undefined', 'number'].includes(typeof length)) {
-    throw new SchemaError(`${joinPath(path, 'length')} must be a number`)
+    throw new SchemaError('"length" must be a number')
   }
   // Check maximum value
   const { maximum } = attributes
   if (!['undefined', 'number'].includes(typeof maximum)) {
-    throw new SchemaError(`${joinPath(path, 'maximum')} must be a number`)
+    throw new SchemaError('"maximum" must be a number')
+  }
+  // Check max items
+  const { maxItems } = attributes
+  if (!['undefined', 'number'].includes(typeof maxItems)) {
+    throw new SchemaError('"maxItems" must be a number')
   }
   // Check max length
   const { maxLength } = attributes
   if (!['undefined', 'number'].includes(typeof maxLength)) {
-    throw new SchemaError(`${joinPath(path, 'maxLength')} must be a number`)
+    throw new SchemaError('"maxLength" must be a number')
   }
   // Check minimum value
   const { minimum } = attributes
   if (!['undefined', 'number'].includes(typeof minimum)) {
-    throw new SchemaError(`${joinPath(path, 'minimum')} must be a number`)
+    throw new SchemaError('"minimum" must be a number')
+  }
+  // Check min items
+  const { minItems } = attributes
+  if (!['undefined', 'number'].includes(typeof minItems)) {
+    throw new SchemaError('"minItems" must be a number')
   }
   // Check min length
   const { minLength } = attributes
   if (!['undefined', 'number'].includes(typeof minLength)) {
-    throw new SchemaError(`${joinPath(path, 'minLength')} must be a number`)
+    throw new SchemaError('"minLength" must be a number')
   }
   // Check pattern
   const { pattern } = attributes
   if (!['undefined', 'string'].includes(typeof pattern)) {
-    throw new SchemaError(`${joinPath(path, 'pattern')} must be a string`)
+    throw new SchemaError('"pattern" must be a string')
   }
   // Check pattern properties
   const { patternProperties } = attributes
   if (typeof patternProperties !== 'undefined' && (typeof patternProperties !== 'object' || patternProperties === null)) {
-    throw new SchemaError(`${joinPath(path, 'patternProperties')} must be an object`)
+    throw new SchemaError('"patternProperties" must be an object')
+  }
+  // Check prefix items
+  const { prefixItems } = attributes
+  if (typeof prefixItems !== 'undefined' && !(prefixItems instanceof Array)) {
+    throw new SchemaError('"prefixItems" must be an object')
   }
   // Check properties
   const { properties } = attributes
   if (typeof properties !== 'undefined' && (typeof properties !== 'object' || properties === null)) {
-    throw new SchemaError(`${joinPath(path, 'properties')} must be an object`)
+    throw new SchemaError('"properties" must be an object')
+  }
+  // Check property names
+  const { propertyNames } = attributes
+  if (!['undefined', 'object', 'boolean'].includes(typeof propertyNames) || propertyNames === null) {
+    throw new SchemaError('"propertyNames" must be an object or a boolean')
   }
   // Check title
   const { title } = attributes
   if (!['undefined', 'string'].includes(typeof title)) {
-    throw new SchemaError(`${joinPath(path, 'title')} must be a string`)
+    throw new SchemaError('"title" must be a string')
   }
 
   // Check denied values
   const { denied } = attributes
   if (typeof denied !== 'undefined' && !(denied instanceof Array)) {
-    throw new SchemaError(`${joinPath(path, 'denied')} must be an array`)
+    throw new SchemaError('"denied" must be an array')
   }
   // Check max words
   const { maxWords } = attributes
   if (!['undefined', 'number'].includes(typeof maxWords)) {
-    throw new SchemaError(`${joinPath(path, 'maxWords')} must be a number`)
+    throw new SchemaError('"maxWords" must be a number')
   }
   // Check min words
   const { minWords } = attributes
   if (!['undefined', 'number'].includes(typeof minWords)) {
-    throw new SchemaError(`${joinPath(path, 'minWords')} must be a number`)
+    throw new SchemaError('"minWords" must be a number')
   }
   // Check required
   const { required } = attributes
   if (typeof required !== 'undefined' && !(required instanceof Array)) {
-    throw new SchemaError(`${joinPath(path, 'required')} must be an array`)
+    throw new SchemaError('"required" must be an array')
   }
   // Check conflicting options.
   if (attributes.enum && attributes.denied) {
-    throw new SchemaError(`${joinPath(path, 'enum')} and ${joinPath(path, 'denied')} cannot be defined together`)
+    throw new SchemaError('"enum" and "denied" cannot be defined together')
   }
 }
 
@@ -653,6 +837,52 @@ export function checkType (
         break
       default:
         throw new Error(`unsupported type "${type}"`)
+    }
+  }
+}
+
+/**
+ * Checks items against different schemas.
+ * @param prefixItems
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkPrefixItems (
+  prefixItems: SchemaAttributes['prefixItems'],
+  value: unknown[],
+  path: string,
+  options: ValidateOptions): void {
+  if (value != null && prefixItems != null) {
+    let errors = {} as ValidationErrors
+
+    for (let i = 0; i < prefixItems.length; i += 1) {
+      if (i in value) {
+        const prefixItem = prefixItems[i]
+        const itemPath = `${path}[${i}]`
+
+        if (prefixItem === false) {
+          const error = new ValidationError(itemPath)
+          if (options.throwOnError) {
+            throw error
+          }
+          errors[itemPath] = error
+        }
+        if (typeof prefixItem === 'object' && prefixItem != null) {
+          errors = {
+            ...errors,
+            ...new JSONSchema(prefixItem, {
+              schemas: options?.schemas
+            }).validate(value[i], {
+              ...options,
+              path: itemPath
+            })
+          }
+        }
+      }
+    }
+    if (Object.keys(errors).length > 0) {
+      throw new ValidateError(errors)
     }
   }
 }
