@@ -45,7 +45,6 @@ import SchemaError from './errors/SchemaError'
  */
 export type SchemaFormat =
   'date'
-  | 'datetime' // todo remove alias
   | 'date-time'
   // todo add 'duration'
   | 'email'
@@ -84,41 +83,10 @@ export type SchemaType =
   | SchemaType[]
 
 /**
- * Schema field properties.
- */
-const ATTRIBUTES: (keyof SchemaAttributes)[] = [
-  '$schema',
-  '$id',
-  'additionalProperties',
-  'denied',
-  'enum',
-  'exclusiveMaximum',
-  'exclusiveMinimum',
-  'format',
-  'items',
-  'length',
-  'maximum',
-  'maxItems',
-  'maxLength',
-  'maxWords',
-  'minimum',
-  'minItems',
-  'minLength',
-  'minWords',
-  'multipleOf',
-  'pattern',
-  'patternProperties',
-  'properties',
-  'required',
-  'title',
-  'type',
-  'uniqueItems'
-]
-
-/**
  * Checks additional properties.
  * @param additionalProperties
  * @param properties
+ * @param patternProperties
  * @param value
  * @param path
  * @param throwOnError
@@ -126,16 +94,29 @@ const ATTRIBUTES: (keyof SchemaAttributes)[] = [
 export function checkAdditionalProperties (
   additionalProperties: SchemaAttributes['additionalProperties'],
   properties: SchemaAttributes['properties'],
+  patternProperties: SchemaAttributes['patternProperties'],
   value: Record<string, unknown>,
   path: string,
   throwOnError: boolean): void {
   if (additionalProperties != null && value != null) {
+    // ignore arrays
+    if (value instanceof Array) {
+      return
+    }
     for (const key in value) {
       if (additionalProperties === false) {
+        if (patternProperties != null) {
+          for (const pattern in patternProperties) {
+            // ignore properties matching pattern
+            if (new RegExp(pattern).test(key)) {
+              return
+            }
+          }
+        }
         if (properties == null || !(key in properties)) {
           throw new FieldAdditionalPropertiesError(joinPath(path, key))
         }
-      } else {
+      } else if (properties != null && !(key in properties)) {
         new JSONSchema(additionalProperties)
           .validate(value[key], {
             path: joinPath(path, key),
@@ -209,17 +190,17 @@ export function checkExclusiveMinimum (exclusiveMinimum: number, value: number, 
 /**
  * Checks the format of a value.
  * @param format
+ * @param strict
  * @param value
  * @param path
  */
-export function checkFormat (format: SchemaFormat, value: string, path: string): void {
+export function checkFormat (format: SchemaFormat, strict: boolean, value: string, path: string): void {
   let regexp
 
   switch (format) {
     case 'date':
       regexp = DateRegExp
       break
-    case 'datetime':
     case 'date-time':
       regexp = DateTimeRegExp
       break
@@ -246,7 +227,11 @@ export function checkFormat (format: SchemaFormat, value: string, path: string):
   }
 
   if (!regexp.test(value)) {
-    throw new FieldFormatError(path, format)
+    if (strict) {
+      throw new FieldFormatError(path, format)
+    } else {
+      console.warn(new FieldFormatError(path, format).message)
+    }
   }
 }
 
@@ -439,8 +424,6 @@ export function checkPatternProperties (
               path: joinPath(path, key),
               throwOnError
             })
-          // do not test other patterns for this key
-          break
         }
       }
     }
@@ -594,18 +577,7 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, path = ''):
   const { required } = attributes
   if (typeof required !== 'undefined' && !(required instanceof Array)) {
     throw new SchemaError(`${joinPath(path, 'required')} must be an array`)
-  } else if (required != null && required.length === 0) {
-    throw new SchemaError(`${joinPath(path, 'required')} must contain at least one entry`)
   }
-  // Check unknown attributes.
-  const keys = Object.keys(attributes)
-  keys.forEach((key) => {
-    if (!ATTRIBUTES.includes(key as keyof SchemaAttributes)) {
-      // eslint-disable-next-line no-console
-      console.warn(`Unknown schema attribute "${path}.${key}"`)
-    }
-  })
-
   // Check conflicting options.
   if (attributes.enum && attributes.denied) {
     throw new SchemaError(`${joinPath(path, 'enum')} and ${joinPath(path, 'denied')} cannot be defined together`)
@@ -695,6 +667,17 @@ export function checkUniqueItems (value: unknown[], path: string): void {
     const dict = new Map()
 
     for (let i = 0; i < value.length; i += 1) {
+      if (value[i] instanceof Array) {
+        const v = JSON.stringify(value[i])
+
+        if (dict.get(v)) {
+          throw new FieldUniqueItemsError(path)
+        } else {
+          dict.set(v, true)
+        }
+        continue
+      }
+
       if (dict.get(value[i])) {
         throw new FieldUniqueItemsError(path)
       }

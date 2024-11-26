@@ -954,7 +954,7 @@ describe('validate(value, options)', () => {
     })
 
     describe('format: "datetime"', () => {
-      const schema = new JSONSchema({ format: 'datetime' })
+      const schema = new JSONSchema({ format: 'date-time' })
 
       describe('with string not containing fraction of seconds and timezone offset', () => {
         it('should not throw FieldFormatError', () => {

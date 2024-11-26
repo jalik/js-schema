@@ -7,6 +7,7 @@
     "moduleResolution": "Node",
     "noImplicitAny": true,
     "outDir": "./esm",
+    "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
     "target": "ES2022"
