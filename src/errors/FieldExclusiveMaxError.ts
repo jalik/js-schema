@@ -7,13 +7,12 @@ import { ERROR_FIELD_EXCLUSIVE_MAXIMUM } from '../errors'
 import ValidationError from './ValidationError'
 
 class FieldExclusiveMaximumError extends ValidationError {
-  public exclusiveMaximum: number
+  public readonly exclusiveMaximum: number
 
   constructor (path: string, exclusiveMaximum: number) {
-    super(path, ERROR_FIELD_EXCLUSIVE_MAXIMUM)
+    super(path, `The field "${path}" must be lesser than ${exclusiveMaximum}.`, ERROR_FIELD_EXCLUSIVE_MAXIMUM)
     Object.setPrototypeOf(this, FieldExclusiveMaximumError.prototype)
     this.exclusiveMaximum = exclusiveMaximum
-    this.message = `The field "${path}" must be lesser than ${exclusiveMaximum}.`
   }
 }
 

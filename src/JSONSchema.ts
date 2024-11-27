@@ -5,9 +5,11 @@
 
 import deepExtend from '@jalik/deep-extend'
 import InvalidPathError from './errors/InvalidPathError'
-import { validate } from './utils'
+import { resolveRef, validate } from './utils'
 import {
   checkAdditionalProperties,
+  checkConst,
+  checkContains,
   checkDenied,
   checkEnum,
   checkExclusiveMaximum,
@@ -18,10 +20,12 @@ import {
   checkMaximum,
   checkMaxItems,
   checkMaxLength,
+  checkMaxProperties,
   checkMaxWords,
   checkMinimum,
   checkMinItems,
   checkMinLength,
+  checkMinProperties,
   checkMinWords,
   checkMultipleOf,
   checkPattern,
@@ -38,8 +42,8 @@ import {
   SchemaType
 } from './checks'
 import { ValidationErrors } from './errors/ValidateError'
-import SchemaError from './errors/SchemaError'
 import ValidationError from './errors/ValidationError'
+import formats, { FormatValidator } from './formats'
 
 export type SchemaAttributes = {
   [key: string]: any;
@@ -55,7 +59,10 @@ export type SchemaAttributes = {
   $schema?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
   additionalProperties?: false | SchemaAttributes;
-  // todo add contains https://json-schema.org/understanding-json-schema/reference/array#contains
+  // https://json-schema.org/understanding-json-schema/reference/const#constant-values
+  const?: any;
+  // https://json-schema.org/understanding-json-schema/reference/array#contains
+  contains?: boolean | SchemaAttributes;
   denied?: unknown[];
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: unknown[];
@@ -71,19 +78,25 @@ export type SchemaAttributes = {
   length?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
   maximum?: number;
-  // todo add maxContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
+  // https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
+  maxContains?: number;
   // https://json-schema.org/understanding-json-schema/reference/array#length
   maxItems?: number;
   // https://json-schema.org/understanding-json-schema/reference/string#length
   maxLength?: number;
+  // https://json-schema.org/understanding-json-schema/reference/object#size
+  maxProperties?: number;
   maxWords?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
   minimum?: number;
-  // todo add minContains https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
+  // https://json-schema.org/understanding-json-schema/reference/array#mincontains-maxcontains
+  minContains?: number;
   // https://json-schema.org/understanding-json-schema/reference/array#length
   minItems?: number;
   // https://json-schema.org/understanding-json-schema/reference/string#length
   minLength?: number;
+  // https://json-schema.org/understanding-json-schema/reference/object#size
+  minProperties?: number;
   minWords?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#multiples
   multipleOf?: number;
@@ -107,7 +120,23 @@ export type SchemaAttributes = {
   uniqueItems?: boolean;
 }
 
-export type ValidateOptions = {
+export type JSONSchemaOptions = {
+  /**
+   * Custom formats used for validation.
+   */
+  formats?: Record<string, FormatValidator>;
+  /**
+   * Schemas referenced with "$ref".
+   */
+  // eslint-disable-next-line no-use-before-define
+  schemas?: Record<string, JSONSchema<SchemaAttributes>>;
+  /**
+   * Fails when a validation is intended to output an annotation (ex: format).
+   */
+  strict?: boolean;
+}
+
+export type ValidateOptions = Pick<JSONSchemaOptions, 'formats' | 'schemas' | 'strict'> & {
   /**
    * Used internally to process nested validation.
    */
@@ -117,13 +146,6 @@ export type ValidateOptions = {
    */
   // eslint-disable-next-line no-use-before-define
   root?: JSONSchema<SchemaAttributes>;
-  /**
-   * Schemas referenced with "$ref".
-   */
-  // eslint-disable-next-line no-use-before-define
-  schemas?: Record<string, JSONSchema<any>>;
-  // todo add description
-  strict?: boolean;
   /**
    * Throws a ValidationError when validation fails.
    */
@@ -168,18 +190,24 @@ export const JSON_SCHEMA_DRAFT_2020_12 = 'https://json-schema.org/draft/2020-12/
 class JSONSchema<A extends SchemaAttributes> {
   protected readonly attributes: A
   protected readonly baseURI: string | null
+  protected readonly formats: Record<string, FormatValidator>
   // eslint-disable-next-line no-use-before-define
   protected readonly schemas: Record<string, JSONSchema<SchemaAttributes>>
 
-  constructor (attributes: A, options?: {
-    schemas?: Record<string, JSONSchema<SchemaAttributes>>
-  }) {
-    checkSchemaAttributes(attributes, options?.schemas)
+  constructor (attributes: A, options?: JSONSchemaOptions) {
+    checkSchemaAttributes(attributes, {
+      strict: false,
+      ...options
+    })
 
     this.attributes = {
       $schema: JSON_SCHEMA_DRAFT_2020_12,
       ...attributes
     }
+
+    // Prepare custom format validators.
+    this.formats = options?.formats ?? {}
+
     // Prepare schemas references.
     this.schemas = options?.schemas ?? {}
 
@@ -659,71 +687,52 @@ class JSONSchema<A extends SchemaAttributes> {
    */
   validate (value: unknown, options?: ValidateOptions): ValidationErrors<(keyof A['properties'] & string) | string> | null {
     const opts = {
+      formats: {},
       root: this,
+      schemas: {},
       strict: false,
       throwOnError: true,
       ...options
     } satisfies ValidateOptions
 
     const path = opts.path ?? ''
-    const root = opts.root
     const strict = opts.strict
     const throwOnError = opts.throwOnError
 
     let attrs = this.attributes
-    let errors: ValidationErrors
+    let errors: ValidationErrors = {}
+
+    // Prepare format validators.
+    opts.formats = { ...formats, ...this.formats, ...opts.formats }
 
     // Complete or overwrite schema references.
     opts.schemas = { ...this.schemas, ...opts.schemas }
-    const { schemas } = opts
 
     // Add root pointer ref to schemas.
     if (opts.path == null || opts.path === '') {
-      schemas['#'] = this
-      // opts.root = this
+      opts.schemas['#'] = this
     }
 
     // Add current schema ref to schemas
     if (attrs.$id != null) {
-      schemas[attrs.$id] = this
-    }
-
-    // Resolve reference.
-    const { $ref } = attrs
-    if ($ref != null) {
-      if ($ref.startsWith('#/$defs')) {
-        const key = $ref.substring('#/$defs'.length + 1)
-        const $defs = root.get$Defs()
-
-        if ($defs != null && key in $defs) {
-          attrs = deepExtend({}, attrs, $defs[key])
-        } else {
-          throw new SchemaError(`cannot resolve $ref = "${$ref}"`)
-        }
-      } else if ($ref.startsWith('#/properties')) {
-        const key = $ref.substring(12 + 1)
-
-        if (attrs.properties != null && key in attrs.properties) {
-          attrs = deepExtend({}, attrs, attrs.properties[key])
-        } else {
-          throw new SchemaError(`cannot resolve $ref = "${$ref}"`)
-        }
-      } else {
-        let uri = $ref
-
-        if ($ref.startsWith('/')) {
-          uri = (this.baseURI ?? '') + $ref
-        }
-
-        if (uri in schemas) {
-          attrs = deepExtend({}, attrs, schemas[uri].toJSON())
-        } else {
-          throw new SchemaError(`cannot resolve $ref = "${$ref}"`)
-        }
-      }
+      opts.schemas[attrs.$id] = this
     }
 
     errors = {
+      ...errors,
+
+      // Resolve reference.
+      ...validate(() => {
+        const { $ref } = attrs
+        if ($ref != null) {
+          attrs = { ...attrs, ...resolveRef($ref, this, opts) }
+        }
+      }, throwOnError),
+
+      ...validate(() => {
+        checkConst(attrs.const, value, path)
+      }, throwOnError),
+
       ...validate(() => {
         if (attrs.required != null) {
           checkRequired(attrs.required, value, path)
@@ -752,43 +761,6 @@ class JSONSchema<A extends SchemaAttributes> {
     // Ignore next checks if value is null or undefined
     if (value == null) {
       return errors
-    }
-
-    // Array
-    if (value instanceof Array) {
-      errors = {
-        ...errors,
-
-        ...validate(() => {
-          if (attrs.items != null) {
-            checkItems(attrs.items, attrs.prefixItems, value, path, opts)
-          }
-        }, throwOnError),
-
-        ...validate(() => {
-          if (attrs.prefixItems != null) {
-            checkPrefixItems(attrs.prefixItems, value, path, opts)
-          }
-        }, throwOnError),
-
-        ...validate(() => {
-          if (attrs.minItems != null) {
-            checkMinItems(attrs.minItems, value, path)
-          }
-        }, throwOnError),
-
-        ...validate(() => {
-          if (attrs.maxItems != null) {
-            checkMaxItems(attrs.maxItems, value, path)
-          }
-        }, throwOnError),
-
-        ...validate(() => {
-          if (attrs.uniqueItems === true) {
-            checkUniqueItems(value, path)
-          }
-        }, throwOnError)
-      }
     }
 
     // Number
@@ -835,7 +807,7 @@ class JSONSchema<A extends SchemaAttributes> {
 
         ...validate(() => {
           if (attrs.format != null) {
-            checkFormat(attrs.format, strict, value, path)
+            checkFormat(attrs.format, opts.formats, strict, value, path)
           }
         }, throwOnError),
 
@@ -882,29 +854,92 @@ class JSONSchema<A extends SchemaAttributes> {
       }, throwOnError)
     }
 
+    // Array
+    if (value instanceof Array) {
+      errors = {
+        ...errors,
+
+        ...validate(() => {
+          if (attrs.minItems != null) {
+            checkMinItems(attrs.minItems, value, path)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.maxItems != null) {
+            checkMaxItems(attrs.maxItems, value, path)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.items != null) {
+            checkItems(attrs.items, attrs.prefixItems, value, path, opts)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.contains != null) {
+            checkContains(attrs.contains, attrs.minContains, attrs.maxContains, value, path, opts)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.prefixItems != null) {
+            checkPrefixItems(attrs.prefixItems, value, path, opts)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.uniqueItems === true) {
+            checkUniqueItems(value, path)
+          }
+        }, throwOnError)
+      }
+    }
+
     // Object
     if (typeof value === 'object' && !(value instanceof Array)) {
       errors = {
         ...errors,
 
         ...validate(() => {
-          checkProperties(attrs.properties, value as any, path, opts)
+          if (attrs.minProperties != null) {
+            checkMinProperties(attrs.minProperties, value, path)
+          }
         }, throwOnError),
 
         ...validate(() => {
-          checkPropertyNames(attrs.propertyNames, value as any, path, opts)
+          if (attrs.maxProperties != null) {
+            checkMaxProperties(attrs.maxProperties, value, path)
+          }
         }, throwOnError),
 
         ...validate(() => {
-          checkPatternProperties(attrs.patternProperties, value as any, path, opts)
+          if (attrs.properties != null) {
+            checkProperties(attrs.properties, value as any, path, opts)
+          }
         }, throwOnError),
 
         ...validate(() => {
-          checkAdditionalProperties(
-            attrs.additionalProperties,
-            attrs.properties,
-            attrs.patternProperties,
-            value as any, path, opts)
+          if (attrs.propertyNames != null) {
+            checkPropertyNames(attrs.propertyNames, value as any, path, opts)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.patternProperties != null) {
+            checkPatternProperties(attrs.patternProperties, value as any, path, opts)
+          }
+        }, throwOnError),
+
+        ...validate(() => {
+          if (attrs.additionalProperties != null) {
+            checkAdditionalProperties(
+              attrs.additionalProperties,
+              attrs.properties,
+              attrs.patternProperties,
+              value as any, path, opts)
+          }
         }, throwOnError)
       }
     }

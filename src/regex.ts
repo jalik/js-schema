@@ -34,6 +34,16 @@ export const IPv4RegExp = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5
 export const IPv6RegExp = /^([0-9A-Fa-f]{1,4})?::?([0-9A-Fa-f]{1,4})?(:[0-9A-Fa-f]{1,4}){0,7}$/
 
 /**
+ * JSON pointer pattern.
+ */
+export const JSONPointerRegExp = /^(\/[0-9A-Za-z_-]+)+$/
+
+/**
+ * Relative JSON pointer pattern.
+ */
+export const RelativeJSONPointerRegExp = /^(\/[0-9A-Za-z_-]+)+$/
+
+/**
  * Time pattern.
  */
 export const TimeRegExp = /^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.[0-9]{1,3})?(?:Z|[+-](0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]))$/

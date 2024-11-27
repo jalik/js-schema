@@ -7,13 +7,12 @@ import { ERROR_FIELD_MIN_ITEMS } from '../errors'
 import ValidationError from './ValidationError'
 
 class FieldMinItemsError extends ValidationError {
-  public minItems: number
+  public readonly minItems: number
 
   constructor (path: string, minItems: number) {
-    super(path, ERROR_FIELD_MIN_ITEMS)
+    super(path, `The field "${path}" must contain at least ${minItems} items.`, ERROR_FIELD_MIN_ITEMS)
     Object.setPrototypeOf(this, FieldMinItemsError.prototype)
     this.minItems = minItems
-    this.message = `The field "${path}" must contain at least ${minItems} items.`
   }
 }
 

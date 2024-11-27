@@ -6,7 +6,7 @@
 import { ERROR_SCHEMA_INVALID } from '../errors'
 
 class SchemaError extends Error {
-  public reason: string
+  public readonly reason: string
 
   constructor (message: string, reason: string = ERROR_SCHEMA_INVALID) {
     super(message ?? 'The schema is not valid.')

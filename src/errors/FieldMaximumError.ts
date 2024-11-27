@@ -7,13 +7,12 @@ import { ERROR_FIELD_MAXIMUM } from '../errors'
 import ValidationError from './ValidationError'
 
 class FieldMaximumError extends ValidationError {
-  public maximum: number
+  public readonly maximum: number
 
   constructor (path: string, maximum: number) {
-    super(path, ERROR_FIELD_MAXIMUM)
+    super(path, `The field "${path}" must be lesser than or equal to ${maximum}.`, ERROR_FIELD_MAXIMUM)
     Object.setPrototypeOf(this, FieldMaximumError.prototype)
     this.maximum = maximum
-    this.message = `The field "${path}" must be lesser than or equal to ${maximum}.`
   }
 }
 
