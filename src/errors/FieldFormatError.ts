@@ -7,13 +7,12 @@ import { ERROR_FIELD_FORMAT } from '../errors'
 import ValidationError from './ValidationError'
 
 class FieldFormatError extends ValidationError {
-  public format: string
+  public readonly format: string
 
   constructor (path: string, format: string) {
-    super(path, ERROR_FIELD_FORMAT)
+    super(path, `The field "${path}" must be a valid "${format}".`, ERROR_FIELD_FORMAT)
     Object.setPrototypeOf(this, FieldFormatError.prototype)
     this.format = format
-    this.message = `The field "${path}" must match the format "${format}".`
   }
 }
 

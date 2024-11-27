@@ -8,9 +8,8 @@ import ValidationError from './ValidationError'
 
 class FieldAdditionalPropertiesError extends ValidationError {
   constructor (path: string) {
-    super(path, ERROR_FIELD_ADDITIONAL_PROPERTIES)
+    super(path, `The field "${path}" is not allowed as additional property.`, ERROR_FIELD_ADDITIONAL_PROPERTIES)
     Object.setPrototypeOf(this, FieldAdditionalPropertiesError.prototype)
-    this.message = `The field "${path}" is not allowed.`
   }
 }
 

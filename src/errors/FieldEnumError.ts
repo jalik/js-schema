@@ -7,13 +7,12 @@ import { ERROR_FIELD_ENUM } from '../errors'
 import ValidationError from './ValidationError'
 
 class FieldEnumError extends ValidationError {
-  public enum: unknown[]
+  public readonly enum: unknown[]
 
-  constructor (path: string, values: unknown[]) {
-    super(path, ERROR_FIELD_ENUM)
+  constructor (path: string, enums: unknown[]) {
+    super(path, `The field "${path}" must be one of ${enums}.`, ERROR_FIELD_ENUM)
     Object.setPrototypeOf(this, FieldEnumError.prototype)
-    this.enum = values
-    this.message = `The field "${path}" must be one of: ${values}.`
+    this.enum = enums
   }
 }
 

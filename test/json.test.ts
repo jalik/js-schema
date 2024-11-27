@@ -5,28 +5,35 @@
 
 import { describe, expect, it } from '@jest/globals'
 import additionalPropertiesTests from './draft2020-12/additionalProperties.json'
-// import booleanSchemaTests from './draft2020-12/boolean_schema.json'
+import constTests from './draft2020-12/const.json'
+import containsTests from './draft2020-12/contains.json'
+import contentTests from './draft2020-12/content.json'
 import defsTests from './draft2020-12/defs.json'
 import enumTests from './draft2020-12/enum.json'
 import exclusiveMaximumTests from './draft2020-12/exclusiveMaximum.json'
 import exclusiveMinimumTests from './draft2020-12/exclusiveMinimum.json'
+import formatTests from './draft2020-12/format.json'
 import itemsTests from './draft2020-12/items.json'
 import maximumTests from './draft2020-12/maximum.json'
+import maxContainsTests from './draft2020-12/maxContains.json'
 import maxItemsTests from './draft2020-12/maxItems.json'
 import maxLengthTests from './draft2020-12/maxLength.json'
+import maxPropertiesTests from './draft2020-12/maxProperties.json'
 import minimumTests from './draft2020-12/minimum.json'
+import minContainsTests from './draft2020-12/minContains.json'
 import minItemsTests from './draft2020-12/minItems.json'
 import minLengthTests from './draft2020-12/minLength.json'
+import minPropertiesTests from './draft2020-12/minProperties.json'
 import multipleOfTests from './draft2020-12/multipleOf.json'
 import patternTests from './draft2020-12/pattern.json'
 import patternPropertiesTests from './draft2020-12/patternProperties.json'
 import prefixItemsTests from './draft2020-12/prefixItems.json'
 import propertiesTests from './draft2020-12/properties.json'
 import propertyNamesTests from './draft2020-12/propertyNames.json'
-// import refTests from './draft2020-12/ref.json'
-// import refRemoteTests from './draft2020-12/refRemote.json'
+import refTests from './draft2020-12/ref.json'
 import requiredTests from './draft2020-12/required.json'
 import typeTests from './draft2020-12/type.json'
+import uniqueItemsTests from './draft2020-12/uniqueItems.json'
 import JSONSchema from '../src/JSONSchema'
 import draft202012 from '../src/schemas/draft-2020-12.json'
 
@@ -48,30 +55,30 @@ const list: JsonTestSuite[][] = [
   // anchorTests, // todo
   // anyOfTests, // todo
   // booleanSchemaTests, // todo
-  // constTests, // todo
-  // containsTests, // todo
-  // contentTests, // todo
-  defsTests, // todo
+  constTests,
+  containsTests,
+  contentTests, // todo
+  defsTests, // fixme
   // dependentRequiredTests, // todo
   // dependentSchemasTests, // todo
   // dynamicRefTests, // todo
   enumTests,
   exclusiveMaximumTests,
   exclusiveMinimumTests,
-  // formatTests, // todo
+  formatTests, // fixme
   // ifThenElseTests, // todo
   itemsTests,
-  // maxContainsTests, // todo
+  maxContainsTests,
   maximumTests,
   maxItemsTests,
   maxLengthTests,
-  // maxPropertiesTests, // todo
-  // minContainsTests, // todo
+  maxPropertiesTests,
+  minContainsTests,
   minimumTests,
   minItemsTests,
   minLengthTests,
-  // minPropertiesTests, // todo
-  multipleOfTests, // todo
+  minPropertiesTests,
+  multipleOfTests, // fixme
   // notTests, // todo
   // oneOfTests, // todo
   patternTests,
@@ -79,13 +86,13 @@ const list: JsonTestSuite[][] = [
   prefixItemsTests,
   propertiesTests,
   propertyNamesTests,
-  // refTests, // todo
+  refTests, // todo
   // refRemoteTests, // todo
   requiredTests,
-  typeTests
+  typeTests,
   // unevaluatedItemsTests, // todo
   // unevaluatedPropertiesTests, // todo
-  // uniqueItemsTests, // todo
+  uniqueItemsTests, // fixme
   // vocabularyTests // todo
 ]
 

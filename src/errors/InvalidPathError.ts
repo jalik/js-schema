@@ -4,9 +4,12 @@
  */
 
 class InvalidPathError extends Error {
+  public readonly path: string
+
   constructor (path: string) {
     super(`The path "${path}" is not valid.`)
     Object.setPrototypeOf(this, InvalidPathError.prototype)
+    this.path = path
   }
 }
 

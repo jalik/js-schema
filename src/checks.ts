@@ -18,46 +18,47 @@ import FieldPatternError from './errors/FieldPatternError'
 import FieldRequiredError from './errors/FieldRequiredError'
 import FieldTypeError from './errors/FieldTypeError'
 import FieldUniqueItemsError from './errors/FieldUniqueItemsError'
-import {
-  DateRegExp,
-  DateTimeRegExp,
-  EmailRegExp,
-  HostnameRegExp,
-  IPv4RegExp,
-  IPv6RegExp,
-  TimeRegExp,
-  URIRegExp,
-  UUIDRegExp
-} from './regex'
-import JSONSchema, { SchemaAttributes, ValidateOptions } from './JSONSchema'
+import JSONSchema, { JSONSchemaOptions, SchemaAttributes, ValidateOptions } from './JSONSchema'
 import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
 import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 import FieldPropertiesError from './errors/FieldPropertiesError'
 import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
-import { joinPath } from './utils'
+import { compare, joinPath } from './utils'
 import ValidateError, { ValidationErrors } from './errors/ValidateError'
 import SchemaError from './errors/SchemaError'
 import FieldPropertyNamesError from './errors/FieldPropertyNamesError'
 import ValidationError from './errors/ValidationError'
+import FieldConstError from './errors/FieldConstError'
+import { FormatValidator } from './formats'
+import FieldMinContainsError from './errors/FieldMinContainsError'
+import FieldMaxContainsError from './errors/FieldMaxContainsError'
+import FieldContainsError from './errors/FieldContainsError'
 
 /**
  * The format of a string.
  * @see https://json-schema.org/understanding-json-schema/reference/string#format
  */
-export type SchemaFormat =
-  'date'
+export type SchemaFormat = string
+  | 'date'
   | 'date-time'
   // todo add 'duration'
   | 'email'
   | 'hostname'
+  // todo add 'idn-email'
+  // todo add 'idn-hostname'
+  // todo add 'iri'
+  // todo add 'iri-reference'
   | 'ipv4'
   | 'ipv6'
   | 'json-pointer'
+  // todo add regex
   | 'relative-json-pointer'
   | 'time'
   | 'uri'
+  // todo add 'uri-reference'
+  // todo add 'uri-template'
   | 'uuid'
 
 /**
@@ -152,6 +153,21 @@ export function checkAdditionalProperties (
 }
 
 /**
+ * Checks if value is equal to a constant.
+ * @param constant
+ * @param value
+ * @param path
+ */
+export function checkConst (constant: unknown, value: unknown, path: string): void {
+  if (typeof constant === 'undefined') {
+    return
+  }
+  if (!compare(constant, value)) {
+    throw new FieldConstError(path, constant)
+  }
+}
+
+/**
  * Checks if value is allowed.
  * @param enums
  * @param value
@@ -187,6 +203,61 @@ export function checkEnum (enums: unknown[], value: unknown, path: string): void
     }
   } else if (!enums.includes(value)) {
     throw new FieldEnumError(path, enums)
+  }
+}
+
+/**
+ * Checks if an array contains a value.
+ * @param contains
+ * @param minContains
+ * @param maxContains
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkContains (
+  contains: SchemaAttributes['contains'],
+  minContains: SchemaAttributes['minContains'],
+  maxContains: SchemaAttributes['maxContains'],
+  value: unknown[],
+  path: string,
+  options: ValidateOptions): void {
+  if (contains === false) {
+    // todo use specific error reason
+    throw new ValidationError(path, `The field "${path}" must not contain any item.`)
+  } else if (contains === true && value.length === 0) {
+    // todo use specific error reason
+    throw new ValidationError(path, `The field "${path}" must contain any item.`)
+  } else if (typeof contains === 'object') {
+    let errors = {} as ValidationErrors
+    let matchingCount = 0
+
+    const schema = new JSONSchema(contains, {
+      schemas: options?.schemas
+    })
+
+    for (let i = 0; i < value.length; i += 1) {
+      errors = {
+        ...schema.validate(value[i], {
+          ...options,
+          throwOnError: false,
+          path: `${path}[${i}]`
+        })
+      }
+      // Valid item found
+      if (Object.keys(errors).length === 0) {
+        matchingCount += 1
+      }
+    }
+    if (minContains != null && matchingCount < minContains) {
+      throw new FieldMinContainsError(path, minContains)
+    }
+    if (maxContains != null && matchingCount > maxContains) {
+      throw new FieldMaxContainsError(path, maxContains)
+    }
+    if (matchingCount === 0 && minContains !== 0) {
+      throw new FieldContainsError(path)
+    }
   }
 }
 
@@ -235,58 +306,36 @@ export function checkExclusiveMinimum (exclusiveMinimum: number, value: number, 
 /**
  * Checks the format of a value.
  * @param format
+ * @param validators
  * @param strict
  * @param value
  * @param path
  */
-export function checkFormat (format: SchemaFormat, strict: boolean, value: string, path: string): void {
-  let regexp
+export function checkFormat (
+  format: SchemaFormat,
+  validators: Record<string, FormatValidator>,
+  strict: boolean,
+  value: string,
+  path: string): void {
+  const validator = validators[format]
 
-  switch (format) {
-    case 'date':
-      regexp = DateRegExp
-      break
-    case 'date-time':
-      regexp = DateTimeRegExp
-      break
-    case 'email':
-      regexp = EmailRegExp
-      break
-    case 'hostname':
-      regexp = HostnameRegExp
-      break
-    case 'ipv4':
-      regexp = IPv4RegExp
-      break
-    case 'ipv6':
-      regexp = IPv6RegExp
-      break
-    case 'json-pointer':
-      // todo check json-pointer format
-      regexp = /^.+$/
-      break
-    case 'relative-json-pointer':
-      // todo check relative-json-pointer format
-      regexp = /^.+$/
-      break
-    case 'time':
-      regexp = TimeRegExp
-      break
-    case 'uri':
-      regexp = URIRegExp
-      break
-    case 'uuid':
-      regexp = UUIDRegExp
-      break
-    default:
-      throw new Error(`"${format}" is not a valid format`)
-  }
+  if (validator == null) {
+    const error = new SchemaError(`"${format}" is not a valid format`)
 
-  if (!regexp.test(value)) {
     if (strict) {
-      throw new FieldFormatError(path, format)
+      throw error
     } else {
-      console.warn(new FieldFormatError(path, format).message)
+      // eslint-disable-next-line no-console
+      console.warn(error.message)
+    }
+  } else if (!validator(value)) {
+    const error = new FieldFormatError(path, format)
+
+    if (strict) {
+      throw error
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(error.message)
     }
   }
 }
@@ -310,7 +359,8 @@ export function checkItems (
       // throw if additional items are found
       if ((prefixItems == null && value.length > 0) ||
         (prefixItems != null && value.length > prefixItems.length)) {
-        throw new ValidationError(path)
+        // todo use specific error reason
+        throw new ValidationError(path, `The field "${path}" must not contain any item.`)
       }
     } else if (typeof items === 'object' && items != null) {
       let errors = {} as ValidationErrors
@@ -390,6 +440,18 @@ export function checkMaxLength (maxLength: number, value: unknown, path: string)
 }
 
 /**
+ * Checks if the value has a maximum of properties.
+ * @param maxProperties
+ * @param value
+ * @param path
+ */
+export function checkMaxProperties (maxProperties: number, value: unknown, path: string): void {
+  if (value != null && (typeof value === 'object') && Object.keys(value).length > maxProperties) {
+    throw new FieldMinLengthError(path, maxProperties)
+  }
+}
+
+/**
  * Checks if the number of words is lesser than of equal to max.
  * @param maxWords
  * @param value
@@ -434,6 +496,18 @@ export function checkMinItems (minItems: number, value: unknown[], path: string)
 export function checkMinLength (minLength: number, value: unknown, path: string): void {
   if (value != null && (typeof value === 'string') && [...value].length < minLength) {
     throw new FieldMinLengthError(path, minLength)
+  }
+}
+
+/**
+ * Checks if the value has a minimum of properties.
+ * @param minProperties
+ * @param value
+ * @param path
+ */
+export function checkMinProperties (minProperties: number, value: unknown, path: string): void {
+  if (value != null && (typeof value === 'object') && Object.keys(value).length < minProperties) {
+    throw new FieldMinLengthError(path, minProperties)
   }
 }
 
@@ -499,7 +573,9 @@ export function checkPatternProperties (
 
         if (regex.test(key)) {
           if (patternProp === false && value[key] != null) {
-            const error = new ValidationError(propPath)
+            // todo use specific error reason
+            const error = new ValidationError(propPath, `The field "${propPath}" must not be set.`)
+
             if (options.throwOnError) {
               throw error
             }
@@ -552,7 +628,8 @@ export function checkProperties (
       const property = properties[key]
 
       if (property === false && value[key] != null) {
-        const error = new ValidationError(propPath)
+        // todo use specific error reason
+        const error = new ValidationError(propPath, `The field "${propPath}" must not be set.`)
 
         if (options.throwOnError) {
           throw error
@@ -632,9 +709,11 @@ export function checkRequired (required: string[], value: unknown, path: string)
 /**
  * Throws an error if schema attributes are not valid.
  * @param attributes
- * @param schemas
+ * @param options
  */
-export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: Record<string, JSONSchema<SchemaAttributes>>): void {
+export function checkSchemaAttributes (attributes: SchemaAttributes, options: JSONSchemaOptions): void {
+  const { formats, schemas, strict } = options
+
   // Check schema reference
   const { $ref } = attributes
   if ($ref != null) {
@@ -650,18 +729,10 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: R
     }
   }
 
-  // Check type
-  const { type } = attributes
-  if (type != null) {
-    if (type instanceof Array) {
-      type.forEach((el) => {
-        if (typeof el !== 'string') {
-          throw new SchemaError('"type" is not valid')
-        }
-      })
-    } else if (typeof type !== 'string') {
-      throw new SchemaError('"type" must be a string or an array of strings')
-    }
+  // Check contains
+  const { contains } = attributes
+  if (!['undefined', 'object', 'boolean'].includes(typeof contains) || contains === null) {
+    throw new SchemaError('"contains" must be an object or a boolean')
   }
   // Check enum
   if (typeof attributes.enum !== 'undefined' && !(attributes.enum instanceof Array)) {
@@ -671,6 +742,17 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: R
   const { format } = attributes
   if (!['undefined', 'string'].includes(typeof format)) {
     throw new SchemaError('"format" must be a string')
+  } else if (typeof format === 'string') {
+    if (formats == null || formats[format] == null) {
+      const error = new SchemaError(`No validator found for format "${format}"`)
+
+      if (strict) {
+        throw error
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(error.message)
+      }
+    }
   }
   // Check items
   const { items } = attributes
@@ -678,13 +760,19 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: R
     throw new SchemaError('"items" must be an object or a boolean')
   }
   // Check length
+  const { length } = attributes
   if (!['undefined', 'number'].includes(typeof length)) {
     throw new SchemaError('"length" must be a number')
   }
-  // Check maximum value
+  // Check maximum
   const { maximum } = attributes
   if (!['undefined', 'number'].includes(typeof maximum)) {
     throw new SchemaError('"maximum" must be a number')
+  }
+  // Check max contains
+  const { maxContains } = attributes
+  if (!['undefined', 'number'].includes(typeof maxContains)) {
+    throw new SchemaError('"maxContains" must be a number')
   }
   // Check max items
   const { maxItems } = attributes
@@ -696,10 +784,15 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: R
   if (!['undefined', 'number'].includes(typeof maxLength)) {
     throw new SchemaError('"maxLength" must be a number')
   }
-  // Check minimum value
+  // Check minimum
   const { minimum } = attributes
   if (!['undefined', 'number'].includes(typeof minimum)) {
     throw new SchemaError('"minimum" must be a number')
+  }
+  // Check min contains
+  const { minContains } = attributes
+  if (!['undefined', 'number'].includes(typeof minContains)) {
+    throw new SchemaError('"minContains" must be a number')
   }
   // Check min items
   const { minItems } = attributes
@@ -736,10 +829,28 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: R
   if (!['undefined', 'object', 'boolean'].includes(typeof propertyNames) || propertyNames === null) {
     throw new SchemaError('"propertyNames" must be an object or a boolean')
   }
+  // Check required
+  const { required } = attributes
+  if (typeof required !== 'undefined' && !(required instanceof Array)) {
+    throw new SchemaError('"required" must be an array')
+  }
   // Check title
   const { title } = attributes
   if (!['undefined', 'string'].includes(typeof title)) {
     throw new SchemaError('"title" must be a string')
+  }
+  // Check type
+  const { type } = attributes
+  if (type != null) {
+    if (type instanceof Array) {
+      type.forEach((el) => {
+        if (typeof el !== 'string') {
+          throw new SchemaError('"type" is not valid')
+        }
+      })
+    } else if (typeof type !== 'string') {
+      throw new SchemaError('"type" must be a string or an array of strings')
+    }
   }
 
   // Check denied values
@@ -756,11 +867,6 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, schemas?: R
   const { minWords } = attributes
   if (!['undefined', 'number'].includes(typeof minWords)) {
     throw new SchemaError('"minWords" must be a number')
-  }
-  // Check required
-  const { required } = attributes
-  if (typeof required !== 'undefined' && !(required instanceof Array)) {
-    throw new SchemaError('"required" must be an array')
   }
   // Check conflicting options.
   if (attributes.enum && attributes.denied) {
@@ -862,7 +968,9 @@ export function checkPrefixItems (
         const itemPath = `${path}[${i}]`
 
         if (prefixItem === false) {
-          const error = new ValidationError(itemPath)
+          // todo use specific error reason
+          const error = new ValidationError(itemPath, `The field "${itemPath}" must not be set.`)
+
           if (options.throwOnError) {
             throw error
           }
