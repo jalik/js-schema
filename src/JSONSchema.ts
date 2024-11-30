@@ -214,7 +214,9 @@ class JSONSchema<A extends SchemaAttributes> {
     // Get base URI.
     if (attributes.$id != null && attributes.$id.startsWith('http')) {
       const baseURI = new URL(attributes.$id)
-      this.baseURI = baseURI.origin
+      this.baseURI = baseURI.origin + (baseURI.pathname?.length
+        ? baseURI.pathname.substring(0, baseURI.pathname.lastIndexOf('/'))
+        : '')
     } else {
       this.baseURI = null
     }
@@ -409,6 +411,15 @@ class JSONSchema<A extends SchemaAttributes> {
     if (this.attributes.properties?.[name as string] != null) {
       return this.attributes.properties?.[name as string] as any
     }
+  }
+
+  /**
+   * Returns the schema root URI.
+   */
+  getRootURI (): string | null {
+    return this.baseURI != null
+      ? new URL(this.baseURI).origin
+      : null
   }
 
   /**
@@ -707,11 +718,6 @@ class JSONSchema<A extends SchemaAttributes> {
 
     // Complete or overwrite schema references.
     opts.schemas = { ...this.schemas, ...opts.schemas }
-
-    // Add root pointer ref to schemas.
-    if (opts.path == null || opts.path === '') {
-      opts.schemas['#'] = this
-    }
 
     // Add current schema ref to schemas
     if (attrs.$id != null) {

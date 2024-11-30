@@ -714,18 +714,19 @@ export function checkRequired (required: string[], value: unknown, path: string)
 export function checkSchemaAttributes (attributes: SchemaAttributes, options: JSONSchemaOptions): void {
   const { formats, schemas, strict } = options
 
+  // todo Check $defs
+  const { $defs } = attributes
+
   // Check schema reference
   const { $ref } = attributes
   if ($ref != null) {
     if (typeof $ref !== 'string') {
       throw new SchemaError('"$ref" must be a string')
     }
-    if ($ref.startsWith('#/')) {
-      // todo handle absolute ref
-    } else if ($ref.startsWith('/')) {
-      // todo handle relative ref
-    } else if (schemas == null || !($ref in schemas)) {
-      throw new SchemaError(`schema with $id = "${$ref}" not found`)
+    // todo check $ref
+    if ((schemas == null || !($ref in schemas)) &&
+      ($defs != null && !($ref in $defs))) {
+      // throw new SchemaError(`schema with $id = "${$ref}" not found`)
     }
   }
 
