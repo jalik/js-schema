@@ -58,6 +58,21 @@ export function compare (a: unknown, b: unknown): boolean {
 }
 
 /**
+ * Returns a decoded JSON pointer.
+ * @see https://datatracker.ietf.org/doc/html/rfc6901
+ * @param pointer
+ */
+export function decodeJSONPointer (pointer: string): string {
+  return decodeURIComponent(pointer)
+    // URI Fragment Identifier Representation
+    .replaceAll('\\"', '"')
+    .replaceAll('\\\\', '\\')
+    // JSON String Representation
+    .replaceAll('~0', '~')
+    .replaceAll('~1', '/')
+}
+
+/**
  * Joins parts of a field path.
  * @param paths
  */
@@ -78,49 +93,89 @@ export function resolveRef (
   ref: string,
   schema: JSONSchema<SchemaAttributes>,
   options: ValidateOptions): SchemaAttributes {
-  let attrs: SchemaAttributes = {}
-
+  const decodedRef = decodeJSONPointer(ref)
   const path = options.path ?? ''
   const root = options.root ?? schema
   const schemas = options.schemas ?? {}
 
-  if (ref === '#') {
-    attrs = deepExtend({}, attrs, root.toJSON())
-  } else if (ref.startsWith('#/$defs')) {
-    const key = decodeURIComponent(ref.substring('#/$defs'.length + 1))
-    const $defs = root.get$Defs()
+  const $id = schema.get$Id()
+  if ($id != null && !($id in schemas)) {
+    schemas[$id] = schema
+  }
+  const root$id = root.get$Id()
+  if (root$id != null && !(root$id in schemas)) {
+    schemas[root$id] = root
+  }
+  const opts = { ...options, schemas }
 
-    if ($defs != null && key in $defs) {
-      attrs = deepExtend({}, attrs, new JSONSchema($defs[key], options).toJSON())
+  let attrs: undefined | boolean | SchemaAttributes
+
+  console.log('resolveRef()', decodedRef, schema.toJSON(), path, schemas)
+
+  if (decodedRef === '' || decodedRef === '#') {
+    attrs = root.toJSON()
+  } else if (decodedRef.startsWith('http')) {
+    let uri = decodedRef
+
+    if (decodedRef.startsWith('/')) {
+      uri = (schema.getBaseURI() ?? '') + decodedRef
+    }
+
+    if (uri in schemas) {
+      attrs = schemas[uri].toJSON()
     } else {
       throw new FieldRefError(path, ref)
     }
-  } else if (ref.startsWith('#/properties')) {
-    const key = ref.substring(12 + 1)
+  } else if (decodedRef.startsWith('#/$defs')) {
+    const key = decodedRef.substring('#/$defs'.length + 1)
+    const $defs = root.get$Defs()
 
-    if (attrs.properties != null && key in attrs.properties) {
-      attrs = deepExtend({}, attrs, attrs.properties[key])
+    if ($defs != null && key in $defs) {
+      attrs = new JSONSchema($defs[key], opts).toJSON()
+    } else {
+      throw new FieldRefError(path, ref)
+    }
+  } else if (decodedRef.startsWith('#/properties')) {
+    const key = decodedRef.substring('#/properties'.length + 1)
+    const properties = root.getProperties()
+
+    if (properties != null && key in properties) {
+      attrs = properties[key]
     } else {
       throw new FieldRefError(path, ref)
     }
   } else {
-    let uri = ref
+    const key = decodedRef
+    const $defs = root.get$Defs()
 
-    if (ref.startsWith('/')) {
-      uri = (schema.getBaseURI() ?? '') + ref
-    }
+    if (key.startsWith('/')) {
+      // absolute path reference
+      const rootUri = root.getRootURI()
+      const uri = rootUri + '/' + key
 
-    if (uri in schemas) {
-      attrs = deepExtend({}, attrs, schemas[uri].toJSON())
+      if (uri in schemas) {
+        attrs = schemas[uri].toJSON()
+      } else {
+        throw new FieldRefError(path, ref)
+      }
+    } else if ($defs != null && key in $defs) {
+      attrs = new JSONSchema($defs[key], opts).toJSON()
+    } else if (key in schemas) {
+      attrs = schemas[key].toJSON()
+    } else if (root.getBaseURI() + '/' + key in schemas) {
+      attrs = schemas[root.getBaseURI() + '/' + key].toJSON()
     } else {
       throw new FieldRefError(path, ref)
     }
   }
+
   // Resolve nested reference.
-  if (attrs.$ref != null) {
-    attrs = { ...attrs, ...resolveRef(attrs.$ref, schema, options) }
+  if (typeof attrs === 'object' && attrs?.$ref != null) {
+    attrs = { ...attrs, ...resolveRef(attrs.$ref, schema, opts) }
   }
-  return attrs
+  return typeof attrs === 'object'
+    ? attrs
+    : {}
 }
 
 /**
