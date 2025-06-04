@@ -789,10 +789,25 @@ export function checkRequired (required: string[], value: unknown, path: string)
  * @param options
  */
 export function checkSchemaAttributes (attributes: SchemaAttributes, options: JSONSchemaOptions): void {
-  const { formats, schemas, strict } = options
+  const { formats, strict } = options
 
-  // todo Check $defs
+  // Check $defs
   const { $defs } = attributes
+  if ($defs != null) {
+    if (typeof $defs !== 'object' || $defs == null) {
+      throw new SchemaError('"$defs" must be an object')
+    }
+
+    // Check each definition in $defs
+    for (const key in $defs) {
+      const def = $defs[key]
+      if (typeof def !== 'object' || def === null) {
+        throw new SchemaError(`"$defs.${key}" must be an object`)
+      }
+      // Recursively check each definition schema
+      checkSchemaAttributes(def, options)
+    }
+  }
 
   // Check schema reference
   const { $ref } = attributes
@@ -800,10 +815,11 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
     if (typeof $ref !== 'string') {
       throw new SchemaError('"$ref" must be a string')
     }
-    // todo check $ref
-    if ((schemas == null || !($ref in schemas)) &&
-      ($defs != null && !($ref in $defs))) {
-      // throw new SchemaError(`schema with $id = "${$ref}" not found`)
+    // Check if the reference is valid
+    // We don't need to throw an error here as the resolveRef function will handle it
+    // This is just a basic check to catch obvious errors
+    if (typeof $ref !== 'string' || $ref.trim() === '') {
+      throw new SchemaError('Schema reference must be a non-empty string')
     }
   }
 

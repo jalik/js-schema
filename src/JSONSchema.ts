@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import deepExtend from '@jalik/deep-extend'
@@ -50,7 +50,7 @@ export type SchemaAttributes = {
   // https://json-schema.org/understanding-json-schema/reference/comments#comments
   $comment?: string;
   // https://json-schema.org/understanding-json-schema/structuring#defs
-  $defs?: Record<string, Pick<SchemaAttributes, '$ref'>>;
+  $defs?: Record<string, SchemaAttributes>;
   // https://json-schema.org/understanding-json-schema/structuring#id
   $id?: string;
   // https://json-schema.org/understanding-json-schema/structuring#dollarref
@@ -453,7 +453,6 @@ class JSONSchema<A extends SchemaAttributes> {
       this.validate(value, { ...options, throwOnError: true })
       return true
     } catch (error) {
-      console.log(error)
       if (error instanceof ValidationError) {
         return false
       }
