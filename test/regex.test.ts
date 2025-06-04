@@ -7,6 +7,7 @@ import { describe, expect, it } from '@jest/globals'
 import {
   DateRegExp,
   DateTimeRegExp,
+  DurationRegExp,
   EmailRegExp,
   HostnameRegExp,
   IDNEmailRegExp,
@@ -15,11 +16,14 @@ import {
   IPv6RegExp,
   IRIReferenceRegExp,
   IRIRegExp,
+  JSONPointerRegExp,
   RegexRegExp,
+  RelativeJSONPointerRegExp,
   TimeRegExp,
   URIReferenceRegExp,
   URIRegExp,
-  URITemplateRegExp
+  URITemplateRegExp,
+  UUIDRegExp
 } from '../src/regex'
 
 describe('DateRegExp', () => {
@@ -52,6 +56,30 @@ describe('DateTimeRegExp', () => {
       expect(DateTimeRegExp.test('2019-04-32T07:00:00-10:00')).toBeFalsy()
       expect(DateTimeRegExp.test('2019-04-11T24:00:00-10:00')).toBeFalsy()
       expect(DateTimeRegExp.test('2019-04-11T00:60:00-10:00')).toBeFalsy()
+    })
+  })
+})
+
+describe('DurationRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(DurationRegExp.test('P1Y')).toBeTruthy()
+      expect(DurationRegExp.test('P1M')).toBeTruthy()
+      expect(DurationRegExp.test('P1D')).toBeTruthy()
+      expect(DurationRegExp.test('PT1H')).toBeTruthy()
+      expect(DurationRegExp.test('PT1M')).toBeTruthy()
+      expect(DurationRegExp.test('PT1S')).toBeTruthy()
+      expect(DurationRegExp.test('P1Y1M1DT1H1M1.5S')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(DurationRegExp.test('P')).toBeFalsy()
+      expect(DurationRegExp.test('PT')).toBeFalsy()
+      expect(DurationRegExp.test('P1D1Y')).toBeFalsy() // Wrong order
+      expect(DurationRegExp.test('P1S')).toBeFalsy() // S must be in time part
+      expect(DurationRegExp.test('PT1D')).toBeFalsy() // D must be in date part
     })
   })
 })
@@ -191,6 +219,25 @@ describe('IRIReferenceRegExp', () => {
   })
 })
 
+describe('JSONPointerRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(JSONPointerRegExp.test('/foo')).toBeTruthy()
+      expect(JSONPointerRegExp.test('/foo/0')).toBeTruthy()
+      expect(JSONPointerRegExp.test('/foo/bar')).toBeTruthy()
+      expect(JSONPointerRegExp.test('/foo/bar/0')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(JSONPointerRegExp.test('foo')).toBeFalsy() // Missing leading slash
+      expect(JSONPointerRegExp.test('/foo/')).toBeFalsy() // Trailing slash
+      expect(JSONPointerRegExp.test('/foo//')).toBeFalsy() // Empty segment
+    })
+  })
+})
+
 describe('RegexRegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
@@ -199,6 +246,24 @@ describe('RegexRegExp', () => {
       expect(RegexRegExp.test('^[a-z]+$')).toBeTruthy()
       expect(RegexRegExp.test('.*')).toBeTruthy()
       expect(RegexRegExp.test('[0-9]+')).toBeTruthy()
+    })
+  })
+})
+
+describe('RelativeJSONPointerRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(RelativeJSONPointerRegExp.test('/foo')).toBeTruthy()
+      expect(RelativeJSONPointerRegExp.test('/foo/bar')).toBeTruthy()
+      expect(RelativeJSONPointerRegExp.test('/foo/0')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(RelativeJSONPointerRegExp.test('foo')).toBeFalsy() // Missing leading slash
+      expect(RelativeJSONPointerRegExp.test('/foo/')).toBeFalsy() // Trailing slash
+      expect(RelativeJSONPointerRegExp.test('/foo//')).toBeFalsy() // Empty segment
     })
   })
 })
@@ -277,6 +342,27 @@ describe('URITemplateRegExp', () => {
   describe('with incorrect value', () => {
     it('should return false', () => {
       expect(URITemplateRegExp.test('https://example.com/{unclosed')).toBeFalsy()
+    })
+  })
+})
+
+describe('UUIDRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(UUIDRegExp.test('123e4567-e89b-12d3-a456-426614174000')).toBeTruthy() // Version 1
+      expect(UUIDRegExp.test('123e4567-e89b-22d3-a456-426614174000')).toBeTruthy() // Version 2
+      expect(UUIDRegExp.test('123e4567-e89b-32d3-a456-426614174000')).toBeTruthy() // Version 3
+      expect(UUIDRegExp.test('123e4567-e89b-42d3-a456-426614174000')).toBeTruthy() // Version 4
+      expect(UUIDRegExp.test('123e4567-e89b-52d3-a456-426614174000')).toBeTruthy() // Version 5
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(UUIDRegExp.test('123e4567-e89b-62d3-a456-426614174000')).toBeFalsy() // Invalid version
+      expect(UUIDRegExp.test('123e4567-e89b-12d3-a456-42661417400')).toBeFalsy() // Too short
+      expect(UUIDRegExp.test('123e4567-e89b-12d3-a456-4266141740000')).toBeFalsy() // Too long
+      expect(UUIDRegExp.test('123e4567-e89b-12d3-a456_426614174000')).toBeFalsy() // Invalid separator
     })
   })
 })
