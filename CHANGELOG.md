@@ -1,5 +1,70 @@
 # Changelog
 
+## v5.0.0 (not released)
+
+This major release brings JSON schema validation.
+
+Initially I created this library as a quick way to validate simple and common things.
+But I finally decided with this release to use JSON Schema for the syntax as it's a well known standard, thus more interoperable and useful for everyone. I did rewrite the whole lib to keep the same Developer Experience as before.
+I also used the official tests suite to drive the implementation.
+As of today, it is usable in production if you don't need the missing parts.
+
+### Breaking changes
+
+- refactor: align behavior of `required` with JSON schema standard (2020-12)
+- refactor: rename class `FieldError` to `ValidationError`
+- refactor: rename option `allowed` to `enum` in `JSONSchema`
+- refactor: rename option `label` to `title` in `JSONSchema`
+- refactor: rename option `min` to `minimum` in `JSONSchema`
+- refactor: rename option `max` to `maximum` in `JSONSchema`
+- refactor: rename method `getField()` to `getProperty()` in `JSONSchema`
+- refactor: rename method `getFields()` to `getProperties()` from `JSONSchema`
+- refactor: rename method `getProperties()` to `toJSON()` in `JSONSchema`
+- refactor: rename method `omit()` to `omitProperties()` in `JSONSchema`
+- refactor: rename method `pick()` to `pickProperties()` in `JSONSchema`
+- refactor: rename method `removeUnknownFields()` to `removeUnknownProperties()` in `JSONSchema`
+- refactor: rename method `resolveField()` to `resolveProperty()` in `JSONSchema`
+- refactor: remove method `clean()` from `JSONSchema`
+- refactor: remove method `getName()` from `JSONSchema`
+- refactor: remove method `throwUnknownFields()` from `JSONSchema`
+- refactor: remove option `check` from `JSONSchema`
+- refactor: remove option `clean` from `JSONSchema`
+- refactor: remove option `parse` from `JSONSchema`
+- refactor: remove option `prepare` from `JSONSchema`
+- refactor: return errors instead of values when calling `validate(value, options)` on
+  `JSONSchema` (note that by default an error is thrown when validation fails, to actually get
+  errors pass `throwOnError: false` in `options`)
+
+### Other changes
+
+- feat: add class `JSONSchema` which is inherited by `Schema`
+- feat: add class `SchemaError`
+- feat: add option `$comment`
+- feat: add option `$defs`
+- feat: add option `$id`
+- feat: add option `$ref`
+- feat: add option `$schema`
+- feat: add option `additionalProperties`
+- feat: add option `const`
+- feat: add option `contains`
+- feat: add option `maxContains`
+- feat: add option `minContains`
+- feat: add option `exclusiveMaximum`
+- feat: add option `exclusiveMinimum`
+- feat: add option `maxProperties`
+- feat: add option `minProperties`
+- feat: add option `patternProperties`
+- feat: add option `prefixItems`
+- feat: add option `properties`
+- feat: add option `propertyNames`
+- feat: add option `type: "null"`
+- feat: include path in message of error objects
+- feat: allow custom schema attributes
+- feat: improve TypeScript autocompletion
+- feat: allow passing custom formats `formats: Record<string, FormatValidator>`
+- fix: enforce TypeScript declaration for locale messages and errors
+  properties
+
 ## v4.2.0 (2024-11-15)
 
 - deprecate: `schema.without()`, use `schema.omit()` instead
