@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import FieldEnumError from './errors/FieldEnumError'
@@ -596,7 +596,18 @@ export function checkMinWords (minWords: number, value: string, path: string): v
  * @param path
  */
 export function checkMultipleOf (multipleOf: number, value: number, path: string): void {
-  if (value % multipleOf !== 0) {
+  // Special case for zero (zero is a multiple of any number)
+  if (value === 0) {
+    return
+  }
+  // Handle very large numbers that would cause precision issues
+  if (!Number.isFinite(value) || !Number.isFinite(value / multipleOf)) {
+    throw new FieldMultipleOfError(path, multipleOf)
+  }
+  // Handle floating point precision issues
+  const remainder = (value / multipleOf) % 1
+  // Check if remainder is very close to 0 or 1 (accounting for floating point precision)
+  if (Math.abs(remainder) > 1e-10 && Math.abs(remainder - 1) > 1e-10) {
     throw new FieldMultipleOfError(path, multipleOf)
   }
 }
