@@ -110,8 +110,6 @@ export function resolveRef (
 
   let attrs: undefined | boolean | SchemaAttributes
 
-  console.log('resolveRef()', decodedRef, schema.toJSON(), path, schemas)
-
   if (decodedRef === '' || decodedRef === '#') {
     attrs = root.toJSON()
   } else if (decodedRef.startsWith('http')) {
@@ -126,8 +124,8 @@ export function resolveRef (
     } else {
       throw new FieldRefError(path, ref)
     }
-  } else if (decodedRef.startsWith('#/$defs')) {
-    const key = decodedRef.substring('#/$defs'.length + 1)
+  } else if (decodedRef.startsWith('#/$defs/')) {
+    const key = decodedRef.substring('#/$defs/'.length)
     const $defs = root.get$Defs()
 
     if ($defs != null && key in $defs) {
