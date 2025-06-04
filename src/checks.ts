@@ -789,7 +789,7 @@ export function checkRequired (required: string[], value: unknown, path: string)
  * @param options
  */
 export function checkSchemaAttributes (attributes: SchemaAttributes, options: JSONSchemaOptions): void {
-  const { formats, strict } = options
+  const { formats: customFormats, strict } = options
 
   // Check $defs
   const { $defs } = attributes
@@ -837,7 +837,9 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
   if (!['undefined', 'string'].includes(typeof format)) {
     throw new SchemaError('"format" must be a string')
   } else if (typeof format === 'string') {
-    if (formats == null || formats[format] == null) {
+    const validators = { ...formats, ...customFormats }
+
+    if (validators[format] == null) {
       const error = new SchemaError(`No validator found for format "${format}"`)
 
       if (strict) {
