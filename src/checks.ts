@@ -31,7 +31,7 @@ import SchemaError from './errors/SchemaError'
 import FieldPropertyNamesError from './errors/FieldPropertyNamesError'
 import ValidationError from './errors/ValidationError'
 import FieldConstError from './errors/FieldConstError'
-import { FormatValidator } from './formats'
+import formats, { FormatValidator } from './formats'
 import FieldMinContainsError from './errors/FieldMinContainsError'
 import FieldMaxContainsError from './errors/FieldMaxContainsError'
 import FieldContainsError from './errors/FieldContainsError'
@@ -43,22 +43,22 @@ import FieldContainsError from './errors/FieldContainsError'
 export type SchemaFormat = string
   | 'date'
   | 'date-time'
-  // todo add 'duration'
+  | 'duration'
   | 'email'
   | 'hostname'
-  // todo add 'idn-email'
-  // todo add 'idn-hostname'
-  // todo add 'iri'
-  // todo add 'iri-reference'
+  | 'idn-email'
+  | 'idn-hostname'
+  | 'iri'
+  | 'iri-reference'
   | 'ipv4'
   | 'ipv6'
   | 'json-pointer'
-  // todo add regex
+  | 'regex'
   | 'relative-json-pointer'
   | 'time'
   | 'uri'
-  // todo add 'uri-reference'
-  // todo add 'uri-template'
+  | 'uri-reference'
+  | 'uri-template'
   | 'uuid'
 
 /**
@@ -317,7 +317,7 @@ export function checkFormat (
   strict: boolean,
   value: string,
   path: string): void {
-  const validator = validators[format]
+  const validator = { ...formats, ...validators }[format]
 
   if (validator == null) {
     const error = new SchemaError(`"${format}" is not a valid format`)

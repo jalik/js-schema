@@ -1,19 +1,26 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import {
   DateRegExp,
   DateTimeRegExp,
+  DurationRegExp,
   EmailRegExp,
   HostnameRegExp,
+  IDNEmailRegExp,
+  IDNHostnameRegExp,
   IPv4RegExp,
   IPv6RegExp,
+  IRIReferenceRegExp,
+  IRIRegExp,
   JSONPointerRegExp,
   RelativeJSONPointerRegExp,
   TimeRegExp,
+  URIReferenceRegExp,
   URIRegExp,
+  URITemplateRegExp,
   UUIDRegExp
 } from './regex'
 
@@ -30,21 +37,31 @@ function regExpValidator (regExp: RegExp): FormatValidator {
 const formats: Record<string, FormatValidator> = {
   date: regExpValidator(DateRegExp),
   'date-time': regExpValidator(DateTimeRegExp),
+  duration: regExpValidator(DurationRegExp),
   email: regExpValidator(EmailRegExp),
   hostname: regExpValidator(HostnameRegExp),
-  // todo idn-email
-  // todo idn-hostname
-  // todo iri
-  // todo iri-reference
+  'idn-email': regExpValidator(IDNEmailRegExp),
+  'idn-hostname': regExpValidator(IDNHostnameRegExp),
+  iri: regExpValidator(IRIRegExp),
+  'iri-reference': regExpValidator(IRIReferenceRegExp),
   ipv4: regExpValidator(IPv4RegExp),
   ipv6: regExpValidator(IPv6RegExp),
   'json-pointer': regExpValidator(JSONPointerRegExp),
-  // todo regex
+  regex: (value: string) => {
+    try {
+      // Try to create a RegExp object to validate the pattern
+      // eslint-disable-next-line no-new
+      new RegExp(value)
+      return true
+    } catch {
+      return false
+    }
+  },
   'relative-json-pointer': regExpValidator(RelativeJSONPointerRegExp),
   time: regExpValidator(TimeRegExp),
   uri: regExpValidator(URIRegExp),
-  // todo uri-reference
-  // todo uri-template
+  'uri-reference': regExpValidator(URIReferenceRegExp),
+  'uri-template': regExpValidator(URITemplateRegExp),
   uuid: regExpValidator(UUIDRegExp)
 }
 

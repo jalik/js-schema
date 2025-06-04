@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import { describe, expect, it } from '@jest/globals'
@@ -9,10 +9,17 @@ import {
   DateTimeRegExp,
   EmailRegExp,
   HostnameRegExp,
+  IDNEmailRegExp,
+  IDNHostnameRegExp,
   IPv4RegExp,
   IPv6RegExp,
+  IRIReferenceRegExp,
+  IRIRegExp,
+  RegexRegExp,
   TimeRegExp,
-  URIRegExp
+  URIReferenceRegExp,
+  URIRegExp,
+  URITemplateRegExp
 } from '../src/regex'
 
 describe('DateRegExp', () => {
@@ -77,6 +84,40 @@ describe('HostnameRegExp', () => {
   })
 })
 
+describe('IDNEmailRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(IDNEmailRegExp.test('user@example.com')).toBeTruthy()
+      expect(IDNEmailRegExp.test('user@例子.测试')).toBeTruthy()
+      expect(IDNEmailRegExp.test('用户@example.com')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(IDNEmailRegExp.test('user@')).toBeFalsy()
+      expect(IDNEmailRegExp.test('user@domain@example')).toBeFalsy()
+    })
+  })
+})
+
+describe('IDNHostnameRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(IDNHostnameRegExp.test('example.com')).toBeTruthy()
+      expect(IDNHostnameRegExp.test('例子.测试')).toBeTruthy()
+      expect(IDNHostnameRegExp.test('sub.例子.测试')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(IDNHostnameRegExp.test('example')).toBeFalsy()
+      expect(IDNHostnameRegExp.test('example.')).toBeFalsy()
+    })
+  })
+})
+
 describe('IPv4RegExp', () => {
   describe('with correct value', () => {
     it('should return true', () => {
@@ -112,6 +153,52 @@ describe('IPv6RegExp', () => {
       expect(IPv6RegExp.test('1200:0000:AB00:1234:O000:2552:7777:1313')).toBeFalsy()
       expect(IPv6RegExp.test('GFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF:FFFF')).toBeFalsy()
       expect(IPv6RegExp.test('256.256.256.256')).toBeFalsy()
+    })
+  })
+})
+
+describe('IRIRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(IRIRegExp.test('https://example.com')).toBeTruthy()
+      expect(IRIRegExp.test('https://例子.测试')).toBeTruthy()
+      expect(IRIRegExp.test('https://example.com/路径')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(IRIRegExp.test('example.com')).toBeFalsy()
+      expect(IRIRegExp.test('https:// example.com')).toBeFalsy()
+    })
+  })
+})
+
+describe('IRIReferenceRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(IRIReferenceRegExp.test('https://example.com')).toBeTruthy()
+      expect(IRIReferenceRegExp.test('/路径/资源')).toBeTruthy()
+      expect(IRIReferenceRegExp.test('#片段')).toBeTruthy()
+      expect(IRIReferenceRegExp.test('')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(IRIReferenceRegExp.test('https://example.com\nwith-newline')).toBeFalsy()
+    })
+  })
+})
+
+describe('RegexRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      // RegexRegExp is a placeholder that matches any string
+      // The actual validation is done in the validator function
+      expect(RegexRegExp.test('^[a-z]+$')).toBeTruthy()
+      expect(RegexRegExp.test('.*')).toBeTruthy()
+      expect(RegexRegExp.test('[0-9]+')).toBeTruthy()
     })
   })
 })
@@ -155,6 +242,41 @@ describe('UriRegExp', () => {
   describe('with incorrect value', () => {
     it('should return false', () => {
       expect(URIRegExp.test('https://www.ietf.org/rfc/ rfc2396.txt')).toBeFalsy()
+    })
+  })
+})
+
+describe('URIReferenceRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(URIReferenceRegExp.test('https://example.com')).toBeTruthy()
+      expect(URIReferenceRegExp.test('/path/to/resource')).toBeTruthy()
+      expect(URIReferenceRegExp.test('path/to/resource')).toBeTruthy()
+      expect(URIReferenceRegExp.test('../resource')).toBeTruthy()
+      expect(URIReferenceRegExp.test('#fragment')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(URIReferenceRegExp.test('https://example.com with space')).toBeFalsy()
+    })
+  })
+})
+
+describe('URITemplateRegExp', () => {
+  describe('with correct value', () => {
+    it('should return true', () => {
+      expect(URITemplateRegExp.test('https://example.com/users/{id}')).toBeTruthy()
+      expect(URITemplateRegExp.test('https://example.com/{path}/resource')).toBeTruthy()
+      expect(URITemplateRegExp.test('/users/{id}/profile')).toBeTruthy()
+      expect(URITemplateRegExp.test('{scheme}://{host}{/path}{?query}')).toBeTruthy()
+    })
+  })
+
+  describe('with incorrect value', () => {
+    it('should return false', () => {
+      expect(URITemplateRegExp.test('https://example.com/{unclosed')).toBeFalsy()
     })
   })
 })

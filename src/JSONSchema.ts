@@ -43,7 +43,7 @@ import {
 } from './checks'
 import { ValidationErrors } from './errors/ValidateError'
 import ValidationError from './errors/ValidationError'
-import formats, { FormatValidator } from './formats'
+import { FormatValidator } from './formats'
 
 export type SchemaAttributes = {
   [key: string]: any;
@@ -713,7 +713,7 @@ class JSONSchema<A extends SchemaAttributes> {
     let errors: ValidationErrors = {}
 
     // Prepare format validators.
-    opts.formats = { ...formats, ...this.formats, ...opts.formats }
+    opts.formats = { ...this.formats, ...opts.formats }
 
     // Complete or overwrite schema references.
     opts.schemas = { ...this.schemas, ...opts.schemas }
