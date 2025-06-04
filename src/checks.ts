@@ -1080,24 +1080,12 @@ export function checkPrefixItems (
  */
 export function checkUniqueItems (value: unknown[], path: string): void {
   if (value != null) {
-    const dict = new Map()
-
     for (let i = 0; i < value.length; i += 1) {
-      if (value[i] instanceof Array) {
-        const v = JSON.stringify(value[i])
-
-        if (dict.get(v)) {
+      for (let j = i + 1; j < value.length; j += 1) {
+        if (compare(value[i], value[j])) {
           throw new FieldUniqueItemsError(path)
-        } else {
-          dict.set(v, true)
         }
-        continue
       }
-
-      if (dict.get(value[i])) {
-        throw new FieldUniqueItemsError(path)
-      }
-      dict.set(value[i], true)
     }
   }
 }
