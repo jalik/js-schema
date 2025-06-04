@@ -434,8 +434,41 @@ export function checkMaxItems (maxItems: number, value: unknown[], path: string)
  * @param path
  */
 export function checkMaxLength (maxLength: number, value: unknown, path: string): void {
-  if (value != null && (typeof value === 'string') && [...value].length > maxLength) {
-    throw new FieldMaxLengthError(path, maxLength)
+  if (value != null) {
+    if (typeof value === 'string') {
+      // Use Intl.Segmenter to count grapheme clusters (visible characters) if available
+      if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+        try {
+          const segmenter = new Intl.Segmenter()
+          const segments = segmenter.segment(value)
+          const count = [...segments].length
+          if (count > maxLength) {
+            throw new FieldMaxLengthError(path, maxLength)
+          }
+        } catch (error) {
+          // If the error is not from our validation, it's a Segmenter failure
+          if (!(error instanceof FieldMaxLengthError)) {
+            // Fallback to traditional length if Segmenter fails
+            if (value.length > maxLength) {
+              throw new FieldMaxLengthError(path, maxLength)
+            }
+          } else {
+            // Re-throw our validation error
+            throw error
+          }
+        }
+      } else {
+        // Fallback for environments without Intl.Segmenter
+        if (value.length > maxLength) {
+          throw new FieldMaxLengthError(path, maxLength)
+        }
+      }
+    } else if (Array.isArray(value) && value.length > maxLength) {
+      throw new FieldMaxLengthError(path, maxLength)
+    } else if (typeof value === 'object' && 'length' in value &&
+      typeof value.length === 'number' && value.length > maxLength) {
+      throw new FieldMaxLengthError(path, maxLength)
+    }
   }
 }
 
@@ -494,8 +527,41 @@ export function checkMinItems (minItems: number, value: unknown[], path: string)
  * @param path
  */
 export function checkMinLength (minLength: number, value: unknown, path: string): void {
-  if (value != null && (typeof value === 'string') && [...value].length < minLength) {
-    throw new FieldMinLengthError(path, minLength)
+  if (value != null) {
+    if (typeof value === 'string') {
+      // Use Intl.Segmenter to count grapheme clusters (visible characters) if available
+      if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+        try {
+          const segmenter = new Intl.Segmenter()
+          const segments = segmenter.segment(value)
+          const count = [...segments].length
+          if (count < minLength) {
+            throw new FieldMinLengthError(path, minLength)
+          }
+        } catch (error) {
+          // If the error is not from our validation, it's a Segmenter failure
+          if (!(error instanceof FieldMinLengthError)) {
+            // Fallback to traditional length if Segmenter fails
+            if (value.length < minLength) {
+              throw new FieldMinLengthError(path, minLength)
+            }
+          } else {
+            // Re-throw our validation error
+            throw error
+          }
+        }
+      } else {
+        // Fallback for environments without Intl.Segmenter
+        if (value.length < minLength) {
+          throw new FieldMinLengthError(path, minLength)
+        }
+      }
+    } else if (Array.isArray(value) && value.length < minLength) {
+      throw new FieldMinLengthError(path, minLength)
+    } else if (typeof value === 'object' && 'length' in value &&
+      typeof value.length === 'number' && value.length < minLength) {
+      throw new FieldMinLengthError(path, minLength)
+    }
   }
 }
 
