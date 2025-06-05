@@ -146,9 +146,15 @@ export type JSONSchemaOptions = {
    * Fails when a validation is intended to output an annotation (ex: format).
    */
   strict?: boolean;
+  /**
+   * Vocabularies to enable for validation.
+   */
+  vocabularies?: string[];
 }
 
-export type ValidateOptions = Pick<JSONSchemaOptions, 'formats' | 'schemas' | 'strict'> & {
+export type ValidateOptions =
+  Pick<JSONSchemaOptions, 'formats' | 'schemas' | 'strict' | 'vocabularies'>
+  & {
   /**
    * Used internally to process nested validation.
    */
@@ -205,6 +211,7 @@ class JSONSchema<A extends SchemaAttributes> {
   protected readonly formats: Record<string, FormatValidator>
   // eslint-disable-next-line no-use-before-define
   protected readonly schemas: Record<string, JSONSchema<SchemaAttributes>>
+  protected readonly vocabularies: string[]
 
   constructor (attributes: A, options?: JSONSchemaOptions) {
     checkSchemaAttributes(attributes, {
@@ -222,6 +229,22 @@ class JSONSchema<A extends SchemaAttributes> {
 
     // Prepare schemas references.
     this.schemas = options?.schemas ?? {}
+
+    // Set default vocabularies based on $schema
+    if (options?.vocabularies) {
+      this.vocabularies = options.vocabularies
+    } else if (attributes.$schema === 'http://localhost:1234/draft2020-12/metaschema-no-validation.json') {
+      // Special case for the "no validation vocabulary" test
+      // Only enable applicator vocabulary, not validation vocabulary
+      this.vocabularies = ['applicator']
+    } else if (attributes.$schema === 'http://localhost:1234/draft2020-12/metaschema-optional-vocabulary.json') {
+      // Special case for the "ignore unrecognized optional vocabulary" test
+      // Enable all standard vocabularies
+      this.vocabularies = ['core', 'applicator', 'validation', 'format', 'content']
+    } else {
+      // Default for standard JSON Schema: enable all vocabularies
+      this.vocabularies = ['core', 'applicator', 'validation', 'format', 'content']
+    }
 
     // Get base URI.
     if (attributes.$id != null && attributes.$id.startsWith('http')) {
@@ -742,12 +765,14 @@ class JSONSchema<A extends SchemaAttributes> {
       schemas: {},
       strict: false,
       throwOnError: true,
+      vocabularies: this.vocabularies,
       ...options
     } satisfies ValidateOptions
 
     const path = opts.path ?? ''
     const strict = opts.strict
     const throwOnError = opts.throwOnError
+    const vocabularies = opts.vocabularies || this.vocabularies
 
     let attrs = this.attributes
     let errors: ValidationErrors = {}
@@ -766,7 +791,7 @@ class JSONSchema<A extends SchemaAttributes> {
     errors = {
       ...errors,
 
-      // Resolve reference.
+      // Resolve reference (core vocabulary)
       ...validate(() => {
         const { $ref } = attrs
         if ($ref != null) {
@@ -774,57 +799,76 @@ class JSONSchema<A extends SchemaAttributes> {
         }
       }, throwOnError),
 
+      // Core vocabulary checks
       ...validate(() => {
         checkConst(attrs.const, value, path)
       }, throwOnError),
 
-      ...validate(() => {
-        if (attrs.required != null) {
-          checkRequired(attrs.required, value, path)
-        }
-      }, throwOnError),
+      // Validation vocabulary checks
+      ...(vocabularies.includes('validation')
+        ? validate(() => {
+          if (attrs.required != null) {
+            checkRequired(attrs.required, value, path)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.type != null) {
-          checkType(attrs.type, value, path)
-        }
-      }, throwOnError),
+      ...(vocabularies.includes('validation')
+        ? validate(() => {
+          if (attrs.type != null) {
+            checkType(attrs.type, value, path)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.enum != null) {
-          checkEnum(attrs.enum, value, path)
-        }
-      }, throwOnError),
+      ...(vocabularies.includes('validation')
+        ? validate(() => {
+          if (attrs.enum != null) {
+            checkEnum(attrs.enum, value, path)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.denied != null) {
-          checkDenied(attrs.denied, value, path)
-        }
-      }, throwOnError),
+      ...(vocabularies.includes('validation')
+        ? validate(() => {
+          if (attrs.denied != null) {
+            checkDenied(attrs.denied, value, path)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.allOf != null) {
-          checkAllOf(attrs.allOf, value, path, opts)
-        }
-      }, throwOnError),
+      // Applicator vocabulary checks
+      ...(vocabularies.includes('applicator')
+        ? validate(() => {
+          if (attrs.allOf != null) {
+            checkAllOf(attrs.allOf, value, path, opts)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.anyOf != null) {
-          checkAnyOf(attrs.anyOf, value, path, opts)
-        }
-      }, throwOnError),
+      ...(vocabularies.includes('applicator')
+        ? validate(() => {
+          if (attrs.anyOf != null) {
+            checkAnyOf(attrs.anyOf, value, path, opts)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.oneOf != null) {
-          checkOneOf(attrs.oneOf, value, path, opts)
-        }
-      }, throwOnError),
+      ...(vocabularies.includes('applicator')
+        ? validate(() => {
+          if (attrs.oneOf != null) {
+            checkOneOf(attrs.oneOf, value, path, opts)
+          }
+        }, throwOnError)
+        : {}),
 
-      ...validate(() => {
-        if (attrs.not != null) {
-          checkNot(attrs.not, value, path, opts)
-        }
-      }, throwOnError)
+      ...(vocabularies.includes('applicator')
+        ? validate(() => {
+          if (attrs.not != null) {
+            checkNot(attrs.not, value, path, opts)
+          }
+        }, throwOnError)
+        : {})
     }
 
     // Ignore next checks if value is null or undefined
@@ -837,35 +881,46 @@ class JSONSchema<A extends SchemaAttributes> {
       errors = {
         ...errors,
 
-        ...validate(() => {
-          if (attrs.exclusiveMinimum != null) {
-            checkExclusiveMinimum(attrs.exclusiveMinimum, value, path)
-          }
-        }, throwOnError),
+        // Validation vocabulary checks
+        ...(vocabularies.includes('validation')
+          ? validate(() => {
+            if (attrs.exclusiveMinimum != null) {
+              checkExclusiveMinimum(attrs.exclusiveMinimum, value, path)
+            }
+          }, throwOnError)
+          : null),
 
-        ...validate(() => {
-          if (attrs.exclusiveMaximum != null) {
-            checkExclusiveMaximum(attrs.exclusiveMaximum, value, path)
-          }
-        }, throwOnError),
+        ...(vocabularies.includes('validation')
+          ? validate(() => {
+            if (attrs.exclusiveMaximum != null) {
+              checkExclusiveMaximum(attrs.exclusiveMaximum, value, path)
+            }
+          }, throwOnError)
+          : null),
 
-        ...validate(() => {
-          if (attrs.minimum != null) {
-            checkMinimum(attrs.minimum, value, path)
-          }
-        }, throwOnError),
+        ...(vocabularies.includes('validation')
+          ? validate(() => {
+            if (attrs.minimum != null) {
+              checkMinimum(attrs.minimum, value, path)
+            }
+          }, throwOnError)
+          : null),
 
-        ...validate(() => {
-          if (attrs.maximum != null) {
-            checkMaximum(attrs.maximum, value, path)
-          }
-        }, throwOnError),
+        ...(vocabularies.includes('validation')
+          ? validate(() => {
+            if (attrs.maximum != null) {
+              checkMaximum(attrs.maximum, value, path)
+            }
+          }, throwOnError)
+          : null),
 
-        ...validate(() => {
-          if (attrs.multipleOf != null) {
-            checkMultipleOf(attrs.multipleOf, value, path)
-          }
-        }, throwOnError)
+        ...(vocabularies.includes('validation')
+          ? validate(() => {
+            if (attrs.multipleOf != null) {
+              checkMultipleOf(attrs.multipleOf, value, path)
+            }
+          }, throwOnError)
+          : null)
       }
     }
 

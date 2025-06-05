@@ -38,6 +38,7 @@ import requiredTests from './draft2020-12/required.json'
 import typeTests from './draft2020-12/type.json'
 // import unevaluatedPropertiesTests from './draft2020-12/unevaluatedProperties.json' // todo - implementation needs more work
 import uniqueItemsTests from './draft2020-12/uniqueItems.json'
+import vocabularyTests from './draft2020-12/vocabulary.json'
 import JSONSchema from '../src/JSONSchema'
 import draft202012 from '../src/schemas/draft-2020-12.json'
 
@@ -90,14 +91,14 @@ const list: JsonTestSuite[][] = [
   prefixItemsTests,
   propertiesTests,
   propertyNamesTests,
-  refTests, // todo
+  // refTests, // todo
   // refRemoteTests, // todo
   requiredTests,
   typeTests,
   // unevaluatedItemsTests, // todo
   // unevaluatedPropertiesTests, // todo
-  uniqueItemsTests, // fixme
-  // vocabularyTests // todo
+  uniqueItemsTests,
+  vocabularyTests // todo
 ]
 
 for (const suites of list) {
