@@ -153,6 +153,180 @@ export function checkAdditionalProperties (
 }
 
 /**
+ * Checks if the value is valid against all schemas in allOf.
+ * @param allOf
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkAllOf (
+  allOf: SchemaAttributes['allOf'],
+  value: unknown,
+  path: string,
+  options: ValidateOptions): void {
+  if (allOf != null && allOf instanceof Array) {
+    let errors = {} as ValidationErrors
+
+    // Validate against each schema in allOf
+    for (let i = 0; i < allOf.length; i += 1) {
+      const schema = allOf[i]
+
+      // Boolean schema handling
+      if (typeof schema === 'boolean') {
+        if (schema === false) {
+          throw new ValidationError(path, `The field "${path}" failed validation against schema at allOf[${i}]`)
+        }
+        // If schema is true, it's always valid, so continue to next schema
+        continue
+      }
+
+      // Object schema handling
+      if (typeof schema === 'object' && schema != null) {
+        const jsonSchema = new JSONSchema(schema, {
+          schemas: options?.schemas
+        })
+
+        errors = {
+          ...errors,
+          ...jsonSchema.validate(value, {
+            ...options,
+            path
+          })
+        }
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      throw new ValidateError(errors)
+    }
+  }
+}
+
+/**
+ * Checks if the value is valid against at least one schema in anyOf.
+ * @param anyOf
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkAnyOf (
+  anyOf: SchemaAttributes['anyOf'],
+  value: unknown,
+  path: string,
+  options: ValidateOptions): void {
+  if (anyOf != null && anyOf instanceof Array) {
+    let validCount = 0
+    let lastError: ValidateError | null = null
+
+    // Validate against each schema in anyOf
+    for (let i = 0; i < anyOf.length; i += 1) {
+      const schema = anyOf[i]
+
+      // Boolean schema handling
+      if (typeof schema === 'boolean') {
+        if (schema === true) {
+          validCount += 1
+        }
+        continue
+      }
+
+      // Object schema handling
+      if (typeof schema === 'object' && schema != null) {
+        const jsonSchema = new JSONSchema(schema, {
+          schemas: options?.schemas
+        })
+
+        try {
+          jsonSchema.validate(value, {
+            ...options,
+            path,
+            throwOnError: true
+          })
+          validCount += 1
+        } catch (error) {
+          if (error instanceof ValidateError) {
+            lastError = error
+          } else if (!(error instanceof ValidationError)) {
+            throw error
+          }
+        }
+      }
+    }
+
+    // Must match at least one schema
+    if (validCount === 0) {
+      if (lastError) {
+        throw lastError
+      }
+      throw new ValidationError(path, `The field "${path}" must validate against at least one schema in anyOf`)
+    }
+  }
+}
+
+/**
+ * Checks if the value is valid against exactly one schema in oneOf.
+ * @param oneOf
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkOneOf (
+  oneOf: SchemaAttributes['oneOf'],
+  value: unknown,
+  path: string,
+  options: ValidateOptions): void {
+  if (oneOf != null && oneOf instanceof Array) {
+    let validCount = 0
+    let lastError: ValidateError | null = null
+
+    // Validate against each schema in oneOf
+    for (let i = 0; i < oneOf.length; i += 1) {
+      const schema = oneOf[i]
+
+      // Boolean schema handling
+      if (typeof schema === 'boolean') {
+        if (schema === true) {
+          validCount += 1
+        }
+        continue
+      }
+
+      // Object schema handling
+      if (typeof schema === 'object' && schema != null) {
+        const jsonSchema = new JSONSchema(schema, {
+          schemas: options?.schemas
+        })
+
+        try {
+          jsonSchema.validate(value, {
+            ...options,
+            path,
+            throwOnError: true
+          })
+          validCount += 1
+        } catch (error) {
+          if (error instanceof ValidateError) {
+            lastError = error
+          } else if (!(error instanceof ValidationError)) {
+            throw error
+          }
+        }
+      }
+    }
+
+    // Must match exactly one schema
+    if (validCount === 0) {
+      if (lastError) {
+        throw lastError
+      }
+      throw new ValidationError(path, `The field "${path}" must validate against exactly one schema in oneOf, but matched none`)
+    } else if (validCount > 1) {
+      throw new ValidationError(path, `The field "${path}" must validate against exactly one schema in oneOf, but matched ${validCount}`)
+    }
+  }
+}
+
+/**
  * Checks if value is equal to a constant.
  * @param constant
  * @param value

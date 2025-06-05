@@ -8,6 +8,8 @@ import InvalidPathError from './errors/InvalidPathError'
 import { resolveRef, validate } from './utils'
 import {
   checkAdditionalProperties,
+  checkAllOf,
+  checkAnyOf,
   checkConst,
   checkContains,
   checkDenied,
@@ -28,6 +30,7 @@ import {
   checkMinProperties,
   checkMinWords,
   checkMultipleOf,
+  checkOneOf,
   checkPattern,
   checkPatternProperties,
   checkPrefixItems,
@@ -59,6 +62,10 @@ export type SchemaAttributes = {
   $schema?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#additionalproperties
   additionalProperties?: false | SchemaAttributes;
+  // https://json-schema.org/understanding-json-schema/reference/combining#allof
+  allOf?: (boolean | SchemaAttributes)[];
+  // https://json-schema.org/understanding-json-schema/reference/combining#anyof
+  anyOf?: (boolean | SchemaAttributes)[];
   // https://json-schema.org/understanding-json-schema/reference/const#constant-values
   const?: any;
   // https://json-schema.org/understanding-json-schema/reference/array#contains
@@ -100,6 +107,8 @@ export type SchemaAttributes = {
   minWords?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#multiples
   multipleOf?: number;
+  // https://json-schema.org/understanding-json-schema/reference/combining#oneof
+  oneOf?: (boolean | SchemaAttributes)[];
   // https://json-schema.org/understanding-json-schema/reference/string#regexp
   pattern?: string;
   // https://json-schema.org/understanding-json-schema/reference/object#patternProperties
@@ -276,6 +285,27 @@ class JSONSchema<A extends SchemaAttributes> {
    */
   getAdditionalProperties (): A['additionalProperties'] {
     return this.attributes.additionalProperties
+  }
+
+  /**
+   * Returns allOf schemas.
+   */
+  getAllOf (): A['allOf'] {
+    return this.attributes.allOf
+  }
+
+  /**
+   * Returns anyOf schemas.
+   */
+  getAnyOf (): A['anyOf'] {
+    return this.attributes.anyOf
+  }
+
+  /**
+   * Returns oneOf schemas.
+   */
+  getOneOf (): A['oneOf'] {
+    return this.attributes.oneOf
   }
 
   /**
@@ -759,6 +789,24 @@ class JSONSchema<A extends SchemaAttributes> {
       ...validate(() => {
         if (attrs.denied != null) {
           checkDenied(attrs.denied, value, path)
+        }
+      }, throwOnError),
+
+      ...validate(() => {
+        if (attrs.allOf != null) {
+          checkAllOf(attrs.allOf, value, path, opts)
+        }
+      }, throwOnError),
+
+      ...validate(() => {
+        if (attrs.anyOf != null) {
+          checkAnyOf(attrs.anyOf, value, path, opts)
+        }
+      }, throwOnError),
+
+      ...validate(() => {
+        if (attrs.oneOf != null) {
+          checkOneOf(attrs.oneOf, value, path, opts)
         }
       }, throwOnError)
     }
