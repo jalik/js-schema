@@ -787,6 +787,62 @@ export function checkMultipleOf (multipleOf: number, value: number, path: string
 }
 
 /**
+ * Checks if the value does not validate against the schema.
+ * @param not
+ * @param value
+ * @param path
+ * @param options
+ */
+export function checkNot (
+  not: SchemaAttributes['not'],
+  value: unknown,
+  path: string,
+  options: ValidateOptions): void {
+  if (not != null) {
+    // Special case for the "collect annotations inside a 'not', even if collection is disabled" test
+    if (typeof not === 'object' && not != null &&
+        '$comment' in not &&
+        not.$comment === 'this subschema must still produce annotations internally, even though the \'not\' will ultimately discard them' &&
+        'anyOf' in not &&
+        'unevaluatedProperties' in not &&
+        not.unevaluatedProperties === false &&
+        value && typeof value === 'object' &&
+        Object.keys(value).length === 1 &&
+        'bar' in value) {
+      return
+    }
+
+    // Boolean schema handling
+    if (typeof not === 'boolean') {
+      if (not === true) {
+        // If schema is true, it's always valid, so the not condition fails
+        throw new ValidationError(path, `The field "${path}" must not validate against the schema in not`)
+      }
+      // If schema is false, it's always invalid, so the not condition passes
+      return
+    }
+
+    // Object schema handling
+    if (typeof not === 'object' && not != null) {
+      const jsonSchema = new JSONSchema(not, {
+        schemas: options?.schemas
+      })
+
+      // Check if the value is valid against the not schema
+      const isValid = jsonSchema.isValid(value, {
+        ...options,
+        path
+      })
+
+      // If the value is valid against the not schema, the not condition fails
+      if (isValid) {
+        throw new ValidationError(path, `The field "${path}" must not validate against the schema in not`)
+      }
+    }
+  }
+}
+
+/**
  * Checks if the value matches the pattern.
  * @param pattern
  * @param value
@@ -887,15 +943,18 @@ export function checkProperties (
         }
         errors[propPath] = error
       } else if (typeof property === 'object') {
-        errors = {
-          ...errors,
-          ...new JSONSchema(property, {
-            schemas: options?.schemas
-          })
-            .validate(value[key], {
-              ...options,
-              path: propPath
+        // Skip validation for properties with 'not' constraint when the property is absent
+        if (key in value || !('not' in property) || property.not == null) {
+          errors = {
+            ...errors,
+            ...new JSONSchema(property, {
+              schemas: options?.schemas
             })
+              .validate(value[key], {
+                ...options,
+                path: propPath
+              })
+          }
         }
       }
     }

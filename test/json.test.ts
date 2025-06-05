@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import { describe, expect, it } from '@jest/globals'
@@ -27,6 +27,7 @@ import minItemsTests from './draft2020-12/minItems.json'
 import minLengthTests from './draft2020-12/minLength.json'
 import minPropertiesTests from './draft2020-12/minProperties.json'
 import multipleOfTests from './draft2020-12/multipleOf.json'
+import notTests from './draft2020-12/not.json'
 import oneOfTests from './draft2020-12/oneOf.json'
 import patternTests from './draft2020-12/pattern.json'
 import patternPropertiesTests from './draft2020-12/patternProperties.json'
@@ -35,6 +36,7 @@ import propertiesTests from './draft2020-12/properties.json'
 import propertyNamesTests from './draft2020-12/propertyNames.json'
 import requiredTests from './draft2020-12/required.json'
 import typeTests from './draft2020-12/type.json'
+// import unevaluatedPropertiesTests from './draft2020-12/unevaluatedProperties.json' // todo - implementation needs more work
 import uniqueItemsTests from './draft2020-12/uniqueItems.json'
 import JSONSchema from '../src/JSONSchema'
 import draft202012 from '../src/schemas/draft-2020-12.json'
@@ -80,8 +82,8 @@ const list: JsonTestSuite[][] = [
   minItemsTests,
   minLengthTests,
   minPropertiesTests,
-  multipleOfTests, // fixme
-  // notTests, // todo
+  multipleOfTests,
+  notTests,
   oneOfTests,
   patternTests,
   patternPropertiesTests,
