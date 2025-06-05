@@ -5,6 +5,8 @@
 
 import { describe, expect, it } from '@jest/globals'
 import additionalPropertiesTests from './draft2020-12/additionalProperties.json'
+import allOfTests from './draft2020-12/allOf.json'
+import anyOfTests from './draft2020-12/anyOf.json'
 import constTests from './draft2020-12/const.json'
 import containsTests from './draft2020-12/contains.json'
 import contentTests from './draft2020-12/content.json'
@@ -25,12 +27,12 @@ import minItemsTests from './draft2020-12/minItems.json'
 import minLengthTests from './draft2020-12/minLength.json'
 import minPropertiesTests from './draft2020-12/minProperties.json'
 import multipleOfTests from './draft2020-12/multipleOf.json'
+import oneOfTests from './draft2020-12/oneOf.json'
 import patternTests from './draft2020-12/pattern.json'
 import patternPropertiesTests from './draft2020-12/patternProperties.json'
 import prefixItemsTests from './draft2020-12/prefixItems.json'
 import propertiesTests from './draft2020-12/properties.json'
 import propertyNamesTests from './draft2020-12/propertyNames.json'
-import refTests from './draft2020-12/ref.json'
 import requiredTests from './draft2020-12/required.json'
 import typeTests from './draft2020-12/type.json'
 import uniqueItemsTests from './draft2020-12/uniqueItems.json'
@@ -51,9 +53,9 @@ type JsonTestSuite = {
 
 const list: JsonTestSuite[][] = [
   additionalPropertiesTests,
-  // allOfTests, // todo
+  allOfTests,
   // anchorTests, // todo
-  // anyOfTests, // todo
+  anyOfTests,
   // booleanSchemaTests, // todo
   constTests,
   containsTests,
@@ -80,7 +82,7 @@ const list: JsonTestSuite[][] = [
   minPropertiesTests,
   multipleOfTests, // fixme
   // notTests, // todo
-  // oneOfTests, // todo
+  oneOfTests,
   patternTests,
   patternPropertiesTests,
   prefixItemsTests,
