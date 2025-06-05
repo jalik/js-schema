@@ -7,6 +7,7 @@ import { describe, expect, it } from '@jest/globals'
 import additionalPropertiesTests from './draft2020-12/additionalProperties.json'
 import allOfTests from './draft2020-12/allOf.json'
 import anyOfTests from './draft2020-12/anyOf.json'
+import booleanSchemaTests from './latest/boolean_schema.json'
 import constTests from './draft2020-12/const.json'
 import containsTests from './draft2020-12/contains.json'
 import contentTests from './draft2020-12/content.json'
@@ -50,7 +51,7 @@ type JsonTest = {
 
 type JsonTestSuite = {
   description: string;
-  schema: object;
+  schema: boolean | object;
   tests: JsonTest[]
 }
 
@@ -59,7 +60,7 @@ const list: JsonTestSuite[][] = [
   allOfTests,
   // anchorTests, // todo
   anyOfTests,
-  // booleanSchemaTests, // todo
+  booleanSchemaTests,
   constTests,
   containsTests,
   contentTests, // todo
@@ -103,15 +104,24 @@ const list: JsonTestSuite[][] = [
 
 for (const suites of list) {
   for (const suite of suites) {
-    describe(suite.description, () => {
+    describe(`${suite.description}`, () => {
       for (const test of suite.tests) {
-        it(test.description, () => {
-          expect(new JSONSchema(suite.schema, {
+        it(`${test.description}`, () => {
+          // Handle boolean schemas
+          if (typeof suite.schema === 'boolean') {
+            // For boolean schema 'true', all values are valid
+            // For boolean schema 'false', all values are invalid
+            expect(suite.schema).toBe(test.valid)
+            return
+          }
+
+          const isValid = new JSONSchema(suite.schema, {
             schemas: {
               'https://json-schema.org/draft/2020-12/schema': new JSONSchema(draft202012)
             }
-          }).isValid(test.data))
-            .toBe(test.valid)
+          }).isValid(test.data)
+
+          expect(isValid).toBe(test.valid)
         })
       }
     })
