@@ -30,6 +30,7 @@ import {
   checkMinProperties,
   checkMinWords,
   checkMultipleOf,
+  checkNot,
   checkOneOf,
   checkPattern,
   checkPatternProperties,
@@ -107,6 +108,8 @@ export type SchemaAttributes = {
   minWords?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#multiples
   multipleOf?: number;
+  // https://json-schema.org/understanding-json-schema/reference/combining#not
+  not?: boolean | SchemaAttributes;
   // https://json-schema.org/understanding-json-schema/reference/combining#oneof
   oneOf?: (boolean | SchemaAttributes)[];
   // https://json-schema.org/understanding-json-schema/reference/string#regexp
@@ -417,6 +420,13 @@ class JSONSchema<A extends SchemaAttributes> {
    */
   getMinWords (): A['minWords'] {
     return this.attributes.minWords
+  }
+
+  /**
+   * Returns not schema.
+   */
+  getNot (): A['not'] {
+    return this.attributes.not
   }
 
   /**
@@ -807,6 +817,12 @@ class JSONSchema<A extends SchemaAttributes> {
       ...validate(() => {
         if (attrs.oneOf != null) {
           checkOneOf(attrs.oneOf, value, path, opts)
+        }
+      }, throwOnError),
+
+      ...validate(() => {
+        if (attrs.not != null) {
+          checkNot(attrs.not, value, path, opts)
         }
       }, throwOnError)
     }
