@@ -213,7 +213,17 @@ class JSONSchema<A extends SchemaAttributes> {
   protected readonly schemas: Record<string, JSONSchema<SchemaAttributes>>
   protected readonly vocabularies: string[]
 
-  constructor (attributes: A, options?: JSONSchemaOptions) {
+  constructor (attributes: A | boolean, options?: JSONSchemaOptions) {
+    // Handle boolean schema
+    if (typeof attributes === 'boolean') {
+      this.attributes = {} as A
+      this.baseURI = null
+      this.formats = options?.formats ?? {}
+      this.schemas = options?.schemas ?? {}
+      this.vocabularies = options?.vocabularies ?? ['core', 'applicator', 'validation', 'format', 'content']
+      return
+    }
+
     checkSchemaAttributes(attributes, {
       strict: false,
       ...options
