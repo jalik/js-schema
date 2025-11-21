@@ -3,11 +3,12 @@
  * Copyright (c) 2025 Karl STEIN
  */
 
-import { describe, expect, it } from '@jest/globals'
+import { describe, expect, it } from 'vitest'
+import JSONSchema from '../src/JSONSchema'
+import draft202012 from '../src/schemas/draft-2020-12.json'
 import additionalPropertiesTests from './draft2020-12/additionalProperties.json'
 import allOfTests from './draft2020-12/allOf.json'
 import anyOfTests from './draft2020-12/anyOf.json'
-import booleanSchemaTests from './latest/boolean_schema.json'
 import constTests from './draft2020-12/const.json'
 import containsTests from './draft2020-12/contains.json'
 import contentTests from './draft2020-12/content.json'
@@ -17,13 +18,13 @@ import exclusiveMaximumTests from './draft2020-12/exclusiveMaximum.json'
 import exclusiveMinimumTests from './draft2020-12/exclusiveMinimum.json'
 import formatTests from './draft2020-12/format.json'
 import itemsTests from './draft2020-12/items.json'
-import maximumTests from './draft2020-12/maximum.json'
 import maxContainsTests from './draft2020-12/maxContains.json'
+import maximumTests from './draft2020-12/maximum.json'
 import maxItemsTests from './draft2020-12/maxItems.json'
 import maxLengthTests from './draft2020-12/maxLength.json'
 import maxPropertiesTests from './draft2020-12/maxProperties.json'
-import minimumTests from './draft2020-12/minimum.json'
 import minContainsTests from './draft2020-12/minContains.json'
+import minimumTests from './draft2020-12/minimum.json'
 import minItemsTests from './draft2020-12/minItems.json'
 import minLengthTests from './draft2020-12/minLength.json'
 import minPropertiesTests from './draft2020-12/minProperties.json'
@@ -40,8 +41,7 @@ import typeTests from './draft2020-12/type.json'
 // import unevaluatedPropertiesTests from './draft2020-12/unevaluatedProperties.json' // todo - implementation needs more work
 import uniqueItemsTests from './draft2020-12/uniqueItems.json'
 import vocabularyTests from './draft2020-12/vocabulary.json'
-import JSONSchema from '../src/JSONSchema'
-import draft202012 from '../src/schemas/draft-2020-12.json'
+import booleanSchemaTests from './latest/boolean_schema.json'
 
 type JsonTest = {
   description: string;

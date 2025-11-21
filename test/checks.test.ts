@@ -1,14 +1,14 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
-import { describe, expect, it } from '@jest/globals'
+import { describe, expect, it } from 'vitest'
 import { checkEnum, checkExclusiveMaximum, checkExclusiveMinimum, checkType } from '../src/checks'
 import FieldEnumError from '../src/errors/FieldEnumError'
-import FieldTypeError from '../src/errors/FieldTypeError'
-import FieldExclusiveMinimumError from '../src/errors/FieldExclusiveMinError'
 import FieldExclusiveMaximumError from '../src/errors/FieldExclusiveMaxError'
+import FieldExclusiveMinimumError from '../src/errors/FieldExclusiveMinError'
+import FieldTypeError from '../src/errors/FieldTypeError'
 
 describe('checkEnum', () => {
   describe('with value in enum', () => {

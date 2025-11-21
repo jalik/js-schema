@@ -1,20 +1,17 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
-import { describe, expect, it } from '@jest/globals'
-import FieldRequiredError from '../src/errors/FieldRequiredError'
-import ValidationError from '../src/errors/ValidationError'
-import JSONSchema, { JSON_SCHEMA_DRAFT_2020_12, SchemaAttributes } from '../src/JSONSchema'
-import InvalidPathError from '../src/errors/InvalidPathError'
+import { describe, expect, it } from 'vitest'
 import { ERROR_FIELD_TYPE } from '../src'
-import FieldTypeError from '../src/errors/FieldTypeError'
 import FieldAdditionalPropertiesError from '../src/errors/FieldAdditionalPropertiesError'
-import FieldEnumError from '../src/errors/FieldEnumError'
 import FieldDeniedError from '../src/errors/FieldDeniedError'
-import FieldLengthError from '../src/errors/FieldLengthError'
+import FieldEnumError from '../src/errors/FieldEnumError'
+import FieldExclusiveMaximumError from '../src/errors/FieldExclusiveMaxError'
+import FieldExclusiveMinimumError from '../src/errors/FieldExclusiveMinError'
 import FieldFormatError from '../src/errors/FieldFormatError'
+import FieldLengthError from '../src/errors/FieldLengthError'
 import FieldMaximumError from '../src/errors/FieldMaximumError'
 import FieldMaxItemsError from '../src/errors/FieldMaxItemsError'
 import FieldMaxLengthError from '../src/errors/FieldMaxLengthError'
@@ -25,10 +22,13 @@ import FieldMinLengthError from '../src/errors/FieldMinLengthError'
 import FieldMinWordsError from '../src/errors/FieldMinWordsError'
 import FieldMultipleOfError from '../src/errors/FieldMultipleOfError'
 import FieldPatternError from '../src/errors/FieldPatternError'
+import FieldRequiredError from '../src/errors/FieldRequiredError'
+import FieldTypeError from '../src/errors/FieldTypeError'
 import FieldUniqueItemsError from '../src/errors/FieldUniqueItemsError'
-import FieldExclusiveMaximumError from '../src/errors/FieldExclusiveMaxError'
-import FieldExclusiveMinimumError from '../src/errors/FieldExclusiveMinError'
+import InvalidPathError from '../src/errors/InvalidPathError'
 import SchemaError from '../src/errors/SchemaError'
+import ValidationError from '../src/errors/ValidationError'
+import JSONSchema, { JSON_SCHEMA_DRAFT_2020_12, SchemaAttributes } from '../src/JSONSchema'
 
 it('should be importable from package', () => {
   expect(typeof JSONSchema).toEqual('function')
