@@ -266,8 +266,8 @@ This can be done when your app starts or right before displaying an error.
 Errors are in **English** by default, you can customize them or use them as this.
 
 ```js
-import { default as en } from '@jalik/schema/dist/locales/en';
-import { default as fr } from '@jalik/schema/dist/locales/fr';
+import { default as en } from '@jalik/schema/cjs/locales/en';
+import { default as fr } from '@jalik/schema/cjs/locales/fr';
 import { ERROR_FIELD_INVALID } from '@jalik/schema';
 
 // Load default error messages in english.
