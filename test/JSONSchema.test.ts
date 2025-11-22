@@ -854,21 +854,19 @@ describe('validate(value, options)', () => {
     describe('enum = Array', () => {
       const schema = new JSONSchema({ enum: ['off', 'on'] })
 
-      describe('with Array', () => {
-        describe('with enum values', () => {
-          it('should not throw FieldAllowedError', () => {
-            expect(() => {
-              schema.validate(['on'])
-            }).not.toThrow()
-          })
+      describe('with enum values', () => {
+        it('should not throw FieldAllowedError', () => {
+          expect(() => {
+            schema.validate('on')
+          }).not.toThrow()
         })
+      })
 
-        describe('without enum values', () => {
-          it('should throw FieldAllowedError', () => {
-            expect(() => {
-              schema.validate(['yes'])
-            }).toThrow(FieldEnumError)
-          })
+      describe('without enum values', () => {
+        it('should throw FieldAllowedError', () => {
+          expect(() => {
+            schema.validate('yes')
+          }).toThrow(FieldEnumError)
         })
       })
     })
@@ -982,7 +980,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('2020/05/13')
+            schema.validate('2020/05/13', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1034,7 +1032,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('2020-05-13 10:00:00')
+            schema.validate('2020-05-13 10:00:00', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1054,7 +1052,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('2020-05-13 10:00:00')
+            schema.validate('2020-05-13 10:00:00', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1074,7 +1072,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('invalid@mail')
+            schema.validate('invalid@mail', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1094,7 +1092,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('www.invalid_host.com')
+            schema.validate('www.invalid_host.com', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1114,7 +1112,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('256.255.255.255')
+            schema.validate('256.255.255.255', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1134,7 +1132,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('gf:ff:ff:ff:ff:ff:ff:ff')
+            schema.validate('gf:ff:ff:ff:ff:ff:ff:ff', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1170,7 +1168,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('12:30:42')
+            schema.validate('12:30:42', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
@@ -1190,7 +1188,7 @@ describe('validate(value, options)', () => {
       describe('with string of incorrect format', () => {
         it('should throw FieldFormatError', () => {
           expect(() => {
-            schema.validate('https://www.ietf.org/rfc/ rfc2396.txt')
+            schema.validate('https://www.ietf.org/rfc/ rfc2396.txt', { strict: true })
           }).toThrow(FieldFormatError)
         })
       })
