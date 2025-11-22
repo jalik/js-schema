@@ -3,38 +3,38 @@
  * Copyright (c) 2025 Karl STEIN
  */
 
-import FieldEnumError from './errors/FieldEnumError'
+import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
+import FieldConstError from './errors/FieldConstError'
+import FieldContainsError from './errors/FieldContainsError'
 import FieldDeniedError from './errors/FieldDeniedError'
+import FieldEnumError from './errors/FieldEnumError'
+import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
+import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
 import FieldFormatError from './errors/FieldFormatError'
 import FieldLengthError from './errors/FieldLengthError'
+import FieldMaxContainsError from './errors/FieldMaxContainsError'
 import FieldMaximumError from './errors/FieldMaximumError'
+import FieldMaxItemsError from './errors/FieldMaxItemsError'
 import FieldMaxLengthError from './errors/FieldMaxLengthError'
 import FieldMaxWordsError from './errors/FieldMaxWordsError'
+import FieldMinContainsError from './errors/FieldMinContainsError'
 import FieldMinimumError from './errors/FieldMinimumError'
+import FieldMinItemsError from './errors/FieldMinItemsError'
 import FieldMinLengthError from './errors/FieldMinLengthError'
 import FieldMinWordsError from './errors/FieldMinWordsError'
 import FieldMultipleOfError from './errors/FieldMultipleOfError'
 import FieldPatternError from './errors/FieldPatternError'
+import FieldPropertiesError from './errors/FieldPropertiesError'
+import FieldPropertyNamesError from './errors/FieldPropertyNamesError'
 import FieldRequiredError from './errors/FieldRequiredError'
 import FieldTypeError from './errors/FieldTypeError'
 import FieldUniqueItemsError from './errors/FieldUniqueItemsError'
-import JSONSchema, { JSONSchemaOptions, SchemaAttributes, ValidateOptions } from './JSONSchema'
-import FieldMinItemsError from './errors/FieldMinItemsError'
-import FieldMaxItemsError from './errors/FieldMaxItemsError'
-import FieldExclusiveMaximumError from './errors/FieldExclusiveMaxError'
-import FieldExclusiveMinimumError from './errors/FieldExclusiveMinError'
-import FieldPropertiesError from './errors/FieldPropertiesError'
-import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
-import { compare, joinPath } from './utils'
-import ValidateError, { ValidationErrors } from './errors/ValidateError'
 import SchemaError from './errors/SchemaError'
-import FieldPropertyNamesError from './errors/FieldPropertyNamesError'
+import ValidateError, { ValidationErrors } from './errors/ValidateError'
 import ValidationError from './errors/ValidationError'
-import FieldConstError from './errors/FieldConstError'
 import formats, { FormatValidator } from './formats'
-import FieldMinContainsError from './errors/FieldMinContainsError'
-import FieldMaxContainsError from './errors/FieldMaxContainsError'
-import FieldContainsError from './errors/FieldContainsError'
+import JSONSchema, { JSONSchemaOptions, SchemaAttributes, ValidateOptions } from './JSONSchema'
+import { compare, joinPath } from './utils'
 
 /**
  * The format of a string.
@@ -87,6 +87,7 @@ export type SchemaType =
   // https://json-schema.org/understanding-json-schema/reference/string#string
   | 'string'
   | SchemaType[]
+  | string
 
 /**
  * Checks additional properties.
@@ -801,14 +802,14 @@ export function checkNot (
   if (not != null) {
     // Special case for the "collect annotations inside a 'not', even if collection is disabled" test
     if (typeof not === 'object' && not != null &&
-        '$comment' in not &&
-        not.$comment === 'this subschema must still produce annotations internally, even though the \'not\' will ultimately discard them' &&
-        'anyOf' in not &&
-        'unevaluatedProperties' in not &&
-        not.unevaluatedProperties === false &&
-        value && typeof value === 'object' &&
-        Object.keys(value).length === 1 &&
-        'bar' in value) {
+      '$comment' in not &&
+      not.$comment === 'this subschema must still produce annotations internally, even though the \'not\' will ultimately discard them' &&
+      'anyOf' in not &&
+      'unevaluatedProperties' in not &&
+      not.unevaluatedProperties === false &&
+      value && typeof value === 'object' &&
+      Object.keys(value).length === 1 &&
+      'bar' in value) {
       return
     }
 

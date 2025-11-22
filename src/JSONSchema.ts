@@ -4,8 +4,6 @@
  */
 
 import deepExtend from '@jalik/deep-extend'
-import InvalidPathError from './errors/InvalidPathError'
-import { resolveRef, validate } from './utils'
 import {
   checkAdditionalProperties,
   checkAllOf,
@@ -45,9 +43,11 @@ import {
   SchemaItems,
   SchemaType
 } from './checks'
+import InvalidPathError from './errors/InvalidPathError'
 import { ValidationErrors } from './errors/ValidateError'
 import ValidationError from './errors/ValidationError'
 import { FormatValidator } from './formats'
+import { resolveRef, validate } from './utils'
 
 export type SchemaAttributes = {
   [key: string]: any;
@@ -71,6 +71,12 @@ export type SchemaAttributes = {
   const?: any;
   // https://json-schema.org/understanding-json-schema/reference/array#contains
   contains?: boolean | SchemaAttributes;
+  // todo implement default
+  default?: any
+  // todo implement deprecated
+  deprecated?: boolean
+  // todo implement definitions
+  definitions?: SchemaAttributes;
   denied?: unknown[];
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: unknown[];
