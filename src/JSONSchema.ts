@@ -3,7 +3,7 @@
  * Copyright (c) 2025 Karl STEIN
  */
 
-import deepExtend from '@jalik/deep-extend'
+import { deepExtend } from '@jalik/deep-extend'
 import {
   checkAdditionalProperties,
   checkAllOf,

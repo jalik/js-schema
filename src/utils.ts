@@ -1,13 +1,13 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
-import deepExtend from '@jalik/deep-extend'
-import ValidationError from './errors/ValidationError'
-import ValidateError, { ValidationErrors } from './errors/ValidateError'
-import JSONSchema, { SchemaAttributes, ValidateOptions } from './JSONSchema'
+import { deepExtend } from '@jalik/deep-extend'
 import FieldRefError from './errors/FieldRefError'
+import ValidateError, { ValidationErrors } from './errors/ValidateError'
+import ValidationError from './errors/ValidationError'
+import JSONSchema, { SchemaAttributes, ValidateOptions } from './JSONSchema'
 
 /**
  * Cleans a value.
