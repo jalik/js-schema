@@ -175,7 +175,7 @@ export function checkAllOf (
       // Boolean schema handling
       if (typeof schema === 'boolean') {
         if (schema === false) {
-          throw new ValidationError(path, `The field "${path}" failed validation against schema at allOf[${i}]`)
+          throw new ValidationError(path, `The field failed validation against schema at allOf[${i}].`)
         }
         // If schema is true, it's always valid, so continue to next schema
         continue
@@ -259,7 +259,7 @@ export function checkAnyOf (
       if (lastError) {
         throw lastError
       }
-      throw new ValidationError(path, `The field "${path}" must validate against at least one schema in anyOf`)
+      throw new ValidationError(path, 'The field must validate against at least one schema in anyOf.')
     }
   }
 }
@@ -320,9 +320,9 @@ export function checkOneOf (
       if (lastError) {
         throw lastError
       }
-      throw new ValidationError(path, `The field "${path}" must validate against exactly one schema in oneOf, but matched none`)
+      throw new ValidationError(path, 'The field must validate against exactly one schema in oneOf, but matched none.')
     } else if (validCount > 1) {
-      throw new ValidationError(path, `The field "${path}" must validate against exactly one schema in oneOf, but matched ${validCount}`)
+      throw new ValidationError(path, `The field must validate against exactly one schema in oneOf, but matched ${validCount}.`)
     }
   }
 }
@@ -399,10 +399,10 @@ export function checkContains (
   options: ValidateOptions): void {
   if (contains === false) {
     // todo use specific error reason
-    throw new ValidationError(path, `The field "${path}" must not contain any item.`)
+    throw new ValidationError(path, 'The field must not contain any item.')
   } else if (contains === true && value.length === 0) {
     // todo use specific error reason
-    throw new ValidationError(path, `The field "${path}" must contain any item.`)
+    throw new ValidationError(path, 'The field must contain any item.')
   } else if (typeof contains === 'object') {
     let errors = {} as ValidationErrors
     let matchingCount = 0
@@ -535,7 +535,7 @@ export function checkItems (
       if ((prefixItems == null && value.length > 0) ||
         (prefixItems != null && value.length > prefixItems.length)) {
         // todo use specific error reason
-        throw new ValidationError(path, `The field "${path}" must not contain any item.`)
+        throw new ValidationError(path, 'The field must not contain any item.')
       }
     } else if (typeof items === 'object' && items != null) {
       let errors = {} as ValidationErrors
@@ -817,7 +817,7 @@ export function checkNot (
     if (typeof not === 'boolean') {
       if (not === true) {
         // If schema is true, it's always valid, so the not condition fails
-        throw new ValidationError(path, `The field "${path}" must not validate against the schema in not`)
+        throw new ValidationError(path, 'The field must not validate against the schema in not.')
       }
       // If schema is false, it's always invalid, so the not condition passes
       return
@@ -837,7 +837,7 @@ export function checkNot (
 
       // If the value is valid against the not schema, the not condition fails
       if (isValid) {
-        throw new ValidationError(path, `The field "${path}" must not validate against the schema in not`)
+        throw new ValidationError(path, 'The field must not validate against the schema.')
       }
     }
   }

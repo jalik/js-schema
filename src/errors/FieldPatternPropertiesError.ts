@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import { ERROR_FIELD_PATTERN_PROPERTIES } from '../errors'
@@ -10,7 +10,7 @@ class FieldPatternPropertiesError extends ValidationError {
   public readonly patternProperties: string[]
 
   constructor (path: string, patternProperties: string[]) {
-    super(path, `The field "${path}" contains invalid property names "${patternProperties}".`, ERROR_FIELD_PATTERN_PROPERTIES)
+    super(path, `The field contains invalid property names "${patternProperties}".`, ERROR_FIELD_PATTERN_PROPERTIES)
     Object.setPrototypeOf(this, FieldPatternPropertiesError.prototype)
     this.patternProperties = patternProperties
   }

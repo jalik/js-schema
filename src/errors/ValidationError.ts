@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import { ERROR_SCHEMA_VALIDATION } from '../errors'
@@ -11,7 +11,7 @@ class ValidationError extends Error {
 
   constructor (
     path: string,
-    message: string = `The field "${path}" is not valid.`,
+    message: string = 'The field is not valid.',
     reason: string = ERROR_SCHEMA_VALIDATION) {
     super(message)
     Object.setPrototypeOf(this, ValidationError.prototype)

@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import { ERROR_FIELD_LENGTH } from '../errors'
@@ -10,7 +10,7 @@ class FieldLengthError extends ValidationError {
   public readonly length: number
 
   constructor (path: string, length: number) {
-    super(path, `The field "${path}" must have a length of ${length}.`, ERROR_FIELD_LENGTH)
+    super(path, `The field must have a length of ${length}.`, ERROR_FIELD_LENGTH)
     Object.setPrototypeOf(this, FieldLengthError.prototype)
     this.length = length
   }

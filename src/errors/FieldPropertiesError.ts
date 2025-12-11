@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2024 Karl STEIN
+ * Copyright (c) 2025 Karl STEIN
  */
 
 import { ERROR_FIELD_PROPERTIES } from '../errors'
@@ -11,7 +11,7 @@ class FieldPropertiesError extends ValidationError {
   public readonly properties: SchemaAttributes['properties']
 
   constructor (path: string, properties: SchemaAttributes['properties']) {
-    super(path, `The field "${path}" must be an object.`, ERROR_FIELD_PROPERTIES)
+    super(path, 'The field must be an object.', ERROR_FIELD_PROPERTIES)
     Object.setPrototypeOf(this, FieldPropertiesError.prototype)
     this.properties = properties
   }
