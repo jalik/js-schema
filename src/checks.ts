@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2025 Karl STEIN
+ * Copyright (c) 2026 Karl STEIN
  */
 
 import FieldAdditionalPropertiesError from './errors/FieldAdditionalPropertiesError'
@@ -1062,6 +1062,20 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
   if (!['undefined', 'object', 'boolean'].includes(typeof contains) || contains === null) {
     throw new SchemaError('"contains" must be an object or a boolean')
   }
+  // Check denied values
+  const { denied } = attributes
+  if (typeof denied !== 'undefined' && !(denied instanceof Array)) {
+    throw new SchemaError('"denied" must be an array')
+  }
+  // Check conflicting options.
+  if (attributes.denied != null && attributes.enum != null) {
+    throw new SchemaError('"enum" and "denied" cannot be defined together')
+  }
+  // Check deprecated
+  const { deprecated } = attributes
+  if (!['undefined', 'boolean'].includes(typeof deprecated)) {
+    throw new SchemaError('"deprecated" must be a boolean')
+  }
   // Check enum
   if (typeof attributes.enum !== 'undefined' && !(attributes.enum instanceof Array)) {
     throw new SchemaError('"enum" must be an array')
@@ -1159,6 +1173,11 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
   if (!['undefined', 'object', 'boolean'].includes(typeof propertyNames) || propertyNames === null) {
     throw new SchemaError('"propertyNames" must be an object or a boolean')
   }
+  // Check readOnly
+  const { readOnly } = attributes
+  if (!['undefined', 'boolean'].includes(typeof readOnly)) {
+    throw new SchemaError('"readOnly" must be a boolean')
+  }
   // Check required
   const { required } = attributes
   if (typeof required !== 'undefined' && !(required instanceof Array)) {
@@ -1183,11 +1202,6 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
     }
   }
 
-  // Check denied values
-  const { denied } = attributes
-  if (typeof denied !== 'undefined' && !(denied instanceof Array)) {
-    throw new SchemaError('"denied" must be an array')
-  }
   // Check max words
   const { maxWords } = attributes
   if (!['undefined', 'number'].includes(typeof maxWords)) {
@@ -1198,9 +1212,15 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
   if (!['undefined', 'number'].includes(typeof minWords)) {
     throw new SchemaError('"minWords" must be a number')
   }
-  // Check conflicting options.
-  if (attributes.enum && attributes.denied) {
-    throw new SchemaError('"enum" and "denied" cannot be defined together')
+  // Check uniqueItems
+  const { uniqueItems } = attributes
+  if (!['undefined', 'boolean'].includes(typeof uniqueItems)) {
+    throw new SchemaError('"uniqueItems" must be a boolean')
+  }
+  // Check writeOnly
+  const { writeOnly } = attributes
+  if (!['undefined', 'boolean'].includes(typeof writeOnly)) {
+    throw new SchemaError('"writeOnly" must be a boolean')
   }
 }
 

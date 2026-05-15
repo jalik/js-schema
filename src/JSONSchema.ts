@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2025 Karl STEIN
+ * Copyright (c) 2026 Karl STEIN
  */
 
 import { deepExtend } from '@jalik/deep-extend'
@@ -73,11 +73,11 @@ export type SchemaAttributes = {
   contains?: boolean | SchemaAttributes;
   // todo implement default
   default?: any
-  // todo implement deprecated
-  deprecated?: boolean
   // todo implement definitions
   definitions?: SchemaAttributes;
   denied?: unknown[];
+  // https://json-schema.org/understanding-json-schema/reference/annotations
+  deprecated?: boolean;
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: unknown[];
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
@@ -128,6 +128,8 @@ export type SchemaAttributes = {
   properties?: Record<string, boolean | SchemaAttributes>;
   // https://json-schema.org/understanding-json-schema/reference/object#propertyNames
   propertyNames?: boolean | Record<string, SchemaAttributes>;
+  // https://json-schema.org/understanding-json-schema/reference/annotations
+  readOnly?: boolean;
   // https://json-schema.org/understanding-json-schema/reference/object#required
   required?: string[];
   // https://json-schema.org/understanding-json-schema/reference/annotations
@@ -136,6 +138,8 @@ export type SchemaAttributes = {
   type?: SchemaType;
   // https://json-schema.org/understanding-json-schema/reference/array#uniqueItems
   uniqueItems?: boolean;
+  // https://json-schema.org/understanding-json-schema/reference/annotations
+  writeOnly?: boolean;
 }
 
 export type JSONSchemaOptions = {
@@ -516,10 +520,24 @@ class JSONSchema<A extends SchemaAttributes> {
   }
 
   /**
+   * Returns true if the schema is deprecated.
+   */
+  isDeprecated (): boolean {
+    return this.attributes.deprecated === true
+  }
+
+  /**
    * Checks if a property is required.
    */
   isPropertyRequired (name: keyof A['properties'] & string): boolean {
     return this.attributes.required instanceof Array && this.attributes.required.includes(name)
+  }
+
+  /**
+   * Returns true if the schema is read-only.
+   */
+  isReadOnly (): boolean {
+    return this.attributes.readOnly === true
   }
 
   /**
@@ -537,6 +555,13 @@ class JSONSchema<A extends SchemaAttributes> {
       }
       throw error
     }
+  }
+
+  /**
+   * Returns true if the schema is write-only.
+   */
+  isWriteOnly (): boolean {
+    return this.attributes.writeOnly === true
   }
 
   /**

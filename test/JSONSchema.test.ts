@@ -1,6 +1,6 @@
 /*
  * The MIT License (MIT)
- * Copyright (c) 2025 Karl STEIN
+ * Copyright (c) 2026 Karl STEIN
  */
 
 import { describe, expect, it } from 'vitest'
@@ -490,6 +490,51 @@ describe('isPropertyRequired(name)', () => {
       expect(schema.isPropertyRequired('a')).toBe(false)
       expect(schema.isPropertyRequired('b')).toBe(false)
     })
+  })
+})
+
+describe('isDeprecated()', () => {
+  it('should return true if deprecated is true', () => {
+    const schema = new JSONSchema({ deprecated: true })
+    expect(schema.isDeprecated()).toBe(true)
+  })
+  it('should return false if deprecated is false', () => {
+    const schema = new JSONSchema({ deprecated: false })
+    expect(schema.isDeprecated()).toBe(false)
+  })
+  it('should return false if deprecated is not defined', () => {
+    const schema = new JSONSchema({})
+    expect(schema.isDeprecated()).toBe(false)
+  })
+})
+
+describe('isReadOnly()', () => {
+  it('should return true if readOnly is true', () => {
+    const schema = new JSONSchema({ readOnly: true })
+    expect(schema.isReadOnly()).toBe(true)
+  })
+  it('should return false if readOnly is false', () => {
+    const schema = new JSONSchema({ readOnly: false })
+    expect(schema.isReadOnly()).toBe(false)
+  })
+  it('should return false if readOnly is not defined', () => {
+    const schema = new JSONSchema({})
+    expect(schema.isReadOnly()).toBe(false)
+  })
+})
+
+describe('isWriteOnly()', () => {
+  it('should return true if writeOnly is true', () => {
+    const schema = new JSONSchema({ writeOnly: true })
+    expect(schema.isWriteOnly()).toBe(true)
+  })
+  it('should return false if writeOnly is false', () => {
+    const schema = new JSONSchema({ writeOnly: false })
+    expect(schema.isWriteOnly()).toBe(false)
+  })
+  it('should return false if writeOnly is not defined', () => {
+    const schema = new JSONSchema({})
+    expect(schema.isWriteOnly()).toBe(false)
   })
 })
 
