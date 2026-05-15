@@ -157,6 +157,23 @@ describe('getAdditionalProperties()', () => {
   })
 })
 
+describe('getDefault()', () => {
+  describe('with default value', () => {
+    it('should return the default value', () => {
+      const defaultValue = { a: 1 }
+      const schema = new JSONSchema({ default: defaultValue })
+      expect(schema.getDefault()).toEqual(defaultValue)
+    })
+  })
+
+  describe('with default: undefined', () => {
+    it('should return undefined', () => {
+      const schema = new JSONSchema({})
+      expect(schema.getDefault()).toBeUndefined()
+    })
+  })
+})
+
 describe('getDenied()', () => {
   describe('with denied: Array', () => {
     it('should return an array', () => {

@@ -71,8 +71,8 @@ export type SchemaAttributes = {
   const?: any;
   // https://json-schema.org/understanding-json-schema/reference/array#contains
   contains?: boolean | SchemaAttributes;
-  // todo implement default
-  default?: any
+  // https://json-schema.org/understanding-json-schema/reference/annotations
+  default?: unknown;
   // todo implement definitions
   definitions?: SchemaAttributes;
   denied?: unknown[];
@@ -416,6 +416,13 @@ class JSONSchema<A extends SchemaAttributes> {
    */
   getItems (): A['items'] {
     return this.attributes.items
+  }
+
+  /**
+   * Returns the default value.
+   */
+  getDefault (): A['default'] {
+    return this.attributes.default
   }
 
   /**
