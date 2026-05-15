@@ -189,6 +189,33 @@ describe('getEnum()', () => {
   })
 })
 
+describe('getExamples()', () => {
+  describe('with examples = Array', () => {
+    it('should return the array', () => {
+      const examples = ['a', 'b']
+      const schema = new JSONSchema({ examples })
+      expect(schema.getExamples()).toStrictEqual(examples)
+    })
+  })
+
+  describe('with examples = undefined', () => {
+    it('should return undefined', () => {
+      const schema = new JSONSchema({})
+      expect(schema.getExamples()).toBeUndefined()
+    })
+  })
+
+  describe('with invalid examples', () => {
+    it('should throw a SchemaError', () => {
+      expect(() => {
+        // @ts-expect-error invalid type
+        // eslint-disable-next-line no-new
+        new JSONSchema({ examples: 'invalid' })
+      }).toThrow(SchemaError)
+    })
+  })
+})
+
 describe('getExclusiveMaximum()', () => {
   describe('with exclusiveMaximum = number', () => {
     it('should return exclusiveMaximum', () => {

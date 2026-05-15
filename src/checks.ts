@@ -1080,6 +1080,10 @@ export function checkSchemaAttributes (attributes: SchemaAttributes, options: JS
   if (typeof attributes.enum !== 'undefined' && !(attributes.enum instanceof Array)) {
     throw new SchemaError('"enum" must be an array')
   }
+  // Check examples
+  if (typeof attributes.examples !== 'undefined' && !(attributes.examples instanceof Array)) {
+    throw new SchemaError('"examples" must be an array')
+  }
   // Check format
   const { format } = attributes
   if (!['undefined', 'string'].includes(typeof format)) {

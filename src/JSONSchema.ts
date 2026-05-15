@@ -80,6 +80,8 @@ export type SchemaAttributes = {
   deprecated?: boolean;
   // https://json-schema.org/understanding-json-schema/reference/enum#enumerated-values
   enum?: unknown[];
+  // https://json-schema.org/understanding-json-schema/reference/annotations
+  examples?: unknown[];
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
   exclusiveMaximum?: number;
   // https://json-schema.org/understanding-json-schema/reference/numeric#range
@@ -414,6 +416,13 @@ class JSONSchema<A extends SchemaAttributes> {
    */
   getItems (): A['items'] {
     return this.attributes.items
+  }
+
+  /**
+   * Returns examples.
+   */
+  getExamples (): A['examples'] {
+    return this.attributes.examples
   }
 
   /**
